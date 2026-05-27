@@ -1,0 +1,32 @@
+Create a Python code which can:
+1. Pull accurate Data from web page via scraping
+2. Implement a particular strategy 
+3. Backtest the strategy for a recent past period for atleast 5 stocks and estimate gains on specified capital
+4. Suggest BUY signal for upcoming dates
+
+Data Pull:
+
+Data Source: 
+Pull following metrics from web.stockedge.com for each stock using links like: 
+1. https://web.stockedge.com/share/pc-jeweller/7943?section=deliveries
+2. other web page to pull Future Open Interest Data
+
+Metrics:
+1. Delivery Quantity by date
+2. VWAP by date
+3. Stock Price by date 
+4. Future Open Interest 
+5. Whether the stock price is running near support level or taking breakout from range
+
+Strategy:
+For stocks which satisfy all of below conditions:
+1. Delivery quantity & Delivery percentage is greater than previous day
+2. Stock price on the date exceed the VWAP for that date
+3. Future Open Interest for the stock is positive and higher than the precious day's Future Open Interest
+4. Stock Price is running near Support levels or taking a breakout from range
+
+Generate a BUY signal if all above conditions are met.
+
+
+
+
