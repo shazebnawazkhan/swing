@@ -1,0 +1,201 @@
+stock,company_name,sector,sub_sector,enabled,halal
+360ONE,360 ONE WAM LIMITED,Financial Services,Asset Management,N,N
+AAREYDRUGS,Aarey Drugs & Pharmaceuticals Limited,Healthcare,Drug Manufacturers - Specialty & Generic,N,N
+ABCAPITAL,Aditya Birla Capital Limited,Financial Services,Financial Conglomerates,N,N
+ABFRL,Aditya Birla Fashion and Retail Limited,Consumer Services,Apparel Manufacturing,N,N
+ADANIENT,Adani Enterprises Limited,Metals & Mining,Thermal Coal,N,N
+AGROPHOS,Agro Phos India Limited,Basic Materials,Agricultural Inputs,N,N
+AIIL,Authum Investment & Infrastructure Limited,Financial Services,Capital Markets,N,N
+ALBERTDAVD,Albert David Limited,Healthcare,Drug Manufacturers - Specialty & Generic,N,N
+ALKEM,Alkem Laboratories Limited,Healthcare,Drug Manufacturers - Specialty & Generic,N,N
+AMBIKCO,Ambika Cotton Mills Limited,Consumer Cyclical,Textile Manufacturing,N,N
+AMRUTANJAN,Amrutanjan Health Care Limited,Healthcare,Drug Manufacturers - Specialty & Generic,N,N
+ANANTRAJ,Anant Raj Limited,Realty,Real Estate - Development,N,N
+ANDHRAPAP,ANDHRA PAPER LIMITED,Basic Materials,Paper & Paper Products,N,N
+ARVIND,Arvind Limited,Textiles,Textile Manufacturing,N,N
+ASHIMASYN,Ashima Limited,Real Estate,Real Estate - Development,N,N
+ASIANHOTNR,Asian Hotels (North) Limited,Consumer Cyclical,Lodging,N,N
+AUTOAXLES,Automotive Axles Limited,Consumer Cyclical,Auto Parts,N,N
+AVL,Aditya Vision Limited,Consumer Services,Specialty Retail,N,N
+AXISCADES,AXISCADES Technologies Limited,Capital Goods,Engineering & Construction,N,N
+AZAD,Azad Engineering Limited,Capital Goods,Specialty Industrial Machinery,N,N
+BALAXI,BALAXI PHARMACEUTICALS LIMITED,Healthcare,Drug Manufacturers - Specialty & Generic,N,N
+BALKRISIND,Balkrishna Industries Limited,Automobile and Auto Components,Auto Parts,N,N
+BANG,Bang Overseas Limited,Consumer Cyclical,Apparel Manufacturing,N,N
+BANSWRAS,Banswara Syntex Limited,Consumer Cyclical,Textile Manufacturing,N,N
+BBOX,Black Box Limited,Information Technology,Software - Application,N,N
+BBTC,The Bombay Burmah Trading Corporation Limited,Fast Moving Consumer Goods,Packaged Foods,N,N
+BDL,Bharat Dynamics Limited,Capital Goods,Aerospace & Defense,N,N
+BECTORFOOD,Mrs. Bectors Food Specialities Limited,Fast Moving Consumer Goods,Packaged Foods,N,N
+BIKAJI,Bikaji Foods International Limited,Fast Moving Consumer Goods,Packaged Foods,N,N
+BIOFILCHEM,Biofil Chemicals & Pharmaceuticals Limited,Healthcare,Drug Manufacturers - Specialty & Generic,N,N
+BNALTD,B & A Limited,,,N,N
+BOROLTD,Borosil Limited,Consumer Cyclical,"Furnishings, Fixtures & Appliances",N,N
+BTML,Bodhi Tree Multimedia Limited,Communication Services,Entertainment,N,N
+CAMLINFINE,Camlin Fine Sciences Limited,Basic Materials,Specialty Chemicals,N,N
+CANFINHOME,Can Fin Homes Limited,Financial Services,Mortgage Finance,N,N
+CAPACITE,Capacit'e Infraprojects Limited,Industrials,Engineering & Construction,N,N
+CASTROLIND,Castrol India Limited,Oil Gas & Consumable Fuels,Oil & Gas Refining & Marketing,N,N
+CCAVENUE,AvenuesAI Limited,Financial Services,Software - Infrastructure,N,N
+CENTURYPLY,Century Plyboards (India) Limited,Consumer Durables,Lumber & Wood Production,N,N
+CGCL,Capri Global Capital Limited,Financial Services,Credit Services,N,N
+CGPOWER,CG Power and Industrial Solutions Limited,Capital Goods,Electrical Equipment & Parts,N,N
+CINEVISTA,Cinevista Limited,Communication Services,Entertainment,N,N
+COFORGE,Coforge Limited,Information Technology,Information Technology Services,N,N
+CONCOR,Container Corporation of India Limited,Services,Railroads,N,N
+CONFIPET,Confidence Petroleum India Limited,Energy,Oil & Gas Refining & Marketing,N,N
+CPPLUS,Aditya Infotech Limited,Capital Goods,Building Products & Equipment,N,N
+DAMCAPITAL,Dam Capital Advisors Limited,Financial Services,Capital Markets,N,N
+DCMFINSERV,DCM Financial Services Limited,Financial Services,Credit Services,N,N
+DCMSRIND,DCM Shriram Industries Limited,Consumer Defensive,Confectioners,N,N
+DELHIVERY,Delhivery Limited,Services,Integrated Freight & Logistics,N,N
+DHUNINV,Dhunseri Investments Limited,Financial Services,Capital Markets,N,N
+DOMS,DOMS Industries Limited,Fast Moving Consumer Goods,Business Equipment & Supplies,N,N
+DRAGARWQ,Dr Agarwals Eye Hospital Limited,,,N,N
+E2E,E2E Networks Limited,Technology,Software - Infrastructure,Y,Y
+ENERGYDEV,Energy Development Company Limited,Utilities,Utilities - Regulated Electric,N,N
+EQUITASBNK,Equitas Small Finance Bank Limited,Financial Services,Banks - Regional,N,N
+EUROBOND,Euro Panel Products Limited,Industrials,Building Products & Equipment,N,N
+EXCELSOFT,Excelsoft Technologies Limited,Technology,Software - Application,N,N
+EXIDEIND,Exide Industries Limited,Automobile and Auto Components,Auto Parts,N,N
+FAZE3Q,Faze Three Limited,Consumer Cyclical,Textile Manufacturing,N,N
+FEDERALBNK,The Federal Bank  Limited,Financial Services,Banks - Regional,N,N
+FELDVR,Future Enterprises Limited,Consumer Cyclical,Department Stores,N,N
+FINEORG,Fine Organic Industries Limited,Basic Materials,Specialty Chemicals,N,N
+GAIL,GAIL (India) Limited,Oil Gas & Consumable Fuels,Utilities - Regulated Gas,N,N
+GHCL,GHCL Limited,Chemicals,Chemicals,N,N
+GOODLUCK,Goodluck India Limited,Basic Materials,Steel,N,N
+GRADIENTE,Gradiente Infotainment Limited,Communication Services,Entertainment,N,N
+GTLINFRA,GTL Infrastructure Limited,Technology,Communication Equipment,N,N
+GULFPETRO,GP Petroleums Limited,Energy,Oil & Gas Refining & Marketing,N,N
+HECPROJECT,HEC Infra Projects Limited,,,N,N
+HEROMOTOCO,Hero MotoCorp Limited,Automobile and Auto Components,,N,N
+HEXT,Hexaware Technologies Limited,Information Technology,,N,N
+HGM,HandsOn Global Management (HGM) Limited,,,N,N
+HINDCOMPOS,Hindustan Composites Limited,,,N,N
+HINDPETRO,Hindustan Petroleum Corporation Limited,Oil Gas & Consumable Fuels,,N,N
+HNDFDS,Hindustan Foods Limited,,,N,N
+HONAUT,Honeywell Automation India Limited,Capital Goods,,N,N
+HONDAPOWER,Honda India Power Products Limited,,,N,N
+HPL,HPL Electric & Power Limited,,,N,N
+ICICIBANK,ICICI Bank Limited,Financial Services,,N,N
+IDEA,Vodafone Idea Limited,Telecommunication,,N,N
+IIFL,IIFL Finance Limited,Financial Services,,N,N
+IKS,Inventurus Knowledge Solutions Limited,Information Technology,,N,N
+IL&FSENGG,IL&FS Engineering and Construction Company Limited,,,N,N
+IMPAL,India Motor Parts and Accessories Limited,,,N,N
+INDIANB,Indian Bank,Financial Services,,N,N
+INDIANCARD,Indian Card Clothing Company Limited,,,N,N
+INDUSINDBK,IndusInd Bank Limited,Financial Services,,N,N
+INNOVACAP,Innova Captab Limited,,,N,N
+INSECTICID,Insecticides (India) Limited,,,N,N
+IOC,Indian Oil Corporation Limited,Oil Gas & Consumable Fuels,,N,N
+IRCTC,Indian Railway Catering And Tourism Corporation Limited,Consumer Services,,N,N
+IREDA,Indian Renewable Energy Development Agency Limited,Financial Services,,N,N
+ISHANCH,Ishan Dyes and Chemicals Limited,,,N,N
+IVALUE,Ivalue Infosolutions Limited,,,N,N
+JARO,Jaro Institute of Technology Management and Research Limited,,,N,N
+JUBLFOOD,Jubilant Foodworks Limited,Consumer Services,,N,N
+JUBLPHARMA,Jubilant Pharmova Limited,Healthcare,,N,N
+JYOTICNC,Jyoti CNC Automation Limited,Capital Goods,,N,N
+JYOTISTRUC,Jyoti Structures Limited,,,N,N
+KABRAEXTRU,Kabra Extrusion Technik Limited,,,N,N
+KALYANKJIL,Kalyan Jewellers India Limited,Consumer Durables,,Y,Y
+KAMAHOLD,Kama Holdings Limited,,,N,N
+KAMOPAINTS,Kamdhenu Ventures Limited,,,N,N
+KAUSHALYA,Kaushalya Infrastructure Development Corporation Limited,,,N,N
+KICL,Kalyani Investment Company Limited,,,N,N
+KISSHT,OnEMI Technology Solutions Limited,,,N,N
+KITEX,Kitex Garments Limited,Textiles,,N,N
+KKCL,Kewal Kiran Clothing Limited,,,N,N
+KUANTUM,Kuantum Papers Limited,,,N,N
+LAURUSLABS,Laurus Labs Limited,Healthcare,,N,N
+LAXMIDENTL,Laxmi Dental Limited,,,N,N
+LLOYDSENT,Lloyds Enterprises Limited,Metals & Mining,,N,N
+MAHEPC,Mahindra EPC Irrigation Limited,,,N,N
+MANBA,Manba Finance Limited,,,N,N
+MAPMYINDIA,C.E. Info Systems Limited,Information Technology,,N,N
+MARINE,Marine Electricals (India) Limited,,,N,N
+MEP,MEP Infrastructure Developers Limited,,,N,N
+MERCANTILE,Mercantile Ventures Limited,,,N,N
+MODINATUR,Modi Naturals Limited,,,N,N
+MSPL,MSP Steel & Power Limited,,,N,N
+MUFIN,Mufin Green Finance Limited,,,N,N
+MUTHOOTFIN,Muthoot Finance Limited,Financial Services,,N,N
+NATCOPHARM,Natco Pharma Limited,Healthcare,,N,N
+NIITMTS,NIIT Learning Systems Limited,,,N,N
+NILKAMAL,Nilkamal Limited,,,N,N
+NOCIL,NOCIL Limited,,,N,N
+NSLNISP,NMDC Steel Limited,Metals & Mining,,N,N
+NTPC,NTPC Limited,Power,,N,N
+NUVAMA,Nuvama Wealth Management Limited,Financial Services,,N,N
+OFSS,Oracle Financial Services Software Limited,Information Technology,,N,N
+ORIENTALTL,Oriental Trimex Limited,,,N,N
+OSIAHYPER,Osia Hyper Retail Limited,,,N,N
+OSWALGREEN,Oswal Greentech Limited,,,N,N
+PARKHOSPS,Park Medi World Limited,Healthcare,,N,N
+PASUPTAC,Pasupati Acrylon Limited,,,N,N
+PATELENG,Patel Engineering Limited,,,N,N
+PCJEWELLER,PC Jeweller Limited,Consumer Durables,,Y,Y
+PGHH,Procter & Gamble Hygiene and Health Care Limited,,,N,N
+PRABHA,Prabha Energy Limited,,,N,N
+PREMIERENE,Premier Energies Limited,Capital Goods,,N,N
+PREMIERPOL,Premier Polyfilm Limited,,,N,N
+PRIVISCL,Privi Speciality Chemicals Limited,Chemicals,,N,N
+RACE,Race Eco Chain Limited,,,N,N
+RAJSREESUG,Rajshree Sugars & Chemicals Limited,,,N,N
+RELTD,Ravindra Energy Limited,,,N,N
+RHFL,Reliance Home Finance Limited,,,N,N
+RHIM,RHI MAGNESITA INDIA LIMITED,Capital Goods,,N,N
+RICOAUTO,Rico Auto Industries Limited,,,N,N
+RISHABH,Rishabh Instruments Limited,,,N,N
+RITCO,Ritco Logistics Limited,,,N,N
+RPGLIFE,RPG Life Sciences Limited,,,N,N
+RSWM,RSWM Limited,,,N,N
+RVTH,Revathi Equipment India Limited,,,N,N
+SAIPARENT,Sai Parenterals Limited,,,N,N
+SCANSTL,Scan Steels Limited,,,N,N
+SECMARK,SecMark Consultancy Limited,,,N,N
+SENORES,Senores Pharmaceuticals Limited,,,N,N
+SEPC,SEPC Limited,,,N,N
+SHANTIGOLD,Shanti Gold International Limited,,,N,N
+SHARDAMOTR,Sharda Motor Industries Limited,,,N,N
+SHIVATEX,Shiva Texyarn Limited,,,N,N
+SHYAMTEL,Shyam Telecom Limited,,,N,N
+SIGIND,Signet Industries Limited,,,N,N
+SITINET,Siti Networks Limited,,,N,N
+SIYSIL,Siyaram Silk Mills Limited,,,N,N
+SMARTWORKS,Smartworks Coworking Spaces Limited,Services,,N,N
+SSWL,Steel Strips Wheels Limited,,,N,N
+STANLEY,Stanley Lifestyles Limited,,,N,N
+STERTOOLS,Sterling Tools Limited,,,N,N
+SUNCLAY,Sundaram Clayton Limited,,,N,N
+SURYALA,Suryalata Spinning Mills Limited,,,N,N
+SUVIDHAA,Suvidhaa Infoserve Limited,,,N,N
+TAKE,Take Solutions Limited,,,N,N
+TASTYBITE,Tasty Bite Eatables Limited,,,N,N
+TATASTEEL,Tata Steel Limited,Metals & Mining,,N,N
+TEGA,Tega Industries Limited,Capital Goods,,N,N
+THEINVEST,The Investment Trust Of India Limited,,,N,N
+TRANSWORLD,TRANSWORLD SHIPPING LINES LIMITED,,,N,N
+TRF,TRF Limited,,,N,N
+TRU,TruCap Finance Limited,,,N,N
+TVSMOTOR,TVS Motor Company Limited,Automobile and Auto Components,,N,N
+UCAL,UCAL LIMITED,,,N,N
+UJJIVANSFB,Ujjivan Small Finance Bank Limited,Financial Services,,N,N
+UMAEXPORTS,Uma Exports Limited,,,N,N
+UNIMECH,Unimech Aerospace and Manufacturing Limited,,,N,N
+UNIONBANK,Union Bank of India,Financial Services,,N,N
+UNIPARTS,Uniparts India Limited,,,N,N
+VAISHALI,Vaishali Pharma Limited,,,N,N
+VAKRANGEE,Vakrangee Limited,,,N,N
+VERTOZ,Vertoz Limited,,,N,N
+VIJIFIN,Viji Finance Limited,,,N,N
+VIMTALABS,Vimta Labs Limited,,,N,N
+VINCOFE,Vintage Coffee And Beverages Limited,,,N,N
+VITAL,Vital Chemtech Limited,,,N,N
+VSTTILLERS,V.S.T Tillers Tractors Limited,,,N,N
+VTL,Vardhman Textiles Limited,Textiles,,N,N
+WILLAMAGOR,Williamson Magor & Company Limited,,,N,N
+XPROINDIA,Xpro India Limited,,,N,N
+ZUARI,Zuari Agro Chemicals Limited,,,N,N

@@ -4,6 +4,7 @@ lxml>=4.9.0
 pandas>=2.0.0
 numpy>=1.24.0
 yfinance>=0.2.40
+pyarrow>=14.0.0
 
 # Optional: Selenium-based StockEdge scraper
 # Uncomment if you set USE_STOCKEDGE=True in config.py

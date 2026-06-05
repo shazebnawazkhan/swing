@@ -68,7 +68,7 @@ STOCKS = {
 }
 
 # ─── Capital & Trade Management ───────────────────────────
-CAPITAL            = 100_000   # Total capital (INR)
+CAPITAL            = 1_000_000   # Total capital (INR)
 POSITION_SIZE_PCT  = 20.0      # % of capital per trade (max 5 concurrent)
 STOP_LOSS_PCT      = 5.0       # Stop loss from entry
 TARGET_PCT         = 10.0      # Profit target from entry

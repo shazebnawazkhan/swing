@@ -5,6 +5,9 @@ outputs/
 # NSE data cache
 .nse_cache/
 
+# Parquet data cache (fetched stock data — rebuild with fetch_data.py)
+data/fetched/
+
 # Python
 __pycache__/
 *.py[cod]

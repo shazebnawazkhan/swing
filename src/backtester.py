@@ -47,6 +47,21 @@ class Backtester:
 
     # ── main entry point ──────────────────────────────────────────────────────
 
+    def run_with_signals(
+        self, strategy: Strategy, df: pd.DataFrame
+    ) -> tuple["BacktestResult", pd.DataFrame]:
+        """Like run(), but also returns the signal-enriched DataFrame."""
+        symbol = str(df["symbol"].iloc[0]) if "symbol" in df.columns else "UNKNOWN"
+        try:
+            sig_df = strategy.generate_signals(df.copy())
+        except Exception as exc:
+            print(f"  [WARN] {strategy.name} signal gen failed for {symbol}: {exc}")
+            return self._empty_result(strategy.name, symbol), pd.DataFrame()
+        if sig_df.empty or "buy_signal" not in sig_df.columns:
+            return self._empty_result(strategy.name, symbol), pd.DataFrame()
+        trades, final_cap = self._simulate(sig_df, symbol, strategy.name)
+        return self._build_result(strategy.name, symbol, trades, final_cap), sig_df
+
     def run(self, strategy: Strategy, df: pd.DataFrame) -> BacktestResult:
         """
         Parameters
