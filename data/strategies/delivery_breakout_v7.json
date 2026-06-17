@@ -1,0 +1,29 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "delivery_breakout_v7",
+  "name": "Delivery Breakout v7 (SL 4%, TP 18%, hold 15)",
+  "description": "delivery_breakout_v5 with target widened to 18% and max hold extended to 15 days — one-variable exit-grid sweep on the top-performing spec. Tests whether confirmed delivery breakouts can sustain a further move. R:R becomes 4.5:1.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": { "del_mult": 1.5, "vol_mult": 1.5, "lookback": 20 },
+  "indicators": {
+    "hhv20":      { "fn": "hhv",   "on": "close",        "window": "@lookback" },
+    "hhv20_prev": { "fn": "shift", "on": "hhv20",        "n": 1 },
+    "del_avg20":  { "fn": "sma",   "on": "delivery_pct", "window": 20 },
+    "vol20":      { "fn": "sma",   "on": "total_volume", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close > hhv20_prev",
+      "delivery_pct > @del_mult * del_avg20",
+      "total_volume > @vol_mult * vol20"
+    ]
+  },
+  "exit": { "stop_loss_pct": 4, "target_pct": 18, "max_hold_days": 15 },
+  "provenance": {
+    "created": "2026-06-17",
+    "hypothesis_id": "h_013",
+    "parent_id": "delivery_breakout_v5",
+    "experiments": []
+  }
+}

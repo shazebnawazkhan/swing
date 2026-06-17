@@ -1,0 +1,28 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "rs_delivery_breakout_v3",
+  "name": "RS Delivery Breakout v3 (SL 3%, DD fix)",
+  "description": "rs_delivery_breakout_v1 with stop tightened to 3% — one-variable SL sweep to address its 22.9% max drawdown. Same entry (20d breakout + delivery >1.5x avg + RS rank >= 0.80). If DD shrinks to sub-15% without losing PF, the spec becomes promotion-eligible.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": { "del_mult": 1.5, "lookback": 20, "rs_floor": 0.80 },
+  "indicators": {
+    "hhv20":      { "fn": "hhv",   "on": "close",        "window": "@lookback" },
+    "hhv20_prev": { "fn": "shift", "on": "hhv20",        "n": 1 },
+    "del_avg20":  { "fn": "sma",   "on": "delivery_pct", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close > hhv20_prev",
+      "delivery_pct > @del_mult * del_avg20",
+      "rs_rank >= @rs_floor"
+    ]
+  },
+  "exit": { "stop_loss_pct": 3, "target_pct": 10, "max_hold_days": 10 },
+  "provenance": {
+    "created": "2026-06-17",
+    "hypothesis_id": "h_014",
+    "parent_id": "rs_delivery_breakout_v1",
+    "experiments": []
+  }
+}

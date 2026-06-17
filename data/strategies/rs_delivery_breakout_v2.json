@@ -1,0 +1,30 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "rs_delivery_breakout_v2",
+  "name": "RS Delivery Breakout v2 (double-confirm + RS 0.70 + asymmetric exit)",
+  "description": "Best-of-breed hybrid: delivery_breakout_v3 double-confirmation entry (delivery% AND volume both >1.5x) + cross-sectional RS rank >= 0.70 gate + the asymmetric exit grid from v5 (SL4/TP14/hold12). Combines three confirmed-positive improvements from batches 3-4. rs_delivery_breakout_v1 used single delivery confirm + RS 0.80; this ups the signal quality on both axes.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": { "del_mult": 1.5, "vol_mult": 1.5, "lookback": 20, "rs_floor": 0.70 },
+  "indicators": {
+    "hhv20":      { "fn": "hhv",   "on": "close",        "window": "@lookback" },
+    "hhv20_prev": { "fn": "shift", "on": "hhv20",        "n": 1 },
+    "del_avg20":  { "fn": "sma",   "on": "delivery_pct", "window": 20 },
+    "vol20":      { "fn": "sma",   "on": "total_volume", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close > hhv20_prev",
+      "delivery_pct > @del_mult * del_avg20",
+      "total_volume > @vol_mult * vol20",
+      "rs_rank >= @rs_floor"
+    ]
+  },
+  "exit": { "stop_loss_pct": 4, "target_pct": 14, "max_hold_days": 12 },
+  "provenance": {
+    "created": "2026-06-17",
+    "hypothesis_id": "h_013",
+    "parent_id": "rs_delivery_breakout_v1",
+    "experiments": []
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "rs_momentum_v3",
+  "name": "Relative-Strength Momentum v3 (SL 3%)",
+  "description": "rs_momentum_v1 with stop tightened to 3% — one-variable SL sweep. v1 is PF 1.03 with DD 12.4%; question is whether cutting losers at 3% reduces DD materially and nudges PF above 1.1. Entry and rs_floor identical to v1.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": { "proximity": 0.98, "vol_mult": 1.5, "rs_floor": 0.90 },
+  "indicators": {
+    "hhv200":    { "fn": "hhv", "on": "close",        "window": 200 },
+    "vol20":     { "fn": "sma", "on": "total_volume", "window": 20 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close >= @proximity * hhv200",
+      "total_volume > @vol_mult * vol20",
+      "delivery_pct > del_avg20",
+      "rs_rank >= @rs_floor"
+    ]
+  },
+  "exit": { "stop_loss_pct": 3, "target_pct": 10, "max_hold_days": 12 },
+  "provenance": {
+    "created": "2026-06-17",
+    "hypothesis_id": "h_014",
+    "parent_id": "rs_momentum_v1",
+    "experiments": []
+  }
+}

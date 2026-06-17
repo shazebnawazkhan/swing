@@ -1,0 +1,32 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "pullback_ema20_v1",
+  "name": "EMA20 Pullback in Uptrend v1",
+  "description": "New signal family: buy when price pulls back to the rising 20-EMA inside an EMA50 uptrend and bounces on above-average delivery. Entry fires when previous close was at/below EMA20 (within 1%) and today's close reclaims above it — the 'knots and swing pullbacks' setup from Bulkowski Ch.1 and Grimes Ch.3/6 (program.md idea #9). Sharper than pullback_trend_v1's generic EMA cross (which fired 13k times); the EMA50 above-close gate and EMA20-touch restriction should reduce trade count 10x.",
+  "markets": ["nse"],
+  "regimes": ["bull"],
+  "params": { "touch_tolerance": 1.01 },
+  "indicators": {
+    "ema20":      { "fn": "ema",   "on": "close", "span": 20 },
+    "ema50":      { "fn": "ema",   "on": "close", "span": 50 },
+    "close_prev": { "fn": "shift", "on": "close", "n": 1 },
+    "ema20_prev": { "fn": "shift", "on": "ema20", "n": 1 },
+    "del_avg20":  { "fn": "sma",   "on": "delivery_pct", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close > ema50",
+      "ema20 > ema50",
+      "close_prev <= @touch_tolerance * ema20_prev",
+      "close > ema20",
+      "delivery_pct > del_avg20"
+    ]
+  },
+  "exit": { "stop_loss_pct": 4, "target_pct": 10, "max_hold_days": 10 },
+  "provenance": {
+    "created": "2026-06-17",
+    "hypothesis_id": null,
+    "parent_id": null,
+    "experiments": []
+  }
+}

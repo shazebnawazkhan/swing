@@ -1,0 +1,29 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "rs_momentum_v4",
+  "name": "Relative-Strength Momentum v4 (RS floor 0.80)",
+  "description": "rs_momentum_v1 with rs_floor relaxed from 0.90 to 0.80 — one-variable RS threshold sweep. v1 gets 215 trades; lowering the RS floor adds the 80th–90th percentile names to test whether the signal edge extends into the second decile or is exclusive to the top decile.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": { "proximity": 0.98, "vol_mult": 1.5, "rs_floor": 0.80 },
+  "indicators": {
+    "hhv200":    { "fn": "hhv", "on": "close",        "window": 200 },
+    "vol20":     { "fn": "sma", "on": "total_volume", "window": 20 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close >= @proximity * hhv200",
+      "total_volume > @vol_mult * vol20",
+      "delivery_pct > del_avg20",
+      "rs_rank >= @rs_floor"
+    ]
+  },
+  "exit": { "stop_loss_pct": 5, "target_pct": 10, "max_hold_days": 12 },
+  "provenance": {
+    "created": "2026-06-17",
+    "hypothesis_id": "h_014",
+    "parent_id": "rs_momentum_v1",
+    "experiments": []
+  }
+}

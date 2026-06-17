@@ -1,0 +1,28 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "high_momentum_52w_v4",
+  "name": "Near-High Momentum v4 (SL 3%)",
+  "description": "high_momentum_52w_v2 with stop tightened to 3% — one-variable SL sweep on a large-sample spec (355 trades, PF 0.95). If losers are being stopped out near -5% on setups that would have recovered at -3%, tightening the stop clips the tail loss and could flip PF above 1.0.",
+  "markets": ["nse"],
+  "regimes": ["bull"],
+  "params": { "proximity": 0.98, "vol_mult": 1.5 },
+  "indicators": {
+    "hhv200":    { "fn": "hhv", "on": "close",        "window": 200 },
+    "vol20":     { "fn": "sma", "on": "total_volume", "window": 20 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close >= @proximity * hhv200",
+      "total_volume > @vol_mult * vol20",
+      "delivery_pct > del_avg20"
+    ]
+  },
+  "exit": { "stop_loss_pct": 3, "target_pct": 10, "max_hold_days": 12 },
+  "provenance": {
+    "created": "2026-06-17",
+    "hypothesis_id": "h_011",
+    "parent_id": "high_momentum_52w_v2",
+    "experiments": []
+  }
+}
