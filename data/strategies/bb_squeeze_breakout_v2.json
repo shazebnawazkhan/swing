@@ -1,0 +1,36 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "bb_squeeze_breakout_v2",
+  "name": "BB Squeeze Breakout v2 (EMA50 trend-aligned)",
+  "description": "bb_squeeze_breakout_v1 plus one condition: price must be above its 50-day EMA before entering the squeeze-fire breakout. v1 fired in both up and down trends — the EMA50 gate restricts it to up-legs only (Carter Ch.11; Edwards & Magee Ch.36; program.md idea #1/#9). One-variable add vs v1.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": {
+    "vol_mult": 1.5,
+    "squeeze_tol": 1.2
+  },
+  "indicators": {
+    "bbw": { "fn": "bb_width", "on": "close", "window": 20, "k": 2 },
+    "bbw_min60": { "fn": "llv", "on": "bbw", "window": 60 },
+    "bbw_prev": { "fn": "shift", "on": "bbw", "n": 1 },
+    "bbw_min_prev": { "fn": "shift", "on": "bbw_min60", "n": 1 },
+    "bb_up": { "fn": "bb_upper", "on": "close", "window": 20, "k": 2 },
+    "vol20": { "fn": "sma", "on": "total_volume", "window": 20 },
+    "ema50": { "fn": "ema", "on": "close", "span": 50 }
+  },
+  "entry": {
+    "all": [
+      "bbw_prev <= @squeeze_tol * bbw_min_prev",
+      "close > bb_up",
+      "total_volume > @vol_mult * vol20",
+      "close > ema50"
+    ]
+  },
+  "exit": { "stop_loss_pct": 5, "target_pct": 12, "max_hold_days": 12 },
+  "provenance": {
+    "created": "2026-06-16",
+    "hypothesis_id": null,
+    "parent_id": "bb_squeeze_breakout_v1",
+    "experiments": []
+  }
+}

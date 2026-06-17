@@ -2,6 +2,20 @@
 
 Scans NSE stocks for a delivery-volume + futures open-interest based BUY signal, backtests over the last 90 days, and flags candidates for the next trading day.
 
+## Research pipeline (new)
+
+The repo is growing into an adaptive multi-market system — see `docs/DESIGN.md` (architecture), `docs/program.md` (autoresearch loop) and `docs/strategy_format.md` (declarative strategy specs).
+
+```bash
+# 1. Build/refresh the halal-universe data store (date-major, ~35s warm)
+python scripts/bulk_fetch.py --universe halal --start 2025-03-01
+
+# 2. Run every strategy spec in data/strategies/ over the past year
+python scripts/run_experiments.py
+
+# Results: outputs/experiments_summary.csv + data/results/experiments.jsonl
+```
+
 ## Strategy
 
 A BUY signal is generated only when **all four** conditions are true on the same day:

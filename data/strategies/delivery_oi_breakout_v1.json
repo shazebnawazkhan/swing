@@ -1,0 +1,31 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "delivery_oi_breakout_v1",
+  "name": "Delivery + OI Breakout v1",
+  "description": "Delivery-confirmed 20d breakout with rising futures open interest (fresh long buildup, not short-covering). Fires only on F&O names where oi_change is present; cash names evaluate the OI condition to False and are skipped (h_013 OI variant).",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": {
+    "del_mult": 1.5,
+    "lookback": 20
+  },
+  "indicators": {
+    "hhv20": { "fn": "hhv", "on": "close", "window": "@lookback" },
+    "hhv20_prev": { "fn": "shift", "on": "hhv20", "n": 1 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close > hhv20_prev",
+      "delivery_pct > @del_mult * del_avg20",
+      "oi_change > 0"
+    ]
+  },
+  "exit": { "stop_loss_pct": 5, "target_pct": 10, "max_hold_days": 10 },
+  "provenance": {
+    "created": "2026-06-16",
+    "hypothesis_id": "h_013",
+    "parent_id": "delivery_breakout_v1",
+    "experiments": []
+  }
+}

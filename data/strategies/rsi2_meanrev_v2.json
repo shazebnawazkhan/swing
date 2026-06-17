@@ -1,0 +1,46 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "rsi2_meanrev_v2",
+  "name": "RSI2 Mean Reversion v2 (deep dip, quick exit)",
+  "description": "v1 with a deeper oversold trigger (RSI2<5), stronger trend gate (EMA200) and a fast 4-day exit \u2014 scalp the bounce, don't marry it.",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "sideways",
+    "bull"
+  ],
+  "params": {
+    "rsi_buy": 5,
+    "trend_span": 200
+  },
+  "indicators": {
+    "rsi2": {
+      "fn": "rsi",
+      "on": "close",
+      "period": 2
+    },
+    "ema_t": {
+      "fn": "ema",
+      "on": "close",
+      "span": "@trend_span"
+    }
+  },
+  "entry": {
+    "all": [
+      "rsi2 < @rsi_buy",
+      "close > ema_t"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 4,
+    "target_pct": 4,
+    "max_hold_days": 4
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": "h_011",
+    "parent_id": "rsi2_meanrev_v1",
+    "experiments": []
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "pullback_trend_v2",
+  "name": "Pullback Trend v2 (strong-trend only, quick exit)",
+  "description": "v1 restricted to strong uptrends (EMA50>EMA200 as well) with a tighter 6% target and 7-day hold.",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "bull"
+  ],
+  "params": {},
+  "indicators": {
+    "ema20": {
+      "fn": "ema",
+      "on": "close",
+      "span": 20
+    },
+    "ema50": {
+      "fn": "ema",
+      "on": "close",
+      "span": 50
+    },
+    "ema200": {
+      "fn": "ema",
+      "on": "close",
+      "span": 200
+    }
+  },
+  "entry": {
+    "all": [
+      "ema20 > ema50",
+      "ema50 > ema200",
+      "low <= ema20",
+      "close > open"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 4,
+    "target_pct": 6,
+    "max_hold_days": 7
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": "h_011",
+    "parent_id": "pullback_trend_v1",
+    "experiments": []
+  }
+}

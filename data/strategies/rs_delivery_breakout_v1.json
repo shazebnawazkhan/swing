@@ -1,0 +1,33 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "rs_delivery_breakout_v1",
+  "name": "RS Delivery Breakout v1",
+  "description": "The alpha-positive delivery_breakout_v1 edge restricted to top-quintile relative-strength names: a 20d breakout on high delivery%, only in stocks already outperforming the universe over 60 days (h_014).",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": {
+    "del_mult": 1.5,
+    "lookback": 20,
+    "rs_floor": 0.80
+  },
+  "indicators": {
+    "hhv20": { "fn": "hhv", "on": "close", "window": "@lookback" },
+    "hhv20_prev": { "fn": "shift", "on": "hhv20", "n": 1 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close > hhv20_prev",
+      "delivery_pct > @del_mult * del_avg20",
+      "rs_rank >= @rs_floor"
+    ]
+  },
+  "exit": { "stop_loss_pct": 5, "target_pct": 10, "max_hold_days": 10 },
+  "param_grid": { "rs_floor": [0.70, 0.80, 0.90] },
+  "provenance": {
+    "created": "2026-06-16",
+    "hypothesis_id": "h_014",
+    "parent_id": "delivery_breakout_v1",
+    "experiments": []
+  }
+}

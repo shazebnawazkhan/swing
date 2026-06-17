@@ -1,0 +1,47 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "delivery_absorption_v1",
+  "name": "Delivery Absorption v1",
+  "description": "Down day where delivery quantity jumps 30%+ with high delivery share \u2014 weak-hand selling absorbed by strong hands; buy the absorption.",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "bull",
+    "sideways"
+  ],
+  "params": {
+    "del_jump": 1.3,
+    "del_floor": 40
+  },
+  "indicators": {
+    "close_prev": {
+      "fn": "shift",
+      "on": "close",
+      "n": 1
+    },
+    "del_prev": {
+      "fn": "shift",
+      "on": "delivery_qty",
+      "n": 1
+    }
+  },
+  "entry": {
+    "all": [
+      "close < close_prev",
+      "delivery_qty > @del_jump * del_prev",
+      "delivery_pct > @del_floor"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 5,
+    "target_pct": 10,
+    "max_hold_days": 10
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": null,
+    "parent_id": null,
+    "experiments": []
+  }
+}

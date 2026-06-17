@@ -1,0 +1,52 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "oversold_snapback_v1",
+  "name": "Oversold Snapback v1",
+  "description": "5-day fall of 10%+ followed by the first up-day on elevated volume \u2014 capitulation snapback.",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "sideways",
+    "high_vol"
+  ],
+  "params": {
+    "drop_pct": -10,
+    "vol_mult": 1.3
+  },
+  "indicators": {
+    "roc5": {
+      "fn": "roc",
+      "on": "close",
+      "period": 5
+    },
+    "close_prev": {
+      "fn": "shift",
+      "on": "close",
+      "n": 1
+    },
+    "vol20": {
+      "fn": "sma",
+      "on": "total_volume",
+      "window": 20
+    }
+  },
+  "entry": {
+    "all": [
+      "roc5 < @drop_pct",
+      "close > close_prev",
+      "total_volume > @vol_mult * vol20"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 5,
+    "target_pct": 8,
+    "max_hold_days": 5
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": null,
+    "parent_id": null,
+    "experiments": []
+  }
+}

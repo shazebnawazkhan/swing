@@ -713,8 +713,27 @@ header h1 { font-size:15px; font-weight:800; color:var(--accent); letter-spacing
 .cl { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase;
       letter-spacing:.06em; margin-bottom:5px; }
 .cv { font-size:22px; font-weight:800; }
-.chart-wrap { background:var(--surface); border:1.5px solid var(--border);
-              border-radius:var(--r); padding:16px; margin-bottom:24px; overflow-x:auto; }
+/* ── Overview: side-by-side table + chart ───────────────────────────────── */
+.overview-body { display:flex; gap:16px; align-items:flex-start; }
+.overview-left { flex:1; min-width:0; }
+.overview-right { width:340px; flex-shrink:0;
+                  position:sticky; top:132px;
+                  height:calc(100vh - 160px);
+                  background:var(--surface); border:1.5px solid var(--border);
+                  border-radius:var(--r);
+                  display:flex; flex-direction:column; overflow:hidden; }
+.chart-right-hdr { padding:10px 14px 8px; font-size:11px; font-weight:800;
+                   color:var(--muted); text-transform:uppercase; letter-spacing:.06em;
+                   border-bottom:1px solid var(--border); flex-shrink:0; }
+.chart-scroll-wrap { flex:1; overflow-y:auto; overflow-x:hidden; padding:8px 4px 8px 8px; }
+.chart-scroll-wrap canvas { display:block; }
+.chart-drag-handle { height:10px; cursor:ns-resize; background:var(--surface);
+                     border:1.5px solid var(--border); border-top:none;
+                     border-radius:0 0 var(--r) var(--r); margin-bottom:12px;
+                     display:flex; align-items:center; justify-content:center; }
+.chart-drag-handle::after { content:''; width:32px; height:3px;
+                             background:var(--border); border-radius:2px; }
+.chart-drag-handle:hover { background:var(--border); }
 
 /* ── Stock table ────────────────────────────────────────────────────────── */
 .tbl-wrap { overflow-x:auto; }
@@ -942,6 +961,25 @@ const _charts    = {};
 const _tableData = {};
 const _sortState = {};
 const _sigCharts = {};
+let   _resizing  = null;
+function startChartResize(e, si) {
+  e.preventDefault();
+  const wrap = document.getElementById('chart-wrap-' + si);
+  if (!wrap) return;
+  _resizing = { wrap, startY: e.clientY, startH: wrap.offsetHeight };
+  document.addEventListener('mousemove', _onChartResize);
+  document.addEventListener('mouseup',   _stopChartResize);
+}
+function _onChartResize(e) {
+  if (!_resizing) return;
+  const h = Math.max(120, _resizing.startH + e.clientY - _resizing.startY);
+  _resizing.wrap.style.height = h + 'px';
+}
+function _stopChartResize() {
+  _resizing = null;
+  document.removeEventListener('mousemove', _onChartResize);
+  document.removeEventListener('mouseup',   _stopChartResize);
+}
 const _SORT_KEYS = ['symbol','company_name','sector','total_trades','win_rate',
                     'total_pnl','total_pnl_pct','max_drawdown_pct','final_capital'];
 
@@ -1159,14 +1197,19 @@ function buildOverviewHTML(strat, si) {
     ['Best',        best  ? '<b>' + best.symbol  + '</b> <span class="pos">+' + fmt(best.total_pnl_pct)  + '%</span>' : '—'],
     ['Worst',       worst ? '<b>' + worst.symbol + '</b> <span class="neg">'  + fmt(worst.total_pnl_pct) + '%</span>' : '—'],
   ];
-  const ht = Math.min(500, Math.max(180, traded.length * 24 + 48));
+  const chartH = Math.max(180, traded.length * 18 + 60);
   return (
     '<div class="cards">' +
       cards.map(([l,v]) =>
         '<div class="card"><div class="cl">' + l + '</div><div class="cv">' + v + '</div></div>'
       ).join('') +
     '</div>' +
-    (traded.length ? '<div class="chart-wrap" style="height:' + ht + 'px"><canvas id="chart-' + si + '"></canvas></div>' : '') +
+    (traded.length
+      ? '<div id="chart-wrap-' + si + '" class="chart-scroll-wrap" style="height:420px;overflow-y:auto;overflow-x:hidden;border:1.5px solid var(--border);border-radius:var(--r) var(--r) 0 0;margin-bottom:0;">' +
+          '<canvas id="chart-' + si + '" height="' + chartH + '"></canvas>' +
+        '</div>' +
+        '<div class="chart-drag-handle" onmousedown="startChartResize(event,' + si + ')"></div>'
+      : '') +
     '<div class="tbl-controls">' +
       '<input type="text" id="filter-' + si + '" placeholder="Filter symbol / company / sector…" oninput="renderTable(' + si + ')">' +
       '<label><input type="checkbox" id="hide-' + si + '" onchange="renderTable(' + si + ')"> Hide no-trade stocks</label>' +
@@ -1469,6 +1512,11 @@ function buildChart(strat, si) {
   const canvas = document.getElementById('chart-' + si);
   if (!canvas) return;
   if (_charts[si]) _charts[si].destroy();
+  const wrap = canvas.parentElement;
+  const w = wrap ? wrap.clientWidth || 308 : 308;
+  const h = Math.max(180, traded.length * 18 + 60);
+  canvas.width  = w;
+  canvas.height = h;
   const data   = traded.map(r => +r.total_pnl_pct || 0);
   const colors = data.map(v => v >= 0 ? 'rgba(21,128,61,.75)' : 'rgba(185,28,28,.75)');
   _charts[si] = new Chart(canvas, {
@@ -1477,15 +1525,15 @@ function buildChart(strat, si) {
       labels: traded.map(r => r.symbol),
       datasets: [{ label:'Return %', data, backgroundColor:colors,
                    borderColor:colors.map(c => c.replace('.75','1')),
-                   borderWidth:1, borderRadius:3 }]
+                   borderWidth:1, borderRadius:3, barThickness:10 }]
     },
     options: {
-      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      indexAxis:'y', responsive:false, maintainAspectRatio:false,
       plugins: { legend:{display:false},
                  tooltip:{ callbacks:{ label: ctx => (ctx.parsed.x>=0?'+':'')+ctx.parsed.x.toFixed(2)+'%' }}},
       scales: {
         x: { grid:{color:'#e5e7eb'}, ticks:{callback:v=>(v>=0?'+':'')+v.toFixed(1)+'%', font:{size:11}}},
-        y: { ticks:{font:{size:11,weight:'700'}}}
+        y: { ticks:{font:{size:10,weight:'700'}}}
       }
     }
   });

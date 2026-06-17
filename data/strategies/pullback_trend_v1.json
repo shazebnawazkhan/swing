@@ -1,0 +1,43 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "pullback_trend_v1",
+  "name": "Pullback Trend v1",
+  "description": "Uptrend (EMA20>EMA50), price pulls back to touch EMA20, closes bullish.",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "bull"
+  ],
+  "params": {},
+  "indicators": {
+    "ema20": {
+      "fn": "ema",
+      "on": "close",
+      "span": 20
+    },
+    "ema50": {
+      "fn": "ema",
+      "on": "close",
+      "span": 50
+    }
+  },
+  "entry": {
+    "all": [
+      "ema20 > ema50",
+      "low <= ema20",
+      "close > open"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 4,
+    "target_pct": 8,
+    "max_hold_days": 10
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": null,
+    "parent_id": null,
+    "experiments": []
+  }
+}

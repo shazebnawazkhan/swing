@@ -1,0 +1,33 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "rs_momentum_v2",
+  "name": "Relative-Strength Momentum v2 (let winners run)",
+  "description": "rs_momentum_v1 with only the exit grid widened — looser stop and a higher target with a longer hold — to stop cutting momentum winners short. One-variable (exit) test of the triple-barrier exit-grid idea (program.md #12; Grimes Ch.8 trade management). Entry logic is identical to v1.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": {
+    "proximity": 0.98,
+    "vol_mult": 1.5,
+    "rs_floor": 0.90
+  },
+  "indicators": {
+    "hhv200": { "fn": "hhv", "on": "close", "window": 200 },
+    "vol20":  { "fn": "sma", "on": "total_volume", "window": 20 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close >= @proximity * hhv200",
+      "total_volume > @vol_mult * vol20",
+      "delivery_pct > del_avg20",
+      "rs_rank >= @rs_floor"
+    ]
+  },
+  "exit": { "stop_loss_pct": 6, "target_pct": 18, "max_hold_days": 20 },
+  "provenance": {
+    "created": "2026-06-16",
+    "hypothesis_id": "h_014",
+    "parent_id": "rs_momentum_v1",
+    "experiments": []
+  }
+}

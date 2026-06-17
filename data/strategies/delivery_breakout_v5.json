@@ -1,0 +1,33 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "delivery_breakout_v5",
+  "name": "Delivery Breakout v5 (asymmetric exit, tight stop)",
+  "description": "delivery_breakout_v3 with an asymmetric exit grid: tighter stop (4%) and wider target (14%) with a longer hold (12 days). Favourable R:R of 3.5:1 vs v3's 2:1. Tests whether letting the delivery-confirmed breakouts run further improves expectancy without materially worsening drawdown (program.md #12 triple-barrier exit search). One-variable (exit) change vs v3.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": {
+    "del_mult": 1.5,
+    "vol_mult": 1.5,
+    "lookback": 20
+  },
+  "indicators": {
+    "hhv20": { "fn": "hhv", "on": "close", "window": "@lookback" },
+    "hhv20_prev": { "fn": "shift", "on": "hhv20", "n": 1 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 },
+    "vol20": { "fn": "sma", "on": "total_volume", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close > hhv20_prev",
+      "delivery_pct > @del_mult * del_avg20",
+      "total_volume > @vol_mult * vol20"
+    ]
+  },
+  "exit": { "stop_loss_pct": 4, "target_pct": 14, "max_hold_days": 12 },
+  "provenance": {
+    "created": "2026-06-16",
+    "hypothesis_id": "h_013",
+    "parent_id": "delivery_breakout_v3",
+    "experiments": []
+  }
+}

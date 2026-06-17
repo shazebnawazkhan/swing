@@ -1,0 +1,33 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "high_momentum_52w_v3",
+  "name": "Near-High Momentum v3 (EMA50 trend filter)",
+  "description": "high_momentum_52w_v2 plus one extra condition: price must also be above its 50-day EMA, so near-high breakouts are only taken inside an established up-leg (the moving-average-as-trendline gate, Edwards & Magee Ch.36; program.md #9). One-variable add vs v2.",
+  "markets": ["nse"],
+  "regimes": ["bull"],
+  "params": {
+    "proximity": 0.98,
+    "vol_mult": 1.5
+  },
+  "indicators": {
+    "hhv200": { "fn": "hhv", "on": "close", "window": 200 },
+    "vol20": { "fn": "sma", "on": "total_volume", "window": 20 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 },
+    "ema50": { "fn": "ema", "on": "close", "span": 50 }
+  },
+  "entry": {
+    "all": [
+      "close >= @proximity * hhv200",
+      "total_volume > @vol_mult * vol20",
+      "delivery_pct > del_avg20",
+      "close > ema50"
+    ]
+  },
+  "exit": { "stop_loss_pct": 5, "target_pct": 10, "max_hold_days": 12 },
+  "provenance": {
+    "created": "2026-06-16",
+    "hypothesis_id": "h_011",
+    "parent_id": "high_momentum_52w_v2",
+    "experiments": []
+  }
+}

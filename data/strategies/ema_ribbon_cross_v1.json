@@ -1,0 +1,58 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "ema_ribbon_cross_v1",
+  "name": "EMA Ribbon Cross v1",
+  "description": "Fresh EMA8/EMA21 bullish crossover above a rising EMA50 \u2014 early trend ignition entry.",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "bull"
+  ],
+  "params": {},
+  "indicators": {
+    "ema8": {
+      "fn": "ema",
+      "on": "close",
+      "span": 8
+    },
+    "ema21": {
+      "fn": "ema",
+      "on": "close",
+      "span": 21
+    },
+    "ema50": {
+      "fn": "ema",
+      "on": "close",
+      "span": 50
+    },
+    "ema8_prev": {
+      "fn": "shift",
+      "on": "ema8",
+      "n": 1
+    },
+    "ema21_prev": {
+      "fn": "shift",
+      "on": "ema21",
+      "n": 1
+    }
+  },
+  "entry": {
+    "all": [
+      "ema8 > ema21",
+      "ema8_prev <= ema21_prev",
+      "close > ema50"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 5,
+    "target_pct": 10,
+    "max_hold_days": 12
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": null,
+    "parent_id": null,
+    "experiments": []
+  }
+}

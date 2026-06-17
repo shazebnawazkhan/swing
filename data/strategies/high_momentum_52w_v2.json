@@ -1,0 +1,51 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "high_momentum_52w_v2",
+  "name": "Near-High Momentum v2 (delivery-confirmed)",
+  "description": "v1 + delivery% confirmation: near-high breakouts only when strong hands are taking delivery above the 20-day average.",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "bull"
+  ],
+  "params": {
+    "proximity": 0.98,
+    "vol_mult": 1.5
+  },
+  "indicators": {
+    "hhv200": {
+      "fn": "hhv",
+      "on": "close",
+      "window": 200
+    },
+    "vol20": {
+      "fn": "sma",
+      "on": "total_volume",
+      "window": 20
+    },
+    "del_avg20": {
+      "fn": "sma",
+      "on": "delivery_pct",
+      "window": 20
+    }
+  },
+  "entry": {
+    "all": [
+      "close >= @proximity * hhv200",
+      "total_volume > @vol_mult * vol20",
+      "delivery_pct > del_avg20"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 5,
+    "target_pct": 10,
+    "max_hold_days": 12
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": "h_011",
+    "parent_id": "high_momentum_52w_v1",
+    "experiments": []
+  }
+}

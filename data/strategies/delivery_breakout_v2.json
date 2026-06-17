@@ -1,0 +1,56 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "delivery_breakout_v2",
+  "name": "Delivery Breakout v2 (trend-gated)",
+  "description": "v1 + EMA200 trend gate and tighter exits \u2014 only break out of bases that are already in long-term uptrends.",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "bull"
+  ],
+  "params": {
+    "del_mult": 1.5,
+    "lookback": 20
+  },
+  "indicators": {
+    "hhv20": {
+      "fn": "hhv",
+      "on": "close",
+      "window": "@lookback"
+    },
+    "hhv20_prev": {
+      "fn": "shift",
+      "on": "hhv20",
+      "n": 1
+    },
+    "del_avg20": {
+      "fn": "sma",
+      "on": "delivery_pct",
+      "window": 20
+    },
+    "ema200": {
+      "fn": "ema",
+      "on": "close",
+      "span": 200
+    }
+  },
+  "entry": {
+    "all": [
+      "close > hhv20_prev",
+      "delivery_pct > @del_mult * del_avg20",
+      "close > ema200"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 4,
+    "target_pct": 8,
+    "max_hold_days": 8
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": "h_011",
+    "parent_id": "delivery_breakout_v1",
+    "experiments": []
+  }
+}

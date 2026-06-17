@@ -1,0 +1,49 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "gap_up_continuation_v2",
+  "name": "Gap-Up Continuation v2 (trend-gated)",
+  "description": "v1 + EMA200 trend gate \u2014 gaps in downtrends are exits, not entries.",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "bull"
+  ],
+  "params": {},
+  "indicators": {
+    "high_prev": {
+      "fn": "shift",
+      "on": "high",
+      "n": 1
+    },
+    "del_prev": {
+      "fn": "shift",
+      "on": "delivery_qty",
+      "n": 1
+    },
+    "ema200": {
+      "fn": "ema",
+      "on": "close",
+      "span": 200
+    }
+  },
+  "entry": {
+    "all": [
+      "open > high_prev",
+      "close > open",
+      "delivery_qty > del_prev",
+      "close > ema200"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 4,
+    "target_pct": 8,
+    "max_hold_days": 7
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": "h_011",
+    "parent_id": "gap_up_continuation_v1",
+    "experiments": []
+  }
+}

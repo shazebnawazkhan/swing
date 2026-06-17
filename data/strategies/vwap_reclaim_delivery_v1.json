@@ -1,0 +1,49 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "vwap_reclaim_delivery_v1",
+  "name": "VWAP Reclaim + Delivery v1",
+  "description": "Close crosses back above VWAP after a below-VWAP day, with delivery percentage above its 20-day average (institutional accumulation).",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "bull",
+    "sideways"
+  ],
+  "params": {},
+  "indicators": {
+    "close_prev": {
+      "fn": "shift",
+      "on": "close",
+      "n": 1
+    },
+    "vwap_prev": {
+      "fn": "shift",
+      "on": "vwap",
+      "n": 1
+    },
+    "del_avg20": {
+      "fn": "sma",
+      "on": "delivery_pct",
+      "window": 20
+    }
+  },
+  "entry": {
+    "all": [
+      "close > vwap",
+      "close_prev < vwap_prev",
+      "delivery_pct > del_avg20"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 5,
+    "target_pct": 10,
+    "max_hold_days": 10
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": null,
+    "parent_id": null,
+    "experiments": []
+  }
+}

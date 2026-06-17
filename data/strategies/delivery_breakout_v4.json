@@ -1,0 +1,34 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "delivery_breakout_v4",
+  "name": "Delivery Breakout v4 (VWAP-confirmed)",
+  "description": "delivery_breakout_v3 plus one extra confirmation: the breakout close must hold above the day's VWAP, so the move is led by buyers paying up rather than fading into the close (Lloyd Ch.1 accumulation; program.md #8). One-variable add vs v3.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": {
+    "del_mult": 1.5,
+    "vol_mult": 1.5,
+    "lookback": 20
+  },
+  "indicators": {
+    "hhv20": { "fn": "hhv", "on": "close", "window": "@lookback" },
+    "hhv20_prev": { "fn": "shift", "on": "hhv20", "n": 1 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 },
+    "vol20": { "fn": "sma", "on": "total_volume", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close > hhv20_prev",
+      "delivery_pct > @del_mult * del_avg20",
+      "total_volume > @vol_mult * vol20",
+      "close > vwap"
+    ]
+  },
+  "exit": { "stop_loss_pct": 5, "target_pct": 10, "max_hold_days": 10 },
+  "provenance": {
+    "created": "2026-06-16",
+    "hypothesis_id": "h_013",
+    "parent_id": "delivery_breakout_v3",
+    "experiments": []
+  }
+}

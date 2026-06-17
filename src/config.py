@@ -79,6 +79,11 @@ BACKTEST_DAYS      = 145       # Calendar days to backtest (covers Jan 1 2026 �
 BACKTEST_START_DATE = "2026-01-01"  # Hard floor; overrides BACKTEST_DAYS if set
 DATA_BUFFER_DAYS   = 50        # Extra days fetched for indicator warm-up
 
+# ─── Transaction costs (NSE delivery, round trip) ─────────
+# Brokerage + STT + exchange charges + slippage, % of traded value.
+# Applied per completed trade by scripts/run_experiments.py.
+ROUND_TRIP_COST_PCT = 0.25
+
 # ─── Strategy ─────────────────────────────────────────────
 SUPPORT_LOOKBACK_DAYS   = 30   # Look-back for support level detection
 SUPPORT_PROXIMITY_PCT   = 2.0  # Within X% of support = "near support"

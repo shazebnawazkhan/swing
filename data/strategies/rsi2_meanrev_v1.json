@@ -1,0 +1,46 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "rsi2_meanrev_v1",
+  "name": "RSI2 Mean Reversion v1",
+  "description": "Buy 2-day RSI oversold dips inside a medium-term uptrend; quick exit.",
+  "markets": [
+    "nse"
+  ],
+  "regimes": [
+    "sideways",
+    "bull"
+  ],
+  "params": {
+    "rsi_buy": 10,
+    "trend_span": 100
+  },
+  "indicators": {
+    "rsi2": {
+      "fn": "rsi",
+      "on": "close",
+      "period": 2
+    },
+    "ema100": {
+      "fn": "ema",
+      "on": "close",
+      "span": "@trend_span"
+    }
+  },
+  "entry": {
+    "all": [
+      "rsi2 < @rsi_buy",
+      "close > ema100"
+    ]
+  },
+  "exit": {
+    "stop_loss_pct": 5,
+    "target_pct": 6,
+    "max_hold_days": 6
+  },
+  "provenance": {
+    "created": "2026-06-12",
+    "hypothesis_id": null,
+    "parent_id": null,
+    "experiments": []
+  }
+}

@@ -30,3 +30,34 @@ Generate a BUY signal if all above conditions are met.
 
 
 
+
+
+
+
+Prompt for Fable:
+-------------------------------------------------------------
+
+Being the infamous Fable model you can efficiently play as a guide for lesser capable models like sonnet 4.6.
+Consider yourself a capable stock swing trader for India NSE, US stock market and other global markets, having excellent skills in currency trading 
+and great understanding macroeconomic indicators.
+Generate a precise but informative design document as markdown file which a claude code agent with sonnet 4.6 can follow to build a system described below.
+Emphasise on what the sonnet 4.6 model can do better to build a great self improving system.
+
+System to be built:
+I want to build a trading system which can 
+1. pull the right kind of data: stock, macroeconomic parameters and KPI, political news, company order win books, technical, fundamental, impact of news etc. 
+2. formulate right swing trading strategies based on that data and related indicators, 
+3. backtest the strategies on past stock data and evaluate the strategies on basis of several paremeters like maximum drawdown, sharpe ratio, profitability etc.
+4. Can adapt the strategies as per market trends like fir sideways markets, and for sector specific bullish trends, refine the strategies
+5. Refine and optimize strategies to grow the invested capital with a global outlook
+6. Leverage and build upon whatever is already bulit and is available in the current folder, reduce the overall claude token consumption during the build.
+6. Is capable of designing and running self improvements via autoresearch, not only for the trading strategies but for improving the entire system as whole. Making improvement in
+ reducing the risk, reducing the Cybertechcle time of investment, optimize runtime performance, optimize cost to gether data and run the strategies etc.
+
+
+
+1. Create an efficient strategy description format to precisely write and store the trading strategies.
+2. Build a detailed program.md file describing the autoresearch feature to design and run experiments.
+3. Optimize the code to pull data for all Halal stocks as per data/stcoks.csv and pull the data.
+4. Optimize the code to run backtest of new strategies on all halaal stocks
+5. Run 10 new experiments to build and refine new strategies based on existing or new indicators, and backtest them with past 1 year of data.
