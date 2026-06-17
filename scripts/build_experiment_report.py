@@ -199,8 +199,8 @@ def build_html(records: list[dict]) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Strategy Comparison — P&amp;L Backtest</title>
 <style>
-  :root {{ --bg:#0f1419; --card:#1a2029; --line:#2a323d; --txt:#e6edf3; --mut:#8b97a5;
-           --good:#22c55e; --bad:#f43f5e; --ok:#eab308; --accent:#38bdf8; }}
+  :root {{ --bg:#0d1520; --card:#162032; --line:#1e2d40; --txt:#dce8f5; --mut:#6e849a;
+           --good:#26d96e; --bad:#f04f5f; --ok:#f5a623; --accent:#3db8f5; }}
   * {{ box-sizing:border-box; }}
   body {{ margin:0; background:var(--bg); color:var(--txt);
           font:14px/1.5 -apple-system,Segoe UI,Roboto,sans-serif; padding:28px; }}
@@ -213,7 +213,7 @@ def build_html(records: list[dict]) -> str:
   table {{ border-collapse:collapse; width:100%; background:var(--card);
            border:1px solid var(--line); border-radius:10px; overflow:hidden; }}
   th,td {{ padding:9px 11px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap; }}
-  th {{ background:#141a22; color:var(--mut); font-weight:600; font-size:12px;
+  th {{ background:#0d1826; color:var(--mut); font-weight:600; font-size:12px;
         text-transform:uppercase; letter-spacing:.03em; position:sticky; top:0; z-index:10; }}
   th[title] {{ cursor:help; text-decoration:underline dotted var(--line); text-underline-offset:3px; }}
   td.name, th.name {{ text-align:left; }}
@@ -236,7 +236,7 @@ def build_html(records: list[dict]) -> str:
   .exp-btn:hover, .exp-btn.open {{ color:var(--accent); }}
   /* ── Signal Validation inline panel ── */
   tr.det-row > td.det-td {{ padding:0; border-bottom:2px solid var(--accent); }}
-  .sv-panel {{ padding:14px 16px 16px; background:#141a22; }}
+  .sv-panel {{ padding:14px 16px 16px; background:#0b1422; }}
   .sv-hdr {{ color:var(--mut); font-size:12px; margin-bottom:8px; }}
   .sv-chips {{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;
                max-height:100px; overflow-y:auto; padding-bottom:2px; }}
@@ -346,15 +346,21 @@ _SCRIPT = r"""
   };
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   const LAYOUT = {
-    layout: { background:{color:"#1a2029"}, textColor:"#8b97a5" },
-    grid:   { vertLines:{color:"#222b36"}, horzLines:{color:"#222b36"} },
-    rightPriceScale:{ borderColor:"#2a323d" },
-    timeScale:{ borderColor:"#2a323d" },
+    layout: { background:{color:"#0f1c2e"}, textColor:"#6e849a" },
+    grid:   { vertLines:{color:"#182436"}, horzLines:{color:"#182436"} },
+    rightPriceScale:{ borderColor:"#1e2d40" },
+    timeScale:{ borderColor:"#1e2d40" },
+  };
+  const PNL_LAYOUT = {
+    layout: { background:{color:"#0b1422"}, textColor:"#6e849a" },
+    grid:   { vertLines:{color:"#142030"}, horzLines:{color:"#142030"} },
+    rightPriceScale:{ borderColor:"#1a2a3a", scaleMargins:{top:0.1,bottom:0.1} },
+    timeScale:{ borderColor:"#1a2a3a", visible:true },
   };
   const PRICE_PAT = /^(ema|bb_up|bb_lower|hhv|llv|vwap)/i;
-  const LINE_COLS = ['#38bdf8','#f59e0b','#a78bfa','rgba(56,189,248,.55)',
-                     'rgba(56,189,248,.4)','rgba(255,255,255,.22)','rgba(255,255,255,.16)',
-                     '#10b981','#fb923c'];
+  const LINE_COLS = ['#3db8f5','#f5a623','#a78bfa','rgba(61,184,245,.5)',
+                     'rgba(61,184,245,.35)','rgba(255,255,255,.2)','rgba(255,255,255,.14)',
+                     '#26d96e','#fb923c'];
 
   const _svState    = {};   // row_key -> true once initialised
   const _svCharts   = {};   // row_key -> candlestick LWC chart
@@ -466,15 +472,15 @@ _SCRIPT = r"""
     _svCharts[key] = chart;
 
     const cs = chart.addCandlestickSeries({
-      upColor:'#22c55e', downColor:'#f43f5e', borderVisible:false,
-      wickUpColor:'#22c55e', wickDownColor:'#f43f5e' });
+      upColor:'#26d96e', downColor:'#f04f5f', borderVisible:false,
+      wickUpColor:'#26d96e', wickDownColor:'#f04f5f' });
     cs.setData(sd.map(function(x){ return { time:x.time, open:x.open, high:x.high, low:x.low, close:x.close }; }));
 
     const vs = chart.addHistogramSeries({ priceFormat:{type:'volume'}, priceScaleId:'' });
     vs.priceScale().applyOptions({ scaleMargins:{ top:0.82, bottom:0 } });
     vs.setData(sd.map(function(x){
       return { time:x.time, value:x.volume||0,
-               color: x.close >= x.open ? 'rgba(34,197,94,.25)' : 'rgba(244,63,94,.25)' };
+               color: x.close >= x.open ? 'rgba(38,217,110,.22)' : 'rgba(240,79,95,.22)' };
     }));
 
     var ci = 0;
@@ -493,9 +499,9 @@ _SCRIPT = r"""
         markers.push({ time:x.time, position:'belowBar', color:'#475569', shape:'circle', text:'' });
     });
     d.trade_markers.forEach(function(t) {
-      if (t.entry_date) markers.push({ time:t.entry_date, position:'belowBar', color:'#3b82f6', shape:'arrowUp', text:'BUY' });
+      if (t.entry_date) markers.push({ time:t.entry_date, position:'belowBar', color:'#3db8f5', shape:'arrowUp', text:'BUY' });
       if (t.exit_date)  markers.push({ time:t.exit_date,  position:'aboveBar',
-        color: t.pnl_pct >= 0 ? '#22c55e' : '#f43f5e', shape:'arrowDown',
+        color: t.pnl_pct >= 0 ? '#26d96e' : '#f04f5f', shape:'arrowDown',
         text:  (t.pnl_pct >= 0 ? '+' : '') + t.pnl_pct.toFixed(1) + '%' });
     });
     markers.sort(function(a,b){ return a.time < b.time ? -1 : 1; });
@@ -504,15 +510,14 @@ _SCRIPT = r"""
     new ResizeObserver(function(){ chart.applyOptions({ width: cdiv.getBoundingClientRect().width || cdiv.clientWidth }); }).observe(cdiv);
   }
 
-  // ── Cumulative P&L chart (per trade exit date) ────────────────────────────
+  // ── Per-trade P&L bars (instantaneous change at each BUY exit) ─────────────
   function _svRenderPnl(container, d, key) {
     if (_svPnlCharts[key]) { try { _svPnlCharts[key].remove(); } catch(_) {} delete _svPnlCharts[key]; }
     var trades = d.trade_markers.slice().sort(function(a,b){ return a.exit_date < b.exit_date ? -1 : 1; });
-    if (!trades.length) { container.innerHTML = '<div class="muted" style="font-size:12px;padding:4px">No trades for this stock.</div>'; return; }
-
-    var cum = 0;
-    var pts = trades.map(function(t) { cum += t.pnl_pct; return { time: t.exit_date, value: parseFloat(cum.toFixed(2)) }; });
-    var finalPnl = pts[pts.length-1].value;
+    if (!trades.length) {
+      container.innerHTML = '<div class="muted" style="font-size:12px;padding:4px 0">No trades for this stock.</div>';
+      return;
+    }
 
     var cdiv = document.createElement('div');
     cdiv.style.cssText = 'width:100%;height:110px;';
@@ -521,24 +526,26 @@ _SCRIPT = r"""
 
     var chart;
     try {
-      chart = LightweightCharts.createChart(cdiv, Object.assign({ width:w, height:110 }, {
-        layout:{ background:{color:'#141a22'}, textColor:'#8b97a5' },
-        grid:{ vertLines:{color:'#1e2735'}, horzLines:{color:'#1e2735'} },
-        rightPriceScale:{ borderColor:'#2a323d', scaleMargins:{top:0.1,bottom:0.1} },
-        timeScale:{ borderColor:'#2a323d', visible:true },
-      }));
-    } catch(e) { container.innerHTML = '<div class="muted err">PnL chart error</div>'; return; }
+      chart = LightweightCharts.createChart(cdiv, Object.assign({ width:w, height:110 }, PNL_LAYOUT));
+    } catch(e) {
+      container.innerHTML = '<div class="muted err">P&L chart error: '+esc(String(e))+'</div>';
+      return;
+    }
     _svPnlCharts[key] = chart;
 
-    var color = finalPnl >= 0 ? '#22c55e' : '#f43f5e';
-    var ls = chart.addAreaSeries({
-      lineColor: color, topColor: color.replace(')', ',.25)').replace('#','rgba('),
-      bottomColor: 'rgba(0,0,0,0)', lineWidth: 2,
-      lastValueVisible: true, priceLineVisible: false,
+    // One histogram bar per trade: positive bars above 0, negative bars below
+    var hs = chart.addHistogramSeries({
+      color: '#26d96e',
+      base: 0,
+      priceFormat: { type:'custom', formatter: function(p){ return (p>=0?'+':'')+p.toFixed(1)+'%'; } },
     });
-    // Fix rgba construction for hex colors
-    ls.applyOptions({ topColor: finalPnl >= 0 ? 'rgba(34,197,94,.20)' : 'rgba(244,63,94,.20)' });
-    ls.setData(pts);
+    hs.setData(trades.map(function(t) {
+      return {
+        time:  t.exit_date,
+        value: parseFloat(t.pnl_pct.toFixed(2)),
+        color: t.pnl_pct >= 0 ? 'rgba(38,217,110,.80)' : 'rgba(240,79,95,.80)',
+      };
+    }));
     chart.timeScale().fitContent();
     new ResizeObserver(function(){ chart.applyOptions({ width: cdiv.getBoundingClientRect().width || cdiv.clientWidth }); }).observe(cdiv);
   }
