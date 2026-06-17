@@ -177,16 +177,11 @@ def build_html(records: list[dict]) -> str:
       <tr class="det-row" id="det-{row_key}" style="display:none">
         <td colspan="15" class="det-td">
           <div class="sv-panel">
-            <div class="sv-controls">
-              <span class="sv-lbl">Stock</span>
-              <select class="sv-sel" id="svsel-{row_key}"
-                      onchange="svLoad('{spec_id_esc}','{gated_str}','{row_key}',this.value)">
-                <option value="">—</option>
-              </select>
-              <span class="sv-cnt" id="svcnt-{row_key}"></span>
-              <span class="sv-note" id="svnote-{row_key}"></span>
-            </div>
-            <div class="sv-chart" id="svchart-{row_key}"></div>
+            <div id="svhdr-{row_key}" class="sv-hdr"></div>
+            <div id="svchips-{row_key}" class="sv-chips"></div>
+            <div id="svnote-{row_key}" class="sv-note"></div>
+            <div id="svchart-{row_key}" class="sv-chart"></div>
+            <div id="svpnl-{row_key}" class="sv-pnl"></div>
             <div id="svtbl-{row_key}"></div>
           </div>
         </td>
@@ -242,13 +237,19 @@ def build_html(records: list[dict]) -> str:
   /* ── Signal Validation inline panel ── */
   tr.det-row > td.det-td {{ padding:0; border-bottom:2px solid var(--accent); }}
   .sv-panel {{ padding:14px 16px 16px; background:#141a22; }}
-  .sv-controls {{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }}
-  .sv-lbl {{ color:var(--mut); font-size:12px; white-space:nowrap; }}
-  .sv-sel {{ background:var(--card); color:var(--txt); border:1px solid var(--line); border-radius:6px;
-             padding:4px 10px; font-size:13px; min-width:200px; max-width:520px; cursor:pointer; }}
-  .sv-cnt {{ color:var(--mut); font-size:12px; }}
-  .sv-note {{ color:var(--ok); font-size:11px; font-family:monospace; }}
-  .sv-chart {{ width:100%; height:320px; border-radius:6px; overflow:hidden; margin-bottom:10px; min-height:40px; }}
+  .sv-hdr {{ color:var(--mut); font-size:12px; margin-bottom:8px; }}
+  .sv-chips {{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;
+               max-height:100px; overflow-y:auto; padding-bottom:2px; }}
+  .sv-chip {{ cursor:pointer; padding:3px 9px; border-radius:12px; font-size:11px;
+              font-family:monospace; white-space:nowrap; border:1px solid var(--line);
+              background:var(--card); color:var(--mut); transition:all .1s; }}
+  .sv-chip:hover {{ background:#253040; color:var(--txt); }}
+  .sv-chip.sv-pos {{ color:#22c55e; border-color:rgba(34,197,94,.35); }}
+  .sv-chip.sv-neg {{ color:#f43f5e; border-color:rgba(244,63,94,.3); }}
+  .sv-chip.sv-sel {{ background:#253040; border-color:var(--accent); color:var(--accent) !important; }}
+  .sv-note {{ color:var(--ok); font-size:11px; font-family:monospace; margin-bottom:6px; }}
+  .sv-chart {{ width:100%; height:300px; margin-bottom:6px; }}
+  .sv-pnl   {{ width:100%; height:110px; margin-bottom:10px; }}
   .sv-row-info {{ color:var(--mut); font-size:12px; margin-bottom:6px; }}
   .sv-tbl-wrap {{ overflow:auto; max-height:280px; border:1px solid var(--line); border-radius:6px; }}
   table.sv-cond-tbl {{ width:auto; border-collapse:collapse; font-size:12px; }}
@@ -343,191 +344,240 @@ _SCRIPT = r"""
     if (a >= 1e3) return s+"₹"+(a/1e3).toFixed(1)+"k";
     return s+"₹"+a.toFixed(0);
   };
-  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   const LAYOUT = {
     layout: { background:{color:"#1a2029"}, textColor:"#8b97a5" },
     grid:   { vertLines:{color:"#222b36"}, horzLines:{color:"#222b36"} },
     rightPriceScale:{ borderColor:"#2a323d" },
     timeScale:{ borderColor:"#2a323d" },
   };
-  // Indicator names that sit on the price scale (overlay as lines on the candle chart)
   const PRICE_PAT = /^(ema|bb_up|bb_lower|hhv|llv|vwap)/i;
   const LINE_COLS = ['#38bdf8','#f59e0b','#a78bfa','rgba(56,189,248,.55)',
                      'rgba(56,189,248,.4)','rgba(255,255,255,.22)','rgba(255,255,255,.16)',
                      '#10b981','#fb923c'];
 
-  // ── State ───────────────────────────────────────────────────────────────────
-  const _svState  = {};   // row_key -> true once initialised
-  const _svCharts = {};   // row_key -> LWC chart instance
+  const _svState    = {};   // row_key -> true once initialised
+  const _svCharts   = {};   // row_key -> candlestick LWC chart
+  const _svPnlCharts = {};  // row_key -> P&L area LWC chart
 
-  // ── Toggle row open/closed ──────────────────────────────────────────────────
+  // ── Toggle expand/collapse ──────────────────────────────────────────────────
   window.svToggle = function(specId, gated, key) {
     const row = document.getElementById('det-' + key);
     const btn = document.getElementById('expbtn-' + key);
     if (!row) return;
     const opening = (row.style.display === 'none' || !row.style.display);
     row.style.display = opening ? 'table-row' : 'none';
-    if (btn) {
-      btn.innerHTML = opening ? '&#9660;' : '&#9658;';
-      btn.classList.toggle('open', opening);
-    }
-    if (opening && !_svState[key]) {
-      _svState[key] = true;
-      _svInit(specId, gated, key);
-    }
+    if (btn) { btn.innerHTML = opening ? '&#9660;' : '&#9658;'; btn.classList.toggle('open', opening); }
+    if (opening && !_svState[key]) { _svState[key] = true; _svInit(specId, gated, key); }
   };
 
-  // ── On first open: load the stock list ─────────────────────────────────────
+  // ── First open: load stock list → chips ────────────────────────────────────
   async function _svInit(specId, gated, key) {
+    const chipsDiv = document.getElementById('svchips-' + key);
+    const hdrDiv   = document.getElementById('svhdr-'   + key);
     const chartDiv = document.getElementById('svchart-' + key);
-    chartDiv.innerHTML = '<div class="muted">Loading traded stocks…</div>';
+    chipsDiv.innerHTML = '<span style="color:var(--mut);font-size:12px">Loading stocks…</span>';
+    chartDiv.innerHTML = '';
     try {
       const res  = await fetch('/api/experiment/'+encodeURIComponent(specId)+'/symbols?gated='+gated);
       const data = await res.json();
       if (data.missing || !data.symbols || !data.symbols.length) {
-        chartDiv.innerHTML = '<div class="muted">No trades file found — run <code>scripts/run_experiments.py</code>.</div>';
+        chipsDiv.innerHTML = '';
+        chartDiv.innerHTML = '<div class="muted">No trades — run <code>scripts/run_experiments.py</code>.</div>';
         return;
       }
-      const sel = document.getElementById('svsel-' + key);
-      sel.innerHTML = data.symbols.map(s =>
-        '<option value="'+esc(s.symbol)+'">'+esc(s.symbol)
-        +' — '+s.trades+' trades, win '+s.win_rate+'%, '+fmtINR(s.total_pnl)+'</option>'
-      ).join('');
-      document.getElementById('svcnt-' + key).textContent = data.n_symbols + ' stocks traded';
-      chartDiv.innerHTML = '';
-      svLoad(specId, gated, key, sel.value);
+      hdrDiv.textContent = data.n_symbols + ' stocks traded · click a chip to inspect signals · sorted by net P&L';
+      chipsDiv.innerHTML = data.symbols.map(function(s, i) {
+        const cls  = s.total_pnl >= 0 ? 'sv-pos' : 'sv-neg';
+        const pnl  = fmtINR(s.total_pnl);
+        const wid  = ' title="'+s.trades+' trades · win '+s.win_rate+'%"';
+        return '<button class="sv-chip '+cls+'" id="svchip-'+key+'-'+i+'"'
+          + wid+' onclick="svChip(\''+esc(specId)+'\',\''+gated+'\',\''+key+'\','+i+',\''+esc(s.symbol)+'\')">'
+          + esc(s.symbol)+' '+pnl+'</button>';
+      }).join('');
+      // Auto-select first chip
+      _svMark(key, 0);
+      _svLoad(specId, gated, key, data.symbols[0].symbol);
     } catch(e) {
-      chartDiv.innerHTML = '<div class="muted err">Server not reachable — open this report at '
-        + '<code>http://localhost:8765</code> with <code>scripts/server.py</code> running.</div>';
+      chipsDiv.innerHTML = '';
+      chartDiv.innerHTML = '<div class="muted err">Server not reachable — open at <code>http://localhost:8765</code>.</div>';
     }
   }
 
-  // ── Load signals for one (spec, stock) ─────────────────────────────────────
-  window.svLoad = async function(specId, gated, key, symbol) {
+  function _svMark(key, idx) {
+    document.querySelectorAll('[id^="svchip-'+key+'-"]').forEach(b => b.classList.remove('sv-sel'));
+    const c = document.getElementById('svchip-'+key+'-'+idx);
+    if (c) c.classList.add('sv-sel');
+  }
+
+  window.svChip = function(specId, gated, key, idx, symbol) {
+    _svMark(key, idx);
+    _svLoad(specId, gated, key, symbol);
+  };
+
+  // ── Load signals for selected stock ────────────────────────────────────────
+  function _svLoad(specId, gated, key, symbol) {
     const chartDiv = document.getElementById('svchart-' + key);
     const tblDiv   = document.getElementById('svtbl-'   + key);
     const noteEl   = document.getElementById('svnote-'  + key);
     if (!symbol) return;
-    chartDiv.innerHTML = '<div class="muted">Loading signals for '+esc(symbol)+'…</div>';
+    // Destroy old charts before clearing containers
+    if (_svCharts[key])    { try { _svCharts[key].remove();    } catch(_) {} delete _svCharts[key]; }
+    if (_svPnlCharts[key]) { try { _svPnlCharts[key].remove(); } catch(_) {} delete _svPnlCharts[key]; }
+    chartDiv.innerHTML = '<div class="muted" style="padding:8px">Loading '+esc(symbol)+'…</div>';
     tblDiv.innerHTML   = '';
     noteEl.textContent = '';
-    try {
-      const res = await fetch(
-        '/api/experiment/'+encodeURIComponent(specId)
-        +'/symbol/'+encodeURIComponent(symbol)+'/signals?gated='+gated);
-      const d = await res.json();
-      if (d.error) { chartDiv.innerHTML = '<div class="muted err">'+esc(d.error)+'</div>'; return; }
-      if (d.uses_rs_rank)
-        noteEl.textContent = '⚠ rs_rank shown as 0.5 (cross-sectional — not recomputable per-symbol)';
-      chartDiv.innerHTML = '';
-      _svRenderChart(chartDiv, d, key);
-      _svRenderTable(tblDiv, d);
-    } catch(e) {
-      chartDiv.innerHTML = '<div class="muted err">Failed to load signals.</div>';
-    }
-  };
+    fetch('/api/experiment/'+encodeURIComponent(specId)+'/symbol/'+encodeURIComponent(symbol)+'/signals?gated='+gated)
+      .then(function(r){ return r.json(); })
+      .then(function(d) {
+        if (d.error) { chartDiv.innerHTML = '<div class="muted err">'+esc(d.error)+'</div>'; return; }
+        if (d.uses_rs_rank) noteEl.textContent = '⚠ rs_rank shown as 0.5 (cross-sectional — not recomputable per symbol)';
+        chartDiv.innerHTML = '';
+        var pnlDiv = document.getElementById('svpnl-'+key);
+        if (pnlDiv) pnlDiv.innerHTML = '';
+        _svRenderChart(chartDiv, d, key);
+        if (pnlDiv) _svRenderPnl(pnlDiv, d, key);
+        _svRenderTable(tblDiv, d);
+      })
+      .catch(function(e) {
+        chartDiv.innerHTML = '<div class="muted err">Fetch failed: '+esc(String(e))+'</div>';
+      });
+  }
 
-  // ── Candlestick chart with indicator overlays + trade markers ───────────────
+  // ── Candlestick + overlays + markers ───────────────────────────────────────
   function _svRenderChart(container, d, key) {
-    if (_svCharts[key]) { try { _svCharts[key].remove(); } catch(_) {} delete _svCharts[key]; }
-    const sd = d.signal_data.filter(x => x.open != null);
+    const sd = d.signal_data.filter(function(x){ return x.open != null; });
     if (!sd.length) { container.innerHTML = '<div class="muted">No OHLCV data.</div>'; return; }
 
-    const chart = LightweightCharts.createChart(container,
-      Object.assign({ width: container.clientWidth || 900, height: 320 }, LAYOUT));
+    // Create a fresh inner div — avoids LWC fighting with container styles
+    const cdiv = document.createElement('div');
+    cdiv.style.cssText = 'width:100%;height:320px;';
+    container.appendChild(cdiv);
+
+    // Measure after DOM insertion (getBoundingClientRect reflects actual layout)
+    const w = Math.round(cdiv.getBoundingClientRect().width) || container.clientWidth || 900;
+    var chart;
+    try {
+      chart = LightweightCharts.createChart(cdiv, Object.assign({ width: w, height: 320 }, LAYOUT));
+    } catch(e) {
+      container.innerHTML = '<div class="muted err">Chart error: '+esc(String(e))+'</div>';
+      return;
+    }
     _svCharts[key] = chart;
 
-    // Candlesticks
     const cs = chart.addCandlestickSeries({
       upColor:'#22c55e', downColor:'#f43f5e', borderVisible:false,
       wickUpColor:'#22c55e', wickDownColor:'#f43f5e' });
-    cs.setData(sd.map(x => ({ time:x.time, open:x.open, high:x.high, low:x.low, close:x.close })));
+    cs.setData(sd.map(function(x){ return { time:x.time, open:x.open, high:x.high, low:x.low, close:x.close }; }));
 
-    // Volume histogram
     const vs = chart.addHistogramSeries({ priceFormat:{type:'volume'}, priceScaleId:'' });
     vs.priceScale().applyOptions({ scaleMargins:{ top:0.82, bottom:0 } });
-    vs.setData(sd.map(x => ({
-      time:x.time, value:x.volume||0,
-      color: x.close >= x.open ? 'rgba(34,197,94,.25)' : 'rgba(244,63,94,.25)'
-    })));
+    vs.setData(sd.map(function(x){
+      return { time:x.time, value:x.volume||0,
+               color: x.close >= x.open ? 'rgba(34,197,94,.25)' : 'rgba(244,63,94,.25)' };
+    }));
 
-    // Price-scale indicator overlays (EMA, BB bands, HHV, VWAP…)
-    let ci = 0;
-    for (const col of d.indicator_cols) {
-      if (!PRICE_PAT.test(col)) continue;
-      const pts = sd.filter(x => x[col] != null).map(x => ({ time:x.time, value:x[col] }));
-      if (!pts.length) continue;
-      const ls = chart.addLineSeries({
-        color: LINE_COLS[ci++ % LINE_COLS.length],
-        lineWidth: 1, lastValueVisible: false, priceLineVisible: false });
+    var ci = 0;
+    d.indicator_cols.forEach(function(col) {
+      if (!PRICE_PAT.test(col)) return;
+      var pts = sd.filter(function(x){ return x[col] != null; }).map(function(x){ return { time:x.time, value:x[col] }; });
+      if (!pts.length) return;
+      var ls = chart.addLineSeries({ color: LINE_COLS[ci++ % LINE_COLS.length], lineWidth:1, lastValueVisible:false, priceLineVisible:false });
       ls.setData(pts);
-    }
+    });
 
-    // Markers: grey circles for skipped signals, blue/green/red arrows for trades
-    const execEntries = new Set(d.trade_markers.map(t => t.entry_date));
-    const markers = [];
-    for (const x of sd)
+    var execEntries = new Set(d.trade_markers.map(function(t){ return t.entry_date; }));
+    var markers = [];
+    sd.forEach(function(x) {
       if (x.buy_signal && !execEntries.has(x.time))
         markers.push({ time:x.time, position:'belowBar', color:'#475569', shape:'circle', text:'' });
-    for (const t of d.trade_markers) {
-      if (t.entry_date)
-        markers.push({ time:t.entry_date, position:'belowBar', color:'#3b82f6', shape:'arrowUp', text:'BUY' });
-      if (t.exit_date)
-        markers.push({ time:t.exit_date, position:'aboveBar',
-          color: t.pnl_pct >= 0 ? '#22c55e' : '#f43f5e', shape:'arrowDown',
-          text: (t.pnl_pct >= 0 ? '+' : '') + t.pnl_pct.toFixed(1) + '%' });
-    }
-    markers.sort((a, b) => a.time.localeCompare(b.time));
+    });
+    d.trade_markers.forEach(function(t) {
+      if (t.entry_date) markers.push({ time:t.entry_date, position:'belowBar', color:'#3b82f6', shape:'arrowUp', text:'BUY' });
+      if (t.exit_date)  markers.push({ time:t.exit_date,  position:'aboveBar',
+        color: t.pnl_pct >= 0 ? '#22c55e' : '#f43f5e', shape:'arrowDown',
+        text:  (t.pnl_pct >= 0 ? '+' : '') + t.pnl_pct.toFixed(1) + '%' });
+    });
+    markers.sort(function(a,b){ return a.time < b.time ? -1 : 1; });
     cs.setMarkers(markers);
     chart.timeScale().fitContent();
-    new ResizeObserver(() => chart.applyOptions({ width: container.clientWidth })).observe(container);
+    new ResizeObserver(function(){ chart.applyOptions({ width: cdiv.getBoundingClientRect().width || cdiv.clientWidth }); }).observe(cdiv);
+  }
+
+  // ── Cumulative P&L chart (per trade exit date) ────────────────────────────
+  function _svRenderPnl(container, d, key) {
+    if (_svPnlCharts[key]) { try { _svPnlCharts[key].remove(); } catch(_) {} delete _svPnlCharts[key]; }
+    var trades = d.trade_markers.slice().sort(function(a,b){ return a.exit_date < b.exit_date ? -1 : 1; });
+    if (!trades.length) { container.innerHTML = '<div class="muted" style="font-size:12px;padding:4px">No trades for this stock.</div>'; return; }
+
+    var cum = 0;
+    var pts = trades.map(function(t) { cum += t.pnl_pct; return { time: t.exit_date, value: parseFloat(cum.toFixed(2)) }; });
+    var finalPnl = pts[pts.length-1].value;
+
+    var cdiv = document.createElement('div');
+    cdiv.style.cssText = 'width:100%;height:110px;';
+    container.appendChild(cdiv);
+    var w = Math.round(cdiv.getBoundingClientRect().width) || container.clientWidth || 900;
+
+    var chart;
+    try {
+      chart = LightweightCharts.createChart(cdiv, Object.assign({ width:w, height:110 }, {
+        layout:{ background:{color:'#141a22'}, textColor:'#8b97a5' },
+        grid:{ vertLines:{color:'#1e2735'}, horzLines:{color:'#1e2735'} },
+        rightPriceScale:{ borderColor:'#2a323d', scaleMargins:{top:0.1,bottom:0.1} },
+        timeScale:{ borderColor:'#2a323d', visible:true },
+      }));
+    } catch(e) { container.innerHTML = '<div class="muted err">PnL chart error</div>'; return; }
+    _svPnlCharts[key] = chart;
+
+    var color = finalPnl >= 0 ? '#22c55e' : '#f43f5e';
+    var ls = chart.addAreaSeries({
+      lineColor: color, topColor: color.replace(')', ',.25)').replace('#','rgba('),
+      bottomColor: 'rgba(0,0,0,0)', lineWidth: 2,
+      lastValueVisible: true, priceLineVisible: false,
+    });
+    // Fix rgba construction for hex colors
+    ls.applyOptions({ topColor: finalPnl >= 0 ? 'rgba(34,197,94,.20)' : 'rgba(244,63,94,.20)' });
+    ls.setData(pts);
+    chart.timeScale().fitContent();
+    new ResizeObserver(function(){ chart.applyOptions({ width: cdiv.getBoundingClientRect().width || cdiv.clientWidth }); }).observe(cdiv);
   }
 
   // ── Per-day conditions table ────────────────────────────────────────────────
-  function condLabel(expr) {
-    // Strip param refs, trim, cap at 30 chars so column headers don't blow out
-    return expr.replace(/@\w+/g, '').replace(/\s+/g, ' ').trim().substring(0, 30);
+  function _condLabel(expr) {
+    return expr.replace(/@\w+/g,'').replace(/\s+/g,' ').trim().substring(0,30);
   }
 
   function _svRenderTable(container, d) {
-    const sd      = d.signal_data;
-    const defs    = d.cond_defs;
-    const tDates  = new Set(d.trade_markers.flatMap(t => [t.entry_date, t.exit_date]));
-    const eDates  = new Set(d.trade_markers.map(t => t.entry_date));
-    const visible = sd.filter(x => x.buy_signal || tDates.has(x.time));
-    const nBuy    = sd.filter(x => x.buy_signal).length;
+    var sd     = d.signal_data;
+    var defs   = d.cond_defs;
+    var tDates = new Set(d.trade_markers.reduce(function(a,t){ a.push(t.entry_date, t.exit_date); return a; }, []));
+    var eDates = new Set(d.trade_markers.map(function(t){ return t.entry_date; }));
+    var visible = sd.filter(function(x){ return x.buy_signal || tDates.has(x.time); });
+    var nBuy   = sd.filter(function(x){ return x.buy_signal; }).length;
 
-    let h = '<div class="sv-row-info">'
-          + nBuy + ' buy signal' + (nBuy === 1 ? '' : 's')
-          + ' &middot; ' + d.trade_markers.length + ' executed'
+    var h = '<div class="sv-row-info">'+nBuy+' buy signal'+(nBuy===1?'':'s')
+          + ' &middot; '+d.trade_markers.length+' executed'
           + ' &mdash; showing signal &amp; trade rows only</div>';
 
-    if (!visible.length) {
-      container.innerHTML = h + '<div class="muted">No signals in window.</div>';
-      return;
-    }
+    if (!visible.length) { container.innerHTML = h+'<div class="muted">No signals in window.</div>'; return; }
 
-    h += '<div class="sv-tbl-wrap"><table class="sv-cond-tbl"><thead><tr>'
-       + '<th>Date</th>'
-       + defs.map(cd => '<th title="' + esc(cd.label) + '">' + esc(condLabel(cd.label)) + '</th>').join('')
+    h += '<div class="sv-tbl-wrap"><table class="sv-cond-tbl"><thead><tr><th>Date</th>'
+       + defs.map(function(cd){ return '<th title="'+esc(cd.label)+'">'+esc(_condLabel(cd.label))+'</th>'; }).join('')
        + '<th>Signal</th></tr></thead><tbody>';
 
-    for (const x of visible) {
-      const cls = x.buy_signal ? 'sv-buy' : '';
-      h += '<tr class="' + cls + '"><td class="sv-date">' + x.time + '</td>';
-      for (const cd of defs)
-        h += '<td class="sv-cd">'
-           + (x[cd.key] ? '<span class="sv-y">✓</span>' : '<span class="sv-n">✗</span>')
-           + '</td>';
-      let sig = '';
-      if (x.buy_signal && eDates.has(x.time))
-        sig = '<span class="sv-sig sv-exec">BUY ✓</span>';
-      else if (x.buy_signal)
-        sig = '<span class="sv-sig sv-skip">BUY ⊘</span>';
-      else if (tDates.has(x.time))
-        sig += '<span class="sv-exit">EXIT</span>';
-      h += '<td>' + sig + '</td></tr>';
-    }
+    visible.forEach(function(x) {
+      var cls = x.buy_signal ? 'sv-buy' : '';
+      h += '<tr class="'+cls+'"><td class="sv-date">'+x.time+'</td>';
+      defs.forEach(function(cd) {
+        h += '<td class="sv-cd">'+(x[cd.key]?'<span class="sv-y">✓</span>':'<span class="sv-n">✗</span>')+'</td>';
+      });
+      var sig = '';
+      if (x.buy_signal && eDates.has(x.time))       sig = '<span class="sv-sig sv-exec">BUY ✓</span>';
+      else if (x.buy_signal)                         sig = '<span class="sv-sig sv-skip">BUY ⊘</span>';
+      else if (tDates.has(x.time) && !x.buy_signal)  sig = '<span class="sv-exit">EXIT</span>';
+      h += '<td>'+sig+'</td></tr>';
+    });
     h += '</tbody></table></div>';
     container.innerHTML = h;
   }
