@@ -31,6 +31,7 @@ if hasattr(sys.stdout, "reconfigure"):
 ROOT = Path(__file__).resolve().parent.parent   # repo root
 TRADES_DIR  = ROOT / "data" / "results" / "trades"
 FETCHED_DIR = ROOT / "data" / "fetched"
+SPEC_DIR    = ROOT / "data" / "strategies"
 
 
 # ── Per-stock chart data (for the report's collapsible visuals) ─────────────────
@@ -105,6 +106,83 @@ def _symbol_chart(spec_id: str, gated: bool, symbol: str) -> dict:
     markers.sort(key=lambda m: m["time"])
     return {"symbol": symbol, "spec_id": spec_id, "gated": gated,
             "candles": candles, "volume": volume, "markers": markers, "trades": trades_out}
+
+def _symbol_signals(spec_id: str, gated: bool, symbol: str) -> dict:
+    """Per-day signal data + condition booleans for the Signal Validation panel."""
+    import pandas as pd
+    sys.path.insert(0, str(ROOT))
+    from src.strategies.spec import SpecStrategy
+
+    spec_path = SPEC_DIR / f"{spec_id}.json"
+    if not spec_path.exists():
+        return {"error": f"spec not found: {spec_id}"}
+    fp = FETCHED_DIR / f"{symbol}.parquet"
+    if not fp.exists():
+        return {"error": f"no price data for {symbol}"}
+
+    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    strat = SpecStrategy(spec)
+
+    df = pd.read_parquet(fp)
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.sort_values("date").reset_index(drop=True)
+
+    entry = spec.get("entry", {})
+    all_exprs = (entry.get("all") or []) + (entry.get("any") or [])
+    uses_rs = any("rs_rank" in e for e in all_exprs)
+    if "rs_rank" not in df.columns:
+        df["rs_rank"] = 0.5  # cross-sectional stub; shown with a banner in the UI
+
+    try:
+        sig_df = strat.generate_signals(df)
+    except Exception as exc:
+        return {"error": f"signal generation failed: {exc}"}
+
+    cond_cols     = [c for c in sig_df.columns if c.startswith("cond_")]
+    indicator_cols = list(spec.get("indicators", {}).keys())
+    cond_defs      = [{"key": f"cond_{i}", "label": e} for i, e in enumerate(all_exprs)]
+
+    rows = []
+    for _, row in sig_df.iterrows():
+        def _f(col):
+            v = row.get(col)
+            return None if (v is None or (isinstance(v, float) and v != v)) else float(v)
+        r = {
+            "time":    row["date"].strftime("%Y-%m-%d"),
+            "open":    _f("open"),   "high":  _f("high"),
+            "low":     _f("low"),    "close": _f("close"),
+            "volume":  int(row.get("total_volume") or 0),
+            "buy_signal": bool(row.get("buy_signal", False)),
+        }
+        for col in cond_cols:
+            r[col] = bool(row.get(col, False))
+        for col in indicator_cols:
+            v = _f(col)
+            if v is not None:
+                r[col] = round(v, 4)
+        rows.append(r)
+
+    trades_df = _trades_for(spec_id, gated)
+    trade_markers = []
+    if trades_df is not None:
+        for tr in trades_df[trades_df["symbol"] == symbol].itertuples():
+            trade_markers.append({
+                "entry_date":  str(tr.entry_date),
+                "exit_date":   str(tr.exit_date),
+                "pnl_pct":     float(tr.pnl_pct),
+                "entry_price": float(tr.entry_price),
+                "exit_price":  float(tr.exit_price),
+            })
+
+    return {
+        "symbol": symbol, "spec_id": spec_id,
+        "signal_data":   rows,
+        "cond_defs":     cond_defs,
+        "trade_markers": trade_markers,
+        "indicator_cols": indicator_cols,
+        "uses_rs_rank":  uses_rs,
+    }
+
 
 # ── Shared run state (protected by _lock) ─────────────────────────────────────
 _lock        = threading.Lock()
@@ -248,6 +326,8 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if len(parts) == 4 and parts[3] == "symbols":
                 self._json(_symbols_payload(unquote(parts[2]), gated))
+            elif len(parts) == 6 and parts[3] == "symbol" and parts[5] == "signals":
+                self._json(_symbol_signals(unquote(parts[2]), gated, unquote(parts[4])))
             elif len(parts) == 5 and parts[3] == "symbol":
                 self._json(_symbol_chart(unquote(parts[2]), gated, unquote(parts[4])))
             else:

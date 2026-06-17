@@ -138,19 +138,27 @@ def build_html(records: list[dict]) -> str:
     rows_html = []
     for r in records:
         m = r.get("metrics", {})
-        apf = m.get("alpha_profit_factor")
         gate = "✓" if r.get("regime_gate") else ""
         hyp = r.get("hypothesis_id") or ""
         name = html.escape(r.get("strategy", r.get("spec_id", "?")))
         if r.get("regime_gate"):
             name += ' <span class="tag">+ regime gate</span>'
-        spec_id = html.escape(r.get("spec_id", ""))
+        spec_id     = r.get("spec_id", "")
+        spec_id_esc = html.escape(spec_id)
+        gated_str   = "1" if r.get("regime_gate") else "0"
+        # DOM id-safe key: spec IDs only use [a-z0-9_] so this is a no-op in practice
+        row_key = spec_id.replace("-", "_").replace(".", "_") + ("_g" if r.get("regime_gate") else "_u")
         pf = m.get("profit_factor")
         profitable = (pf is not None and (pf == float("inf") or pf >= 1.0))
         row_cls = "alpha-pos" if profitable else ""
         rows_html.append(f"""
-      <tr class="{row_cls}">
-        <td class="name"><span class="sn">{name}</span><span class="sid">{spec_id}</span></td>
+      <tr class="strat-row {row_cls}">
+        <td class="name">
+          <button class="exp-btn" id="expbtn-{row_key}"
+                  onclick="svToggle('{spec_id_esc}','{gated_str}','{row_key}')"
+                  title="Signal Validation — expand to inspect per-stock signals">&#9658;</button>
+          <span class="sn">{name}</span><span class="sid">{spec_id_esc}</span>
+        </td>
         <td class="dt">{html.escape(r.get('created') or '—')}</td>
         <td>{_fmt(m.get('trades'))}</td>
         <td>{_fmt(m.get('win_rate'),'%')}</td>
@@ -162,9 +170,26 @@ def build_html(records: list[dict]) -> str:
         <td>{_fmt(m.get('best_trade_pct'),'%')}</td>
         <td>{_fmt(m.get('worst_trade_pct'),'%')}</td>
         <td>{_fmt(m.get('avg_hold_days'))}</td>
-        <td>{_fmt(r.get('costs',{}).get('avg_round_trip_pct'),'%')}</td>
+        <td>{_fmt(r.get('costs', {}).get('avg_round_trip_pct'),'%')}</td>
         <td class="gate">{gate}</td>
         <td class="hyp">{html.escape(hyp)}</td>
+      </tr>
+      <tr class="det-row" id="det-{row_key}" style="display:none">
+        <td colspan="15" class="det-td">
+          <div class="sv-panel">
+            <div class="sv-controls">
+              <span class="sv-lbl">Stock</span>
+              <select class="sv-sel" id="svsel-{row_key}"
+                      onchange="svLoad('{spec_id_esc}','{gated_str}','{row_key}',this.value)">
+                <option value="">—</option>
+              </select>
+              <span class="sv-cnt" id="svcnt-{row_key}"></span>
+              <span class="sv-note" id="svnote-{row_key}"></span>
+            </div>
+            <div class="sv-chart" id="svchart-{row_key}"></div>
+            <div id="svtbl-{row_key}"></div>
+          </div>
+        </td>
       </tr>""")
 
     def _pf(r):
@@ -174,7 +199,6 @@ def build_html(records: list[dict]) -> str:
     n_promote = sum(1 for r in records
                     if _pf(r) >= 1.3 and (r.get("metrics", {}).get("trades") or 0) >= 100)
 
-    breakdown = _breakdown_html(records)
     page = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -195,7 +219,7 @@ def build_html(records: list[dict]) -> str:
            border:1px solid var(--line); border-radius:10px; overflow:hidden; }}
   th,td {{ padding:9px 11px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap; }}
   th {{ background:#141a22; color:var(--mut); font-weight:600; font-size:12px;
-        text-transform:uppercase; letter-spacing:.03em; position:sticky; top:0; }}
+        text-transform:uppercase; letter-spacing:.03em; position:sticky; top:0; z-index:10; }}
   th[title] {{ cursor:help; text-decoration:underline dotted var(--line); text-underline-offset:3px; }}
   td.name, th.name {{ text-align:left; }}
   .name .sn {{ display:block; font-weight:600; }}
@@ -210,31 +234,38 @@ def build_html(records: list[dict]) -> str:
   .legend {{ margin-top:18px; color:var(--mut); font-size:12.5px; max-width:1000px; }}
   .legend b {{ color:var(--txt); }}
   code {{ background:#141a22; padding:1px 5px; border-radius:4px; font-size:12px; }}
-  /* ── per-strategy breakdown ── */
-  h2 {{ font-size:16px; margin:30px 0 10px; }}
-  details.strat {{ background:var(--card); border:1px solid var(--line); border-radius:10px;
-                   margin-bottom:8px; overflow:hidden; }}
-  details.strat > summary {{ cursor:pointer; padding:11px 14px; list-style:none;
-                             display:flex; justify-content:space-between; gap:12px; align-items:center; }}
-  details.strat > summary::-webkit-details-marker {{ display:none; }}
-  details.strat > summary::before {{ content:"▸"; color:var(--mut); margin-right:8px; }}
-  details.strat[open] > summary::before {{ content:"▾"; }}
-  details.strat > summary:hover {{ background:#141a22; }}
-  .s-name {{ font-weight:600; }} .s-stats {{ color:var(--mut); font-size:12.5px; font-family:monospace; }}
-  .strat-body {{ padding:6px 14px 14px; }}
   .muted {{ color:var(--mut); font-size:13px; padding:8px 2px; }} .muted.err {{ color:var(--bad); }}
-  .sym-count {{ color:var(--mut); font-size:12px; margin:4px 0 8px; }}
-  details.sym {{ border-top:1px solid var(--line); }}
-  details.sym > summary {{ cursor:pointer; padding:8px 4px; list-style:none; display:flex;
-                           gap:14px; align-items:center; font-size:13px; }}
-  details.sym > summary::-webkit-details-marker {{ display:none; }}
-  details.sym .sy {{ font-weight:600; min-width:120px; font-family:monospace; }}
-  details.sym .st {{ color:var(--mut); }}
-  .chart-slot {{ padding:8px 0 4px; }}
-  .lwchart {{ width:100%; height:320px; }}
-  table.tr {{ width:auto; margin-top:8px; font-size:12px; background:transparent; border:none; }}
-  table.tr td, table.tr th {{ padding:4px 10px; border-bottom:1px solid var(--line); }}
-  .g {{ color:var(--good); }} .r {{ color:var(--bad); }}
+  /* ── expand button ── */
+  .exp-btn {{ background:none; border:none; cursor:pointer; color:var(--mut); font-size:12px;
+              padding:0 5px 0 0; vertical-align:middle; line-height:1; transition:color .15s; }}
+  .exp-btn:hover, .exp-btn.open {{ color:var(--accent); }}
+  /* ── Signal Validation inline panel ── */
+  tr.det-row > td.det-td {{ padding:0; border-bottom:2px solid var(--accent); }}
+  .sv-panel {{ padding:14px 16px 16px; background:#141a22; }}
+  .sv-controls {{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }}
+  .sv-lbl {{ color:var(--mut); font-size:12px; white-space:nowrap; }}
+  .sv-sel {{ background:var(--card); color:var(--txt); border:1px solid var(--line); border-radius:6px;
+             padding:4px 10px; font-size:13px; min-width:200px; max-width:520px; cursor:pointer; }}
+  .sv-cnt {{ color:var(--mut); font-size:12px; }}
+  .sv-note {{ color:var(--ok); font-size:11px; font-family:monospace; }}
+  .sv-chart {{ width:100%; height:320px; border-radius:6px; overflow:hidden; margin-bottom:10px; min-height:40px; }}
+  .sv-row-info {{ color:var(--mut); font-size:12px; margin-bottom:6px; }}
+  .sv-tbl-wrap {{ overflow:auto; max-height:280px; border:1px solid var(--line); border-radius:6px; }}
+  table.sv-cond-tbl {{ width:auto; border-collapse:collapse; font-size:12px; }}
+  table.sv-cond-tbl th {{ background:#0f1419; color:var(--mut); padding:5px 10px;
+                          position:sticky; top:0; z-index:1; border-bottom:1px solid var(--line);
+                          white-space:nowrap; font-weight:500; text-transform:none; letter-spacing:0;
+                          max-width:150px; overflow:hidden; text-overflow:ellipsis; }}
+  table.sv-cond-tbl td {{ padding:4px 10px; border-bottom:1px solid #1e2735; white-space:nowrap; }}
+  tr.sv-buy {{ background:rgba(34,197,94,.10); }}
+  .sv-date {{ font-family:monospace; font-size:11px; color:var(--mut); }}
+  .sv-cd {{ text-align:center; }}
+  .sv-y {{ color:var(--good); font-weight:700; }}
+  .sv-n {{ color:#2d3748; }}
+  .sv-sig {{ font-size:11px; padding:1px 6px; border-radius:3px; font-weight:600; }}
+  .sv-exec {{ background:#1d4ed8; color:#fff; }}
+  .sv-skip {{ background:#374151; color:#9ca3af; }}
+  .sv-exit {{ color:var(--mut); font-size:11px; }}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 </head>
@@ -255,13 +286,13 @@ def build_html(records: list[dict]) -> str:
 
   <table>
     <thead><tr>
-      <th class="name" title="Strategy display name and its spec id (data/strategies/&lt;id&gt;.json).">Strategy</th>
+      <th class="name" title="Strategy display name and its spec id (data/strategies/&lt;id&gt;.json). Click ▶ to open the Signal Validation panel.">Strategy</th>
       <th title="Date the strategy spec was first created (provenance.created in the spec JSON).">Created</th>
       <th title="Number of completed round-trip trades pooled across all 1,792 universe symbols in the window (fixed ₹100k per trade, no concurrency cap).">Trades</th>
       <th title="Win rate: share of trades that closed with a positive net P&amp;L (after costs).">Win%</th>
       <th class="sep" title="Profit factor: gross winning P&amp;L ÷ gross losing P&amp;L, after costs. &gt; 1.0 = profitable; ≥ 1.3 with ≥ 100 trades = promotion-grade.">Profit Factor</th>
       <th title="Expectancy: average net % return per trade after I-Star costs. The per-trade edge in pure P&amp;L terms.">Expectancy</th>
-      <th title="Total net P&amp;L in rupees: sum of every trade's profit/loss at ₹100k per position across the universe (pooled, uncapped).">Total P&amp;L</th>
+      <th title="Total net P&amp;L in rupees: sum of every trade's profit/loss at ₹100k each across the universe (pooled, uncapped).">Total P&amp;L</th>
       <th title="Sharpe (approx): mean per-trade return ÷ its std, annualised by average holding period. Risk-adjusted return consistency.">Sharpe</th>
       <th class="sep" title="Maximum drawdown: largest peak-to-trough drop of the pooled, exit-ordered cumulative P&amp;L curve, in %. (Pooled/uncapped — read as relative, not a portfolio DD.)">Max DD</th>
       <th title="Best single trade: largest winning trade return, in %.">Best</th>
@@ -275,6 +306,11 @@ def build_html(records: list[dict]) -> str:
   </table>
 
   <div class="legend">
+    <p>Click <b>&#9658;</b> next to a strategy name to open its <b>Signal Validation panel</b>.
+    Select a stock to see its candlestick chart with entry/exit markers, indicator overlays, and a
+    per-day conditions table showing which entry conditions fired on each signal date.
+    Requires <code>scripts/server.py</code> running — open this report at
+    <code>http://localhost:8765</code>, not as a local file.</p>
     <p>Strategies are ranked on <b>absolute P&amp;L</b> — no benchmark adjustment. Every
     trade pays a liquidity-aware round-trip cost (I-Star model: scales with order
     size ÷ ADV and volatility), fills at the next bar, and uses a fixed ₹100k position
@@ -291,37 +327,11 @@ def build_html(records: list[dict]) -> str:
     <p>Green rows are profitable (PF ≥ 1.0). Promotion bar (docs/program.md):
     <code>profit factor ≥ 1.3</code> · <code>trades ≥ 100</code>.</p>
   </div>
-
-  <h2>Per-strategy breakdown — traded stocks &amp; charts</h2>
-  <div class="muted">Expand a strategy to see every stock it traded; expand a stock for its
-  candlestick chart with entry/exit markers. Data is served on demand by
-  <code>scripts/server.py</code> — open this report at the server URL (e.g.
-  <code>http://localhost:8765</code>), not as a local file.</div>
-  {breakdown}
 """
     return page + _SCRIPT + "\n</body></html>"
 
 
-def _breakdown_html(records: list[dict]) -> str:
-    out = []
-    for r in records:
-        m = r.get("metrics", {})
-        spec_id = html.escape(r.get("spec_id", ""))
-        gated = "1" if r.get("regime_gate") else "0"
-        name = html.escape(r.get("strategy", spec_id))
-        if r.get("regime_gate"):
-            name += ' <span class="tag">+ regime gate</span>'
-        stats = (f"PF {_fmt(m.get('profit_factor'))} · {_fmt(m.get('trades'))} trades · "
-                 f"net {_fmt_inr(m.get('total_pnl'))}")
-        out.append(f"""
-  <details class="strat" data-spec="{spec_id}" data-gated="{gated}">
-    <summary><span class="s-name">{name}</span><span class="s-stats">{stats}</span></summary>
-    <div class="strat-body"><div class="muted">Expand to load traded stocks…</div></div>
-  </details>""")
-    return "".join(out)
-
-
-# ── Client-side: lazy-load symbols + render lightweight-charts per stock ──────────
+# ── Client-side: Signal Validation with per-day conditions + chart ─────────────
 _SCRIPT = r"""
 <script>
 (function(){
@@ -333,90 +343,195 @@ _SCRIPT = r"""
     if (a >= 1e3) return s+"₹"+(a/1e3).toFixed(1)+"k";
     return s+"₹"+a.toFixed(0);
   };
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const LAYOUT = {
     layout: { background:{color:"#1a2029"}, textColor:"#8b97a5" },
     grid:   { vertLines:{color:"#222b36"}, horzLines:{color:"#222b36"} },
     rightPriceScale:{ borderColor:"#2a323d" },
     timeScale:{ borderColor:"#2a323d" },
   };
+  // Indicator names that sit on the price scale (overlay as lines on the candle chart)
+  const PRICE_PAT = /^(ema|bb_up|bb_lower|hhv|llv|vwap)/i;
+  const LINE_COLS = ['#38bdf8','#f59e0b','#a78bfa','rgba(56,189,248,.55)',
+                     'rgba(56,189,248,.4)','rgba(255,255,255,.22)','rgba(255,255,255,.16)',
+                     '#10b981','#fb923c'];
 
-  async function loadSymbols(det){
-    if (det.dataset.loaded) return;
-    det.dataset.loaded = "1";
-    const body = det.querySelector(".strat-body");
-    const spec = det.dataset.spec, gated = det.dataset.gated;
-    body.innerHTML = '<div class="muted">Loading traded stocks…</div>';
+  // ── State ───────────────────────────────────────────────────────────────────
+  const _svState  = {};   // row_key -> true once initialised
+  const _svCharts = {};   // row_key -> LWC chart instance
+
+  // ── Toggle row open/closed ──────────────────────────────────────────────────
+  window.svToggle = function(specId, gated, key) {
+    const row = document.getElementById('det-' + key);
+    const btn = document.getElementById('expbtn-' + key);
+    if (!row) return;
+    const opening = (row.style.display === 'none' || !row.style.display);
+    row.style.display = opening ? 'table-row' : 'none';
+    if (btn) {
+      btn.innerHTML = opening ? '&#9660;' : '&#9658;';
+      btn.classList.toggle('open', opening);
+    }
+    if (opening && !_svState[key]) {
+      _svState[key] = true;
+      _svInit(specId, gated, key);
+    }
+  };
+
+  // ── On first open: load the stock list ─────────────────────────────────────
+  async function _svInit(specId, gated, key) {
+    const chartDiv = document.getElementById('svchart-' + key);
+    chartDiv.innerHTML = '<div class="muted">Loading traded stocks…</div>';
     try {
-      const res = await fetch("/api/experiment/"+encodeURIComponent(spec)+"/symbols?gated="+gated);
+      const res  = await fetch('/api/experiment/'+encodeURIComponent(specId)+'/symbols?gated='+gated);
       const data = await res.json();
-      if (data.missing) { body.innerHTML = '<div class="muted">No trades file yet — run <code>python scripts/run_experiments.py</code>.</div>'; return; }
-      if (!data.symbols || !data.symbols.length) { body.innerHTML = '<div class="muted">No trades for this strategy.</div>'; return; }
-      let h = '<div class="sym-count">'+data.n_symbols+' stocks traded · sorted by net P&L · click a stock to chart it</div>';
-      for (const s of data.symbols) {
-        const cls = s.total_pnl >= 0 ? "g" : "r";
-        h += '<details class="sym" data-sym="'+s.symbol+'">'
-           +   '<summary><span class="sy">'+s.symbol+'</span>'
-           +     '<span class="st">'+s.trades+' trades</span>'
-           +     '<span class="st">win '+s.win_rate+'%</span>'
-           +     '<span class="st">avg '+s.avg_pnl_pct+'%</span>'
-           +     '<span class="'+cls+'">'+fmtINR(s.total_pnl)+'</span></summary>'
-           +   '<div class="chart-slot"></div></details>';
+      if (data.missing || !data.symbols || !data.symbols.length) {
+        chartDiv.innerHTML = '<div class="muted">No trades file found — run <code>scripts/run_experiments.py</code>.</div>';
+        return;
       }
-      body.innerHTML = h;
-      body.querySelectorAll("details.sym").forEach(sd => {
-        sd.addEventListener("toggle", () => { if (sd.open) loadChart(sd, spec, gated); });
-      });
-    } catch (e) {
-      body.innerHTML = '<div class="muted err">Could not reach the data server. Start it with '
-        + '<code>python scripts/server.py</code> and open this report at the server URL.</div>';
+      const sel = document.getElementById('svsel-' + key);
+      sel.innerHTML = data.symbols.map(s =>
+        '<option value="'+esc(s.symbol)+'">'+esc(s.symbol)
+        +' — '+s.trades+' trades, win '+s.win_rate+'%, '+fmtINR(s.total_pnl)+'</option>'
+      ).join('');
+      document.getElementById('svcnt-' + key).textContent = data.n_symbols + ' stocks traded';
+      chartDiv.innerHTML = '';
+      svLoad(specId, gated, key, sel.value);
+    } catch(e) {
+      chartDiv.innerHTML = '<div class="muted err">Server not reachable — open this report at '
+        + '<code>http://localhost:8765</code> with <code>scripts/server.py</code> running.</div>';
     }
   }
 
-  async function loadChart(sd, spec, gated){
-    if (sd.dataset.loaded) return;
-    sd.dataset.loaded = "1";
-    const slot = sd.querySelector(".chart-slot");
-    const sym = sd.dataset.sym;
-    slot.innerHTML = '<div class="muted">Loading chart…</div>';
+  // ── Load signals for one (spec, stock) ─────────────────────────────────────
+  window.svLoad = async function(specId, gated, key, symbol) {
+    const chartDiv = document.getElementById('svchart-' + key);
+    const tblDiv   = document.getElementById('svtbl-'   + key);
+    const noteEl   = document.getElementById('svnote-'  + key);
+    if (!symbol) return;
+    chartDiv.innerHTML = '<div class="muted">Loading signals for '+esc(symbol)+'…</div>';
+    tblDiv.innerHTML   = '';
+    noteEl.textContent = '';
     try {
-      const res = await fetch("/api/experiment/"+encodeURIComponent(spec)+"/symbol/"+encodeURIComponent(sym)+"?gated="+gated);
+      const res = await fetch(
+        '/api/experiment/'+encodeURIComponent(specId)
+        +'/symbol/'+encodeURIComponent(symbol)+'/signals?gated='+gated);
       const d = await res.json();
-      if (d.error) { slot.innerHTML = '<div class="muted err">'+d.error+'</div>'; return; }
-      slot.innerHTML = "";
-      const cdiv = document.createElement("div"); cdiv.className = "lwchart"; slot.appendChild(cdiv);
-      const chart = LightweightCharts.createChart(cdiv, Object.assign({
-        width: cdiv.clientWidth || 800, height: 320 }, LAYOUT));
-      const cs = chart.addCandlestickSeries({
-        upColor:"#22c55e", downColor:"#f43f5e", borderVisible:false,
-        wickUpColor:"#22c55e", wickDownColor:"#f43f5e" });
-      cs.setData(d.candles);
-      if (d.markers && d.markers.length) cs.setMarkers(d.markers);
-      const vs = chart.addHistogramSeries({ priceFormat:{type:"volume"}, priceScaleId:"" });
-      vs.priceScale().applyOptions({ scaleMargins:{ top:0.82, bottom:0 } });
-      vs.setData(d.volume);
-      chart.timeScale().fitContent();
-      new ResizeObserver(() => chart.applyOptions({ width: cdiv.clientWidth })).observe(cdiv);
-
-      if (d.trades && d.trades.length) {
-        let t = '<table class="tr"><thead><tr><th>Entry</th><th>Exit</th><th>Hold</th>'
-              + '<th>Entry ₹</th><th>Exit ₹</th><th>P&L%</th><th>Reason</th></tr></thead><tbody>';
-        for (const x of d.trades) {
-          t += '<tr><td>'+x.entry_date+'</td><td>'+x.exit_date+'</td><td>'+x.hold_days+'d</td>'
-             + '<td>'+x.entry_price+'</td><td>'+x.exit_price+'</td>'
-             + '<td class="'+(x.pnl_pct>=0?'g':'r')+'">'+x.pnl_pct.toFixed(2)+'%</td>'
-             + '<td>'+x.exit_reason+'</td></tr>';
-        }
-        t += "</tbody></table>";
-        const td = document.createElement("div"); td.innerHTML = t; slot.appendChild(td);
-      }
-    } catch (e) {
-      slot.innerHTML = '<div class="muted err">Failed to load chart data.</div>';
+      if (d.error) { chartDiv.innerHTML = '<div class="muted err">'+esc(d.error)+'</div>'; return; }
+      if (d.uses_rs_rank)
+        noteEl.textContent = '⚠ rs_rank shown as 0.5 (cross-sectional — not recomputable per-symbol)';
+      chartDiv.innerHTML = '';
+      _svRenderChart(chartDiv, d, key);
+      _svRenderTable(tblDiv, d);
+    } catch(e) {
+      chartDiv.innerHTML = '<div class="muted err">Failed to load signals.</div>';
     }
+  };
+
+  // ── Candlestick chart with indicator overlays + trade markers ───────────────
+  function _svRenderChart(container, d, key) {
+    if (_svCharts[key]) { try { _svCharts[key].remove(); } catch(_) {} delete _svCharts[key]; }
+    const sd = d.signal_data.filter(x => x.open != null);
+    if (!sd.length) { container.innerHTML = '<div class="muted">No OHLCV data.</div>'; return; }
+
+    const chart = LightweightCharts.createChart(container,
+      Object.assign({ width: container.clientWidth || 900, height: 320 }, LAYOUT));
+    _svCharts[key] = chart;
+
+    // Candlesticks
+    const cs = chart.addCandlestickSeries({
+      upColor:'#22c55e', downColor:'#f43f5e', borderVisible:false,
+      wickUpColor:'#22c55e', wickDownColor:'#f43f5e' });
+    cs.setData(sd.map(x => ({ time:x.time, open:x.open, high:x.high, low:x.low, close:x.close })));
+
+    // Volume histogram
+    const vs = chart.addHistogramSeries({ priceFormat:{type:'volume'}, priceScaleId:'' });
+    vs.priceScale().applyOptions({ scaleMargins:{ top:0.82, bottom:0 } });
+    vs.setData(sd.map(x => ({
+      time:x.time, value:x.volume||0,
+      color: x.close >= x.open ? 'rgba(34,197,94,.25)' : 'rgba(244,63,94,.25)'
+    })));
+
+    // Price-scale indicator overlays (EMA, BB bands, HHV, VWAP…)
+    let ci = 0;
+    for (const col of d.indicator_cols) {
+      if (!PRICE_PAT.test(col)) continue;
+      const pts = sd.filter(x => x[col] != null).map(x => ({ time:x.time, value:x[col] }));
+      if (!pts.length) continue;
+      const ls = chart.addLineSeries({
+        color: LINE_COLS[ci++ % LINE_COLS.length],
+        lineWidth: 1, lastValueVisible: false, priceLineVisible: false });
+      ls.setData(pts);
+    }
+
+    // Markers: grey circles for skipped signals, blue/green/red arrows for trades
+    const execEntries = new Set(d.trade_markers.map(t => t.entry_date));
+    const markers = [];
+    for (const x of sd)
+      if (x.buy_signal && !execEntries.has(x.time))
+        markers.push({ time:x.time, position:'belowBar', color:'#475569', shape:'circle', text:'' });
+    for (const t of d.trade_markers) {
+      if (t.entry_date)
+        markers.push({ time:t.entry_date, position:'belowBar', color:'#3b82f6', shape:'arrowUp', text:'BUY' });
+      if (t.exit_date)
+        markers.push({ time:t.exit_date, position:'aboveBar',
+          color: t.pnl_pct >= 0 ? '#22c55e' : '#f43f5e', shape:'arrowDown',
+          text: (t.pnl_pct >= 0 ? '+' : '') + t.pnl_pct.toFixed(1) + '%' });
+    }
+    markers.sort((a, b) => a.time.localeCompare(b.time));
+    cs.setMarkers(markers);
+    chart.timeScale().fitContent();
+    new ResizeObserver(() => chart.applyOptions({ width: container.clientWidth })).observe(container);
   }
 
-  document.querySelectorAll("details.strat").forEach(det => {
-    det.addEventListener("toggle", () => { if (det.open) loadSymbols(det); });
-  });
+  // ── Per-day conditions table ────────────────────────────────────────────────
+  function condLabel(expr) {
+    // Strip param refs, trim, cap at 30 chars so column headers don't blow out
+    return expr.replace(/@\w+/g, '').replace(/\s+/g, ' ').trim().substring(0, 30);
+  }
+
+  function _svRenderTable(container, d) {
+    const sd      = d.signal_data;
+    const defs    = d.cond_defs;
+    const tDates  = new Set(d.trade_markers.flatMap(t => [t.entry_date, t.exit_date]));
+    const eDates  = new Set(d.trade_markers.map(t => t.entry_date));
+    const visible = sd.filter(x => x.buy_signal || tDates.has(x.time));
+    const nBuy    = sd.filter(x => x.buy_signal).length;
+
+    let h = '<div class="sv-row-info">'
+          + nBuy + ' buy signal' + (nBuy === 1 ? '' : 's')
+          + ' &middot; ' + d.trade_markers.length + ' executed'
+          + ' &mdash; showing signal &amp; trade rows only</div>';
+
+    if (!visible.length) {
+      container.innerHTML = h + '<div class="muted">No signals in window.</div>';
+      return;
+    }
+
+    h += '<div class="sv-tbl-wrap"><table class="sv-cond-tbl"><thead><tr>'
+       + '<th>Date</th>'
+       + defs.map(cd => '<th title="' + esc(cd.label) + '">' + esc(condLabel(cd.label)) + '</th>').join('')
+       + '<th>Signal</th></tr></thead><tbody>';
+
+    for (const x of visible) {
+      const cls = x.buy_signal ? 'sv-buy' : '';
+      h += '<tr class="' + cls + '"><td class="sv-date">' + x.time + '</td>';
+      for (const cd of defs)
+        h += '<td class="sv-cd">'
+           + (x[cd.key] ? '<span class="sv-y">✓</span>' : '<span class="sv-n">✗</span>')
+           + '</td>';
+      let sig = '';
+      if (x.buy_signal && eDates.has(x.time))
+        sig = '<span class="sv-sig sv-exec">BUY ✓</span>';
+      else if (x.buy_signal)
+        sig = '<span class="sv-sig sv-skip">BUY ⊘</span>';
+      else if (tDates.has(x.time))
+        sig += '<span class="sv-exit">EXIT</span>';
+      h += '<td>' + sig + '</td></tr>';
+    }
+    h += '</tbody></table></div>';
+    container.innerHTML = h;
+  }
+
 })();
 </script>"""
 
