@@ -93,6 +93,22 @@ def add_labels(panel: pd.DataFrame, data: dict[str, pd.DataFrame],
     return panel.merge(lab, on=["date", "symbol"], how="left")
 
 
+def swing_label_frame(data: dict[str, pd.DataFrame],
+                      stop_pct: float, target_pct: float, max_hold: int) -> pd.DataFrame:
+    """
+    Just the swing head's labels for a given barrier set — for the label sweep (hp_005),
+    which holds features fixed and only varies the triple-barrier. Returns
+    (date, symbol, y_swing, swing_w, fwd_ret_pct).
+    """
+    frames = []
+    for sym, df in data.items():
+        d = df.sort_values("date").reset_index(drop=True)
+        y, w, fwd = _swing_one(d, stop_pct, target_pct, max_hold)
+        frames.append(pd.DataFrame({"date": d["date"], "symbol": sym,
+                                    "y_swing": y, "swing_w": w, "fwd_ret_pct": fwd}))
+    return pd.concat(frames, ignore_index=True)
+
+
 def label_summary(panel: pd.DataFrame) -> str:
     """One-screen class-balance / coverage summary for the acceptance test."""
     lines = []

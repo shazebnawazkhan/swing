@@ -43,6 +43,36 @@ def time_split(panel: pd.DataFrame, train_months: int = 12, valid_months: int = 
     return train, valid, valid_start
 
 
+def make_masks(panel, valid_start, train_months, valid_months, purge_days):
+    """Train/validate masks for one fold whose validation window starts at valid_start."""
+    valid_end = valid_start + pd.DateOffset(months=valid_months)
+    purge_cut = valid_start - pd.Timedelta(days=purge_days)
+    train_start = valid_start - pd.DateOffset(months=train_months)
+    train = (panel["date"] >= train_start) & (panel["date"] < purge_cut)
+    valid = (panel["date"] >= valid_start) & (panel["date"] < valid_end)
+    return train, valid, valid_end
+
+
+def walk_forward_folds(panel, train_months=10, valid_months=2, slide_months=1, purge_days=15):
+    """
+    Rolling walk-forward folds (docs/PREDICTOR.md §7). The latest fold's validation
+    window ends at the panel's last date; earlier folds slide back by `slide_months`
+    while the train window still fits inside history.
+
+    Returns a list of (valid_start, valid_end, train_mask, valid_mask), oldest first.
+    """
+    dmin, dmax = panel["date"].min(), panel["date"].max()
+    starts, cur = [], dmax - pd.DateOffset(months=valid_months)
+    while (cur - pd.DateOffset(months=train_months)) >= dmin:
+        starts.append(cur)
+        cur = cur - pd.DateOffset(months=slide_months)
+    folds = []
+    for vs in sorted(starts):
+        tr, va, ve = make_masks(panel, vs, train_months, valid_months, purge_days)
+        folds.append((vs, ve, tr, va))
+    return folds
+
+
 _LGB_PARAMS = dict(
     objective="binary", n_estimators=400, learning_rate=0.03,
     num_leaves=31, max_depth=-1, min_child_samples=80,
