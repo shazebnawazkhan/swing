@@ -61,6 +61,12 @@ _TEMPLATE = r"""<!doctype html>
   body { margin:0; background:var(--bg); color:var(--txt);
          font:14px/1.5 -apple-system,Segoe UI,Roboto,sans-serif; padding:24px; }
   h1 { margin:0 0 4px; font-size:21px; } .sub { color:var(--mut); font-size:13px; margin-bottom:16px; }
+  .hdr { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:4px; }
+  .datechip { display:inline-flex; align-items:center; gap:8px; padding:6px 12px;
+              border-radius:8px; border:1px solid var(--accent); background:rgba(61,184,245,.08);
+              font-size:13px; color:var(--accent); font-weight:600; }
+  .datechip .dt { font-size:16px; font-variant-numeric:tabular-nums; }
+  .datechip.stale { border-color:var(--watch); background:rgba(245,166,35,.08); color:var(--watch); }
   .banner { padding:10px 14px; border-radius:8px; margin-bottom:16px; font-size:13px;
             border:1px solid var(--line); background:var(--card); }
   .banner.warn { border-color:var(--watch); color:var(--watch); }
@@ -93,7 +99,7 @@ _TEMPLATE = r"""<!doctype html>
   .pbar { display:inline-block; width:42px; height:6px; background:var(--line); border-radius:3px; vertical-align:middle; margin-right:5px; }
   .pbar > i { display:block; height:100%; border-radius:3px; background:var(--accent); }
 </style></head><body>
-<h1>Next-Day Signal Predictor</h1>
+<div class="hdr"><h1>Next-Day Signal Predictor</h1><span id="datechip" class="datechip"></span></div>
 <div class="sub" id="sub"></div>
 <div id="banner"></div>
 <div class="row" id="kpis"></div>
@@ -173,8 +179,19 @@ function modelCard(head){
 }
 
 (function init(){
+  // Prominent "inference through" date + staleness flag (data date vs generated date).
+  const gen = (sig.generated||"").slice(0,10);
+  let ageDays = null;
+  if(sig.date && gen){ ageDays = Math.round((new Date(gen) - new Date(sig.date))/86400000); }
+  const chip = document.getElementById("datechip");
+  const stale = ageDays!=null && ageDays > 3;
+  chip.className = "datechip" + (stale ? " stale" : "");
+  chip.innerHTML = `Inference through <span class="dt">${sig.date||"–"}</span>`
+    + (ageDays!=null ? ` &nbsp;·&nbsp; ${stale?"⚠ ":""}data ${ageDays}d old` : "");
+  chip.title = `Last bar used for inference: ${sig.date}. Signals are for the NEXT trading session after this date.`
+    + (stale ? `\nData is ${ageDays} days old — refresh the bar cache (bulk_fetch.py) before trusting these.` : "");
   document.getElementById("sub").textContent =
-    `as-of ${sig.date} · universe ${sig.universe} · models ${Object.values(sig.model_runs||{}).join(" / ")} · generated ${sig.generated}`;
+    `signals for the next session after ${sig.date} · universe ${sig.universe} · models ${Object.values(sig.model_runs||{}).join(" / ")} · generated ${sig.generated}`;
   const c=sig.counts||{};
   const kpi=(k,v,cls)=>`<div class="card kpi"><div class="k">${k}</div><div class="v ${cls||''}">${v}</div></div>`;
   document.getElementById("kpis").innerHTML =
