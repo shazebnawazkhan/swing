@@ -314,3 +314,69 @@ Promote a winner per §3.4; record under a new `h_0NN` id when picked up.
 > & labelling references; 16–18 to risk chapters; 19–20 to validation references.
 > Full chapter/page provenance is in `docs/knowledge_index.md`. Avoid futures/options
 > constructs throughout — cash-equity, multi-day holds only.
+
+---
+
+## 9. Predictor experiment track (ML next-day signal module)
+
+Design spec: **`docs/PREDICTOR.md`**. The predictor is a *standalone ML signal engine*
+(two heads: `dir1d` next-day direction + `swing` triple-barrier win) that runs through this
+**same loop** — same backlog, same `data/results/experiments.jsonl`, same deterministic
+runner, **no LLM calls inside the loop**. This section makes predictor work expressible as
+hypotheses so the system can "expand its data horizon" by evidence, not by guesswork.
+
+### 9.1 What a predictor experiment optimises
+The single optimization target (PREDICTOR.md §10): **validation-window, net-of-cost Sharpe
+of the agreement-basket**, subject to `calibration_error < base_rate` and
+`coverage ∈ [5, 50] signals/day`. Every hypothesis below is a claim about moving that number;
+each is checked by an **ablation/promotion gate**, not by intuition.
+
+### 9.2 New `test_plan` actions the runner interprets
+Beyond the rule-spec actions (`backtest_specs`, etc.), the runner gains five structured
+predictor actions — still an interpreter, never a code generator:
+
+| Action | Meaning | Pass condition |
+|---|---|---|
+| `train_head` | train a head on a feature set + label cfg, score validation | AUC ≥ 0.55 **and** beats logistic baseline |
+| `ablate_feature` | drop/add one feature (group), retrain, compare | Δ validation AUC **or** basket PF ≥ gate ⇒ keep |
+| `add_adapter` | wire a new data source's features, retrain | adapter lifts AUC/PF past the gate ⇒ adapter stays on |
+| `sweep_label` | vary swing horizon H / TP·SL barriers, relabel, retrain | barrier set raises basket expectancy ≥ 0.1% |
+| `walkforward_predict` | rolling 10mo-train / 2mo-validate folds | mean validation PF ≥ 1.3, dispersion bounded |
+
+Records use the existing schema with `kind:"predict"` and `params:{head, feature_set_id,
+model, label_cfg}` (PREDICTOR.md §11.3–§11.4).
+
+### 9.3 Predictor promotion gate (a head goes `live` on the page)
+Validation `ROC-AUC ≥ 0.55` AND beats logistic baseline AND `Brier` < base-rate Brier AND
+top-decile-by-`P(win)` basket net-of-cost `profit_factor ≥ 1.3` over ≥100 trades with
+`max_DD ≤ 15%` — confirmed on a **rolling walk-forward**, not a single split. Economic test
+outranks the statistical one. Demote when trailing paper-ledger Sharpe < 0 or live-vs-backtest
+gap exceeds its band.
+
+### 9.4 Where predictor hypotheses come from (priority order)
+1. **Feature importance + ablation telemetry** — a low-importance feature group is a
+   `data_cost` hypothesis (drop the adapter); a high-IC unused column is an `alpha` one.
+2. **Calibration & live-vs-backtest gap** (paper ledger) — miscalibrated `P(win)` or a
+   widening gap is always top priority.
+3. **Data-horizon expansion** — each best-effort adapter (news, order-wins, fundamentals,
+   ratings, intraday) enters as an `add_adapter` hypothesis and must *earn* its place.
+4. **Label/horizon search** — `sweep_label` over H and TP/SL barriers.
+5. **Model track** — `h_dl`: revisit deep learning once ≥2y history + live intraday exist.
+
+### 9.5 Seed predictor backlog (add to `data/research/backlog.jsonl` in Predictor P0–P2)
+- **hp_001** `alpha` — swing head on core features beats the best rule-spec basket PF by ≥0.1.
+- **hp_002** `data_cost` — news-sentiment + order-win features lift validation AUC ≥0.02
+  (else the news/order-win adapters stay off). `action: add_adapter`.
+- **hp_003** `alpha` — fundamentals (EPS surprise, target-vs-price) lift basket PF ≥0.1 on
+  the subset of stocks with fresh fundamentals. `action: add_adapter`.
+- **hp_004** `risk` — sizing by calibrated `P(win)` (Kelly-capped) lowers basket max DD ≥2pts
+  vs equal-weight top-N at equal CAGR.
+- **hp_005** `alpha` — `sweep_label` over H∈{5,10,15} and TP/SL multiples finds a barrier set
+  raising validation expectancy ≥0.1% vs the config default.
+- **hp_006** `data_cost` — intraday 5-min entry-timing features lift basket PF ≥0.1 (else
+  intraday stays optional/off). `action: add_adapter`.
+- **hp_007** `methodology` — rolling walk-forward validation flips/confirms the single-split
+  promotion candidates; document any that don't survive.
+- **h_dl** `model` — deep sequence model beats GBT once data ≥2y & intraday live (deferred).
+
+Replenishment: keep ≥5 open predictor hypotheses alongside the ≥5 strategy hypotheses.
