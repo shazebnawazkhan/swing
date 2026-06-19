@@ -88,7 +88,7 @@ _TEMPLATE = r"""<!doctype html>
   .badge.BUY { background:rgba(38,217,110,.16); color:var(--buy); }
   .badge.WATCH { background:rgba(245,166,35,.15); color:var(--watch); }
   .badge.AVOID { background:rgba(240,79,95,.14); color:var(--avoid); }
-  .pos { color:var(--buy); } .neg { color:var(--avoid); }
+  .pos { color:var(--buy); } .neg { color:var(--avoid); } .mut { color:var(--mut); }
   .why { color:var(--mut); font-size:11px; font-family:monospace; }
   .pbar { display:inline-block; width:42px; height:6px; background:var(--line); border-radius:3px; vertical-align:middle; margin-right:5px; }
   .pbar > i { display:block; height:100%; border-radius:3px; background:var(--accent); }
@@ -113,6 +113,7 @@ let sortKey = "rank", sortAsc = true;
 const COLS = [
   ["rank","#",false],["symbol","Symbol",true],["direction","Dir",true],
   ["p_up","P(up)",false],["p_win","P(win)",false],["expected_value_pct","EV%",false],
+  ["news_sent","News",false],["headline","Headline / order-win",true],
   ["ref_close","Close",false],["stop","Stop",false],["target","Target",false],
   ["sector","Sector",true],["why","Why (top features)",true],
 ];
@@ -124,6 +125,13 @@ function fmt(k,v,row){
   if(k==="p_up"||k==="p_win"){ const pct=Math.round(v*100);
     return `<span class="pbar"><i style="width:${pct}%"></i></span>${v.toFixed(2)}`; }
   if(k==="expected_value_pct") return `<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${v.toFixed(2)}</span>`;
+  if(k==="news_sent"){ if(v==null) return '<span class="mut">–</span>';
+    const cls=v>0.1?'pos':(v<-0.1?'neg':'');
+    const arrow=v>0.1?'▲':(v<-0.1?'▼':'■');
+    return `<span class="${cls}" title="sentiment ${v.toFixed(2)} · ${row.news_count||0} items">${arrow} ${v.toFixed(2)}</span>`; }
+  if(k==="headline"){ const ow=row.order_win?`<span class="badge BUY" title="order-win event">★ OW</span> `:"";
+    const age=row.news_age_days!=null?` <span class="mut">(${row.news_age_days}d)</span>`:"";
+    return ow + `<span class="why">${esc((v||"").slice(0,90))}</span>` + age; }
   if(k==="why") return `<span class="why">`+ (row.why||[]).map(w=>`${w[0]}=${w[1]==null?'·':w[1]}`).join("  ")+`</span>`;
   if(typeof v==="number") return Number.isInteger(v)?v:v.toFixed(2);
   return esc(v);

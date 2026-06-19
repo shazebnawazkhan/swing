@@ -33,9 +33,11 @@ sys.path.insert(0, str(ROOT))
 
 import src.config as cfg
 from src.predictor import data, features, model
+from src.predictor.adapters import news_adapter
 
 MODELS_DIR = ROOT / "models"
 OUT_DIR = ROOT / "outputs"
+NEWS_DIR = ROOT / "data" / "features" / "news"
 PAPER_LEDGER = ROOT / "data" / "paper_trades.jsonl"
 HEADS = ["dir1d", "swing"]
 
@@ -56,6 +58,8 @@ def main():
     ap.add_argument("--top", type=int, default=25, help="how many ranked candidates to surface")
     ap.add_argument("--dir-thr", type=float, default=0.52, help="p_up gate for a BUY badge")
     ap.add_argument("--win-thr", type=float, default=0.30, help="p_win gate for a BUY badge")
+    ap.add_argument("--no-news", action="store_true",
+                    help="skip news/order-win enrichment (offline / fast mode)")
     args = ap.parse_args()
 
     t0 = time.time()
@@ -117,6 +121,29 @@ def main():
                         index=features.FEATURE_COLS).sort_values(ascending=False)
     why_cols = list(gbt_imp.head(4).index)
 
+    # News + order-win enrichment — only the surfaced candidates (data-cost rule).
+    news_map = {}
+    if not args.no_news:
+        print("[2b] Fetching news/order-win for candidates …")
+        cmap = {s.strip(): c.strip() for s, c in
+                zip(pd.read_csv(data.STOCKS_CSV, dtype=str).fillna("")["stock"],
+                    pd.read_csv(data.STOCKS_CSV, dtype=str).fillna("")["company_name"])}
+        nsyms = buys["symbol"].tolist()
+        ndf = news_adapter.fetch_news(nsyms, cmap, verbose=True)
+        news_map = {r["symbol"]: r for _, r in ndf.iterrows()}
+        NEWS_DIR.mkdir(parents=True, exist_ok=True)
+        ndf.assign(date=asof).to_parquet(NEWS_DIR / f"{asof}.parquet", index=False)
+
+    def _news_fields(sym):
+        n = news_map.get(sym)
+        if n is None:
+            return {"news_sent": None, "news_count": 0, "order_win": 0,
+                    "news_age_days": None, "headline": ""}
+        return {"news_sent": None if pd.isna(n["news_sent"]) else float(n["news_sent"]),
+                "news_count": int(n["news_count"]), "order_win": int(n["order_win_flag"]),
+                "news_age_days": None if pd.isna(n["days_since_news"]) else float(n["days_since_news"]),
+                "headline": str(n.get("top_headline", ""))[:140]}
+
     signals = []
     for rank, (_, r) in enumerate(buys.iterrows(), 1):
         signals.append({
@@ -128,6 +155,7 @@ def main():
             "stop": float(r["stop"]), "target": float(r["target"]),
             "sector": sec.get(r["symbol"], ""),
             "why": [[c, round(float(r[c]), 4) if pd.notna(r[c]) else None] for c in why_cols],
+            **_news_fields(r["symbol"]),
         })
 
     OUT_DIR.mkdir(exist_ok=True)
