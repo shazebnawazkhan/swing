@@ -293,6 +293,27 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(body)
 
+        elif p in ("/predictor", "/predict"):
+            page = ROOT / "outputs" / "predictor.html"
+            if page.exists():
+                self._file(page, "text/html; charset=utf-8")
+            else:
+                body = (b"<h2>No predictor page yet &mdash; run "
+                        b"<code>python scripts/predict_daily.py</code> then "
+                        b"<code>python scripts/build_predictor_report.py</code>.</h2>")
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html")
+                self.send_header("Content-Length", len(body))
+                self.end_headers()
+                self.wfile.write(body)
+
+        elif p == "/api/predicted_signals":
+            sig = ROOT / "outputs" / "predicted_signals_latest.json"
+            if sig.exists():
+                self._file(sig, "application/json")
+            else:
+                self._json({"error": "no signals — run predict_daily.py"}, 404)
+
         elif p == "/api/config":
             self._json({"capital": _read_capital()})
 

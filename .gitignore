@@ -8,6 +8,11 @@ outputs/
 # Parquet data cache (fetched stock data — rebuild with fetch_data.py)
 data/fetched/
 
+# Predictor artifacts (reproducible from cached bars; rebuild with train_predictor.py)
+models/
+data/features/
+data/paper_trades.jsonl
+
 # Python
 __pycache__/
 *.py[cod]
