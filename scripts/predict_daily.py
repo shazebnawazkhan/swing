@@ -55,7 +55,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--universe", choices=["halal", "all"], default="halal")
     ap.add_argument("--asof", default=None, help="score as-of this date (ISO); default=latest cached")
-    ap.add_argument("--top", type=int, default=25, help="how many ranked candidates to surface")
+    ap.add_argument("--top", type=int, default=0,
+                    help="cap rows emitted (0 = all scored stocks, the default)")
+    ap.add_argument("--news-top", type=int, default=25,
+                    help="fetch news/order-win for this many top-ranked candidates (data-cost rule)")
     ap.add_argument("--dir-thr", type=float, default=0.52, help="p_up gate for a BUY badge")
     ap.add_argument("--win-thr", type=float, default=0.30, help="p_win gate for a BUY badge")
     ap.add_argument("--no-news", action="store_true",
@@ -111,24 +114,27 @@ def main():
     latest["expected_value_pct"] = (latest["p_win"] * tp - (1 - latest["p_win"]) * sl
                                     - cfg.ROUND_TRIP_COST_PCT).round(2)
 
-    # Always surface a ranked watchlist (top-N by P(win)) so the page is never blank;
-    # the BUY/WATCH/AVOID badge tells the user the conviction. On a risk-off day the
-    # list is all WATCH — that is the model honestly declining to buy.
-    buys = latest.sort_values(["p_win", "p_up"], ascending=False).head(args.top)
+    # Emit ALL scored stocks, ranked by conviction (P(win)), so the dashboard can show
+    # the whole universe in a scrollable table. --top optionally caps the rows.
+    ranked = latest.sort_values(["p_win", "p_up"], ascending=False).reset_index(drop=True)
+    if args.top and args.top > 0:
+        ranked = ranked.head(args.top)
+    buys = ranked
 
     # Cheap "why": global top-importance features (swing head) + this row's values.
     gbt_imp = pd.Series(arts["swing"]["gbt"].feature_importances_,
                         index=features.FEATURE_COLS).sort_values(ascending=False)
     why_cols = list(gbt_imp.head(4).index)
 
-    # News + order-win enrichment — only the surfaced candidates (data-cost rule).
+    # News + order-win enrichment — only the top-ranked candidates (data-cost rule:
+    # fetching news for the whole universe would be slow + rate-limited).
     news_map = {}
     if not args.no_news:
-        print("[2b] Fetching news/order-win for candidates …")
+        print(f"[2b] Fetching news/order-win for top {args.news_top} candidates …")
         cmap = {s.strip(): c.strip() for s, c in
                 zip(pd.read_csv(data.STOCKS_CSV, dtype=str).fillna("")["stock"],
                     pd.read_csv(data.STOCKS_CSV, dtype=str).fillna("")["company_name"])}
-        nsyms = buys["symbol"].tolist()
+        nsyms = ranked.head(args.news_top)["symbol"].tolist()
         ndf = news_adapter.fetch_news(nsyms, cmap, verbose=True)
         news_map = {r["symbol"]: r for _, r in ndf.iterrows()}
         NEWS_DIR.mkdir(parents=True, exist_ok=True)

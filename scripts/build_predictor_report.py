@@ -84,11 +84,11 @@ _TEMPLATE = r"""<!doctype html>
   .controls { display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; align-items:center; }
   .controls input, .controls select { background:var(--card); border:1px solid var(--line);
     color:var(--txt); border-radius:6px; padding:6px 9px; font-size:13px; }
-  table { border-collapse:collapse; width:100%; background:var(--card); border:1px solid var(--line);
-          border-radius:10px; overflow:hidden; }
+  .tbl-wrap { max-height:74vh; overflow:auto; border:1px solid var(--line); border-radius:10px; }
+  table { border-collapse:collapse; width:100%; background:var(--card); }
   th,td { padding:8px 11px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap; }
   th { background:#0d1826; color:var(--mut); font-size:11px; text-transform:uppercase; letter-spacing:.03em;
-       cursor:pointer; user-select:none; position:sticky; top:0; }
+       cursor:pointer; user-select:none; position:sticky; top:0; z-index:2; box-shadow:0 1px 0 var(--line); }
   td.l, th.l { text-align:left; }
   .badge { font-size:11px; font-weight:700; padding:1px 8px; border-radius:10px; }
   .badge.BUY { background:rgba(38,217,110,.16); color:var(--buy); }
@@ -110,8 +110,9 @@ _TEMPLATE = r"""<!doctype html>
     <option value="">all directions</option><option>BUY</option><option>WATCH</option><option>AVOID</option>
   </select>
   <span class="sub" id="count"></span>
+  <span class="sub" style="margin-left:auto" title="News/order-win is fetched only for the top-ranked candidates to keep the daily run cheap; other rows show – for news.">News on top candidates only ⓘ</span>
 </div>
-<table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table>
+<div class="tbl-wrap"><table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
 <script>
 const D = /*DATA*/;
 const sig = D.sig, cards = D.cards;
@@ -160,7 +161,8 @@ function render(){
     return sortAsc?(x-y):(y-x); });
   document.getElementById("body").innerHTML = rows.map(r=>"<tr>"+COLS.map(c=>
     `<td class="${c[2]?'l':''}">${fmt(c[0],r[c[0]],r)}</td>`).join("")+"</tr>").join("");
-  document.getElementById("count").textContent = `${rows.length} shown`;
+  document.getElementById("count").textContent =
+    `${rows.length} of ${sig.signals.length} stocks` + (q||df ? " (filtered)" : "");
 }
 
 function modelCard(head){
