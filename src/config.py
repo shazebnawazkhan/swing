@@ -71,8 +71,10 @@ STOCKS = {
 CAPITAL            = 1_000_000   # Total capital (INR)
 POSITION_SIZE_PCT  = 20.0      # % of capital per trade (max 5 concurrent)
 STOP_LOSS_PCT      = 5.0       # Stop loss from entry
-TARGET_PCT         = 10.0      # Profit target from entry
-MAX_HOLD_DAYS      = 10        # Max trading days to hold
+TARGET_PCT         = 14.0      # Profit target from entry (predictor label sweep hp_005:
+                               # TP14/H15 beats TP10/H10 by +0.19-0.39% expectancy, robust
+                               # across 4 walk-forward folds — default was cutting winners short)
+MAX_HOLD_DAYS      = 15        # Max trading days to hold (raised with TARGET per hp_005)
 
 # ─── Backtest ─────────────────────────────────────────────
 BACKTEST_DAYS      = 145       # Calendar days to backtest (covers Jan 1 2026 → present)
