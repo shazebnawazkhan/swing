@@ -34,6 +34,7 @@ sys.path.insert(0, str(ROOT))
 import src.config as cfg
 from src.predictor import data, features, model
 from src.predictor.adapters import news_adapter
+from src.predictor.adapters import fundamentals_adapter as fund
 
 MODELS_DIR = ROOT / "models"
 OUT_DIR = ROOT / "outputs"
@@ -63,13 +64,18 @@ def main():
     ap.add_argument("--win-thr", type=float, default=0.30, help="p_win gate for a BUY badge")
     ap.add_argument("--no-news", action="store_true",
                     help="skip news/order-win enrichment (offline / fast mode)")
+    ap.add_argument("--no-fundamentals", action="store_true",
+                    help="skip the hp_003 EPS adapter (offline / fast mode)")
     args = ap.parse_args()
 
     t0 = time.time()
     print("[1/3] Building features (no labels) for inference …")
     d = data.load_universe(args.universe, asof=args.asof)
     nifty = data.load_nifty(asof=args.asof)
-    panel = features.build_panel(d, nifty)
+    earnings = None
+    if not args.no_fundamentals:
+        earnings = fund.load_or_fetch(list(d.keys()))
+    panel = features.build_panel(d, nifty, earnings=earnings)
     asof = args.asof or str(panel["date"].max().date())
 
     # Latest bar per symbol on/at the as-of date (the row we predict FROM).

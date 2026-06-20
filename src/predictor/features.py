@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 
 from src import fast_indicators as fi
+from src.predictor.adapters import fundamentals_adapter as _fund
 
 # ── Feature catalog ────────────────────────────────────────────────────────────
 # Grouped by source; the union (minus identifiers) is what the model consumes.
@@ -39,8 +40,12 @@ _XS_FEATS = [
 _CTX_FEATS = [
     "mkt_ret_20", "mkt_above_ema50", "rel_ret_20", "dow",
 ]
+# Backfillable fundamentals (hp_003, CONFIRMED): point-in-time EPS-surprise/earnings
+# features from the yfinance adapter. NaN where a symbol has no earnings coverage —
+# LightGBM eats NaN, so the ~40% of small-caps without yfinance data degrade silently.
+_FUND_FEATS = list(_fund.FUND_FEATURES)
 
-FEATURE_COLS: list[str] = _PRICE_FEATS + _MICRO_FEATS + _XS_FEATS + _CTX_FEATS
+FEATURE_COLS: list[str] = _PRICE_FEATS + _MICRO_FEATS + _XS_FEATS + _CTX_FEATS + _FUND_FEATS
 ID_COLS = ["date", "symbol"]
 
 
@@ -183,10 +188,15 @@ def _add_cross_sectional(panel: pd.DataFrame) -> pd.DataFrame:
     return panel
 
 
-def build_panel(data: dict[str, pd.DataFrame], nifty: pd.DataFrame | None = None) -> pd.DataFrame:
+def build_panel(data: dict[str, pd.DataFrame], nifty: pd.DataFrame | None = None,
+                earnings: pd.DataFrame | None = None) -> pd.DataFrame:
     """
     Assemble the long feature panel. `data` is {symbol: bars_df} from data.load_universe.
     Returns one row per (date, symbol) with FEATURE_COLS (+ id cols). NaNs preserved.
+
+    `earnings` (optional): the fundamentals adapter's earnings frame; when given, the
+    point-in-time EPS/earnings features (_FUND_FEATS) are attached. Omit it and those
+    columns stay NaN (graceful-degrade), so the panel never depends on the network.
     """
     parts = []
     for sym, df in data.items():
@@ -197,6 +207,9 @@ def build_panel(data: dict[str, pd.DataFrame], nifty: pd.DataFrame | None = None
     panel = pd.concat(parts, ignore_index=True)
     panel = _add_market_features(panel, nifty)
     panel = _add_cross_sectional(panel)
+    if earnings is not None and len(earnings):
+        fund = _fund.build_features(panel[ID_COLS], earnings)
+        panel = panel.merge(fund, on=ID_COLS, how="left")
     # Stable column order; guarantee every declared feature exists
     for c in FEATURE_COLS:
         if c not in panel.columns:
@@ -215,4 +228,7 @@ def feature_manifest() -> dict:
         man[c] = {"source": "panel", "lag_bars": 0, "kind": "cross_sectional"}
     for c in _CTX_FEATS:
         man[c] = {"source": "nifty/calendar", "lag_bars": 0, "kind": "context"}
+    for c in _FUND_FEATS:
+        # Point-in-time by construction (report_date < T join in the adapter).
+        man[c] = {"source": "yfinance_earnings", "lag_bars": 0, "kind": "fundamental"}
     return man

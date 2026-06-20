@@ -35,6 +35,7 @@ sys.path.insert(0, str(ROOT))
 
 import src.config as cfg
 from src.predictor import data, features, labels, model
+from src.predictor.adapters import fundamentals_adapter as fund
 
 FEATURES_DIR = ROOT / "data" / "features"
 MODELS_DIR = ROOT / "models"
@@ -47,14 +48,20 @@ HEADS = [
 
 
 def build_panel(universe: str, asof: str | None, limit: int | None,
-                stop: float, target: float, hold: int) -> pd.DataFrame:
+                stop: float, target: float, hold: int,
+                use_fundamentals: bool = True) -> pd.DataFrame:
     print("[1/3] Loading universe + building feature panel …")
     d = data.load_universe(universe, asof=asof)
     if limit:
         d = dict(list(d.items())[:limit])
         print(f"      (limited to {len(d)} symbols)")
     nifty = data.load_nifty(asof=asof)
-    panel = features.build_panel(d, nifty)
+    earnings = None
+    if use_fundamentals:
+        # hp_003 (CONFIRMED): point-in-time EPS features. Cached + incremental, so
+        # only symbols missing from the rolling cache trigger a (slow) yfinance fetch.
+        earnings = fund.load_or_fetch(list(d.keys()))
+    panel = features.build_panel(d, nifty, earnings=earnings)
     panel = labels.add_labels(panel, d, stop_pct=stop, target_pct=target, max_hold=hold)
     print(labels.label_summary(panel))
     return panel, d
@@ -137,11 +144,14 @@ def main():
     ap.add_argument("--stop", type=float, default=cfg.STOP_LOSS_PCT)
     ap.add_argument("--target", type=float, default=cfg.TARGET_PCT)
     ap.add_argument("--hold", type=int, default=cfg.MAX_HOLD_DAYS)
+    ap.add_argument("--no-fundamentals", action="store_true",
+                    help="skip the hp_003 EPS adapter (faster; no yfinance fetch)")
     args = ap.parse_args()
 
     t0 = time.time()
     panel, _ = build_panel(args.universe, args.asof, args.limit,
-                           args.stop, args.target, args.hold)
+                           args.stop, args.target, args.hold,
+                           use_fundamentals=not args.no_fundamentals)
     asof = args.asof or str(panel["date"].max().date())
     save_panel(panel, asof)
 

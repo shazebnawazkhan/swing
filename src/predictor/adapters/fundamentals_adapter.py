@@ -34,6 +34,10 @@ FUND_FEATURES = ["eps_surprise_pct", "eps_surprise_sign", "eps_yoy",
                  "days_since_result", "in_result_window"]
 
 _CACHE_DIR = Path(__file__).resolve().parents[3] / "data" / "features" / "fundamentals"
+# Backfillable earnings history is the same whatever day we pull it, and point-in-time
+# safety is enforced at join time (report_date < T) — so one rolling cache, not a dated
+# file per run. Incrementally filled across train/predict/ablation runs.
+_CACHE_FILE = "earnings.parquet"
 _RESULT_WINDOW_DAYS = 5      # post-result drift window flag
 _FRESH_MAX_DAYS = 120        # a result older than ~1 quarter is "stale" (no fresh fundamentals)
 
@@ -90,15 +94,62 @@ def fetch_earnings(symbols: list[str], limit: int = 16, throttle: float = 0.4,
     return res.reset_index(drop=True)
 
 
-def cache_path(asof: str) -> Path:
-    return _CACHE_DIR / f"{asof}.parquet"
+def cache_path(asof: str | None = None) -> Path:
+    """Rolling earnings cache (the `asof` arg is accepted for call-site compat, ignored)."""
+    return _CACHE_DIR / _CACHE_FILE
 
 
-def save(earnings: pd.DataFrame, asof: str) -> Path:
+def save(earnings: pd.DataFrame, asof: str | None = None) -> Path:
     _CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    p = cache_path(asof)
+    p = cache_path()
     earnings.to_parquet(p, index=False)
     return p
+
+
+def _seen_path() -> Path:
+    return _CACHE_DIR / "_fetched_symbols.json"
+
+
+def _load_seen() -> set[str]:
+    p = _seen_path()
+    if p.exists():
+        import json
+        return set(json.loads(p.read_text()))
+    return set()
+
+
+def _save_seen(seen: set[str]):
+    import json
+    _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    _seen_path().write_text(json.dumps(sorted(seen)))
+
+
+def load_or_fetch(symbols: list[str], asof: str | None = None, refresh: bool = False,
+                  verbose: bool = True) -> pd.DataFrame:
+    """
+    Return earnings for `symbols`, fetching only the ones not already ATTEMPTED, so
+    repeated train/predict runs don't refetch the whole universe — and crucially don't
+    re-hit the ~40% of small-caps that yfinance has no data for (those return no rows
+    but are still recorded as attempted in a sidecar). `refresh=True` ignores both.
+    """
+    cp = cache_path()
+    cached = pd.read_parquet(cp) if cp.exists() else pd.DataFrame()
+    seen = set() if refresh else _load_seen()
+    if not seen and len(cached):                      # migrate a pre-sidecar cache
+        seen = set(cached["symbol"].unique())
+    todo = list(symbols) if refresh else [s for s in symbols if s not in seen]
+    if todo:
+        if verbose:
+            print(f"      fundamentals: fetching {len(todo)} symbols "
+                  f"({len(set(symbols) & seen)} already attempted)…")
+        fresh = fetch_earnings(todo, verbose=verbose)
+        cached = pd.concat([cached[~cached["symbol"].isin(todo)], fresh], ignore_index=True) \
+            if len(cached) else fresh
+        save(cached, asof)
+        _save_seen(seen | set(todo))
+    elif verbose:
+        print(f"      fundamentals: all {len(symbols)} symbols already attempted.")
+    return cached[cached["symbol"].isin(symbols)].copy() if len(cached) else cached
 
 
 def build_features(panel_ids: pd.DataFrame, earnings: pd.DataFrame) -> pd.DataFrame:

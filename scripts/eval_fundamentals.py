@@ -104,7 +104,10 @@ def main():
     earnings = load_or_fetch(syms, asof, args.refresh)
 
     # Restrict the panel to the slice, attach fundamentals, flag the fresh subset.
+    # Drop any fund cols already baked into the saved panel (fundamentals are now a
+    # live feature group) so this ablation always recomputes them cleanly.
     panel = panel[panel["symbol"].isin(syms)].copy()
+    panel = panel.drop(columns=[c for c in fa.FUND_FEATURES if c in panel.columns])
     feat = fa.build_features(panel[["date", "symbol"]], earnings)
     panel = panel.merge(feat, on=["date", "symbol"], how="left")
     fresh = fa.fresh_mask(panel)
@@ -123,8 +126,10 @@ def main():
     print(f"Walk-forward: {len(folds)} folds "
           f"({args.train_months}mo/{args.valid_months}mo, slide {args.slide}mo)\n")
 
-    core_cols = features.FEATURE_COLS
-    fund_cols = features.FEATURE_COLS + fa.FUND_FEATURES
+    # Fundamentals are now part of features.FEATURE_COLS, so split it back out for
+    # the ablation: core = everything except the fund group, fund = the full set.
+    core_cols = [c for c in features.FEATURE_COLS if c not in fa.FUND_FEATURES]
+    fund_cols = features.FEATURE_COLS
     rows = []
     for i, (vs, ve, tr, va) in enumerate(folds, 1):
         try:
