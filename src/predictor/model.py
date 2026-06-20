@@ -188,6 +188,82 @@ def basket_metrics(valid_df: pd.DataFrame, label_col: str, top_frac: float = 0.1
     }
 
 
+def portfolio_curve(valid_df: pd.DataFrame, top_frac: float = 0.1, cost_pct: float = 0.25,
+                    sizing: str = "equal", kelly_b: float = 2.8,
+                    kelly_cap: float = 0.25, trading_days: int = 252) -> dict:
+    """
+    Daily-rebalanced basket equity curve for the position-sizing test (hp_004).
+
+    Each trading day we take the top-`top_frac` names by predicted P(win) and
+    allocate capital across them, realise that day's net-of-cost return, and
+    compound the daily basket returns into an out-of-sample equity curve. Both
+    sizing modes see *identical* picks each day — only the weights differ — so
+    any CAGR / max-DD gap isolates the effect of sizing alone.
+
+      equal      : 1/N across the N picks (gross = 1.0, always fully invested).
+      kelly      : per-name fraction f = clip(p - (1-p)/b, 0, kelly_cap), gross
+                   capped at 1.0 (no leverage), remainder held flat in cash. Edge-poor
+                   days shrink exposure — combines de-risking with conviction tilt.
+      kelly_full : the same Kelly fractions renormalised to gross = 1.0 every day, so
+                   exposure matches equal-weight and only the *tilt* toward high-P(win)
+                   names remains. Isolates skill-weighting from plain de-risking.
+
+    Picks per day match `basket_metrics`: floor(N * top_frac), at least one name.
+    Returns CAGR, max_DD (%), Sharpe, total_return (%), mean exposure, n_trades.
+    """
+    zero = {"cagr_pct": 0.0, "max_dd_pct": 0.0, "sharpe": 0.0, "total_return_pct": 0.0,
+            "avg_exposure": 0.0, "n_trades": 0, "n_days": 0}
+    if "fwd_ret_pct" not in valid_df.columns or valid_df.empty:
+        return zero
+    v = valid_df.dropna(subset=["fwd_ret_pct"]).copy()
+    if v.empty:
+        return zero
+    cost = cost_pct / 100.0
+
+    dates, rets, exposures, n_trades = [], [], [], 0
+    for date, g in v.sort_values("p", ascending=False).groupby("date", sort=True):
+        keep_n = max(1, int(len(g) * top_frac))
+        picks = g.head(keep_n)
+        r = picks["fwd_ret_pct"].to_numpy(dtype=float) / 100.0 - cost
+        if sizing in ("kelly", "kelly_full"):
+            p = picks["p"].to_numpy(dtype=float)
+            f = np.clip(p - (1.0 - p) / kelly_b, 0.0, kelly_cap)
+            s = f.sum()
+            if sizing == "kelly_full":           # renormalise to gross 1.0 (tilt only)
+                w = f / s if s > 0 else np.full(len(r), 1.0 / len(r))
+                exposure = 1.0
+            else:                                # cap gross at 1.0, hold cash otherwise
+                w = f / s if s > 1.0 else f
+                exposure = min(float(s), 1.0)
+        else:
+            w = np.full(len(r), 1.0 / len(r))
+            exposure = 1.0
+        dates.append(date)
+        rets.append(float((w * r).sum()))
+        exposures.append(exposure)
+        n_trades += len(r)
+
+    rets = np.asarray(rets, dtype=float)
+    equity = np.cumprod(1.0 + rets)
+    end = float(equity[-1])
+    n_days = len(rets)
+    span_years = n_days / trading_days
+    cagr = (end ** (1.0 / span_years) - 1.0) if (span_years > 0 and end > 0) else 0.0
+    peak = np.maximum.accumulate(equity)
+    max_dd = float(np.max((peak - equity) / peak)) if n_days else 0.0
+    sd = rets.std()
+    sharpe = float(rets.mean() / sd * np.sqrt(trading_days)) if sd > 0 else 0.0
+    return {
+        "cagr_pct": round(cagr * 100, 2),
+        "max_dd_pct": round(max_dd * 100, 2),
+        "sharpe": round(sharpe, 2),
+        "total_return_pct": round((end - 1.0) * 100, 2),
+        "avg_exposure": round(float(np.mean(exposures)), 3),
+        "n_trades": int(n_trades),
+        "n_days": int(n_days),
+    }
+
+
 def _safe_auc(y, p):
     try:
         return float(roc_auc_score(y, p)) if len(np.unique(y)) > 1 else 0.5
