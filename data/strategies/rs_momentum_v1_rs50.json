@@ -1,0 +1,33 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "rs_momentum_v1_rs50",
+  "name": "Relative-Strength Momentum v1 (RS >= 50%)",
+  "description": "Variant of rs_momentum_v1 with rs_floor relaxed from 0.90 to 0.50: only requires a stock to be in the top half of the universe by 60-day relative strength (instead of top decile), to test whether the tight RS gate is excluding stocks early in their move rather than just filtering laggards.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": {
+    "proximity": 0.98,
+    "vol_mult": 1.5,
+    "rs_floor": 0.50
+  },
+  "indicators": {
+    "hhv200": { "fn": "hhv", "on": "close", "window": 200 },
+    "vol20":  { "fn": "sma", "on": "total_volume", "window": 20 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close >= @proximity * hhv200",
+      "total_volume > @vol_mult * vol20",
+      "delivery_pct > del_avg20",
+      "rs_rank >= @rs_floor"
+    ]
+  },
+  "exit": { "stop_loss_pct": 5, "target_pct": 10, "max_hold_days": 12 },
+  "provenance": {
+    "created": "2026-06-18",
+    "hypothesis_id": "h_014",
+    "parent_id": "rs_momentum_v1",
+    "experiments": []
+  }
+}

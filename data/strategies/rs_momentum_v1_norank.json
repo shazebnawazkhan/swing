@@ -1,0 +1,31 @@
+{
+  "schema": "strategy-spec/v1",
+  "id": "rs_momentum_v1_norank",
+  "name": "Relative-Strength Momentum v1 (no RS filter)",
+  "description": "Ablation of rs_momentum_v1: drops the rs_rank >= @rs_floor condition entirely so the same near-52w-high + volume + delivery setup is evaluated on the full halal universe, not just the top decile by 60-day relative strength. Used to measure how much the RS gate costs in trade count vs. what it buys in quality.",
+  "markets": ["nse"],
+  "regimes": ["bull", "sideways"],
+  "params": {
+    "proximity": 0.98,
+    "vol_mult": 1.5
+  },
+  "indicators": {
+    "hhv200": { "fn": "hhv", "on": "close", "window": 200 },
+    "vol20":  { "fn": "sma", "on": "total_volume", "window": 20 },
+    "del_avg20": { "fn": "sma", "on": "delivery_pct", "window": 20 }
+  },
+  "entry": {
+    "all": [
+      "close >= @proximity * hhv200",
+      "total_volume > @vol_mult * vol20",
+      "delivery_pct > del_avg20"
+    ]
+  },
+  "exit": { "stop_loss_pct": 5, "target_pct": 10, "max_hold_days": 12 },
+  "provenance": {
+    "created": "2026-06-18",
+    "hypothesis_id": "h_014",
+    "parent_id": "rs_momentum_v1",
+    "experiments": []
+  }
+}

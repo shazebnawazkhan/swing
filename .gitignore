@@ -13,6 +13,14 @@ models/
 data/features/
 data/paper_trades.jsonl
 
+# Per-experiment trade detail (reproducible with run_experiments.py; experiments.jsonl ledger is tracked)
+data/results/trades/
+
+# Working/iteration screenshots (not referenced by docs)
+docs/pw_*.png
+docs/BarChartFix.jpg
+docs/P&Lss.jpg
+
 # Python
 __pycache__/
 *.py[cod]
