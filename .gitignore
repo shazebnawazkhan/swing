@@ -13,6 +13,9 @@ models/
 data/features/
 data/paper_trades.jsonl
 
+# Personal watchlist + Groww holdings snapshots (private; rebuild with build_watchlist.py)
+data/watchlist/
+
 # Per-experiment trade detail (reproducible with run_experiments.py; experiments.jsonl ledger is tracked)
 data/results/trades/
 
