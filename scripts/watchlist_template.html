@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Watchlists</title>
+<style>
+:root{
+  --fs:1;
+  --bg:#f0f4f9;--sf:#fff;--sf2:#f1f5fb;--sf3:#e4ecf7;--bd:#d1daea;--bd2:#b0bfcf;
+  --tx:#0f172a;--mu:#52657f;--mu2:#8193a8;--ac:#4f46e5;--ac2:#4338ca;--acbg:#eef2ff;
+  --green:#15803d;--red:#dc2626;--amber:#b45309;--amberbg:#fffbeb;--amberbd:#fcd34d;
+  --th:#e8eef8;--hover:#f8faff;--shadow:0 1px 4px #0001;--pop:0 12px 40px #0f172a33;--bench:#64748b;
+  --sh-pro:#4f46e5;--sh-fii:#0d9488;--sh-dii:#d97706;--sh-pub:#94a3b8;--sh-oth:#cbd5e1;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1120;--sf:#111a2e;--sf2:#16213a;--sf3:#1c2a48;--bd:#26344f;--bd2:#36486b;
+  --tx:#e2e8f0;--mu:#94a3b8;--mu2:#7085a0;--ac:#818cf8;--ac2:#a5b4fc;--acbg:#1e1b4b;
+  --green:#4ade80;--red:#f87171;--amber:#fbbf24;--amberbg:#2a2110;--amberbd:#6b5313;
+  --th:#16213a;--hover:#131d33;--shadow:none;--pop:0 12px 40px #000a;--bench:#94a3b8;
+  --sh-pro:#818cf8;--sh-fii:#2dd4bf;--sh-dii:#fbbf24;--sh-pub:#64748b;--sh-oth:#475569;
+}}
+:root[data-theme="dark"]{
+  --bg:#0b1120;--sf:#111a2e;--sf2:#16213a;--sf3:#1c2a48;--bd:#26344f;--bd2:#36486b;
+  --tx:#e2e8f0;--mu:#94a3b8;--mu2:#7085a0;--ac:#818cf8;--ac2:#a5b4fc;--acbg:#1e1b4b;
+  --green:#4ade80;--red:#f87171;--amber:#fbbf24;--amberbg:#2a2110;--amberbd:#6b5313;
+  --th:#16213a;--hover:#131d33;--shadow:none;--pop:0 12px 40px #000a;--bench:#94a3b8;
+  --sh-pro:#818cf8;--sh-fii:#2dd4bf;--sh-dii:#fbbf24;--sh-pub:#64748b;--sh-oth:#475569;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font:calc(12px * var(--fs)) system-ui,-apple-system,sans-serif;min-height:100vh}
+a{color:var(--ac2);text-decoration:none} a:hover{text-decoration:underline}
+/* page width kept to a comfortable reading span; the table layout scrolls inside the board */
+.wrap{max-width:1320px;margin:0 auto;padding:12px 14px}
+header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+h1{font-size:calc(18px * var(--fs));font-weight:700;margin-right:auto}
+h1 span{color:var(--ac)}
+.mode{font-size:calc(11px * var(--fs));padding:4px 10px;border-radius:999px;border:1px solid var(--bd);background:var(--sf);color:var(--mu);max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mode.live{color:var(--green);border-color:var(--green)}
+.mode.busy{color:var(--amber);border-color:var(--amber)}
+.btn{font:inherit;font-size:calc(12px * var(--fs));padding:5px 11px;border-radius:7px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);cursor:pointer;white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--ac);color:var(--ac2)}
+.btn.primary{background:var(--ac);border-color:var(--ac);color:#fff}
+.btn.primary:hover:not(:disabled){filter:brightness(1.1);color:#fff}
+.btn.danger:hover:not(:disabled){border-color:var(--red);color:var(--red)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.sm{padding:3px 8px;font-size:calc(11px * var(--fs))}
+.seg{display:inline-flex;border:1px solid var(--bd);border-radius:7px;padding:2px;background:var(--sf);gap:2px}
+.seg button{font:inherit;font-size:calc(11px * var(--fs));padding:3px 8px;border:none;border-radius:5px;background:none;color:var(--mu);cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--ac);color:#fff}
+.ico{font:inherit;font-size:calc(11px * var(--fs));line-height:1;width:calc(22px * var(--fs));height:calc(20px * var(--fs));border-radius:5px;border:1px solid var(--bd);background:var(--sf);color:var(--mu);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.ico:hover:not(:disabled){border-color:var(--ac);color:var(--ac2)}
+.ico.danger:hover:not(:disabled){border-color:var(--red);color:var(--red)}
+.ico:disabled{opacity:.4;cursor:not-allowed}
+.banner{background:var(--amberbg);border:1px solid var(--amberbd);color:var(--amber);border-radius:8px;padding:7px 12px;font-size:calc(12px * var(--fs));line-height:1.5;margin-bottom:10px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;box-shadow:var(--shadow)}
+.toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.tab{font-size:calc(12px * var(--fs));padding:5px 11px;border-radius:999px;border:1px solid var(--bd);background:var(--sf);color:var(--mu);cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--tx)}
+.tab.active{background:var(--acbg);color:var(--ac2);border-color:var(--ac)}
+.tab .n{opacity:.7;margin-left:4px;font-variant-numeric:tabular-nums}
+.newlist{display:inline-flex;gap:4px}
+.newlist input{width:140px}
+.spacer{flex:1}
+.toolbar .search{width:170px}
+.viewbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:calc(11px * var(--fs));color:var(--mu)}
+input,select{font:inherit;font-size:calc(12px * var(--fs));padding:5px 8px;border-radius:7px;border:1px solid var(--bd);background:var(--sf2);color:var(--tx);outline:none;width:100%}
+input:focus,select:focus{border-color:var(--ac)}
+label{display:flex;flex-direction:column;gap:3px;font-size:calc(10px * var(--fs));font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em}
+.addbar{padding:10px;margin-bottom:8px;display:grid;grid-template-columns:1.2fr 1fr .5fr .5fr 2fr auto;gap:8px;align-items:end}
+.addbar[hidden]{display:none}
+.row2{grid-column:1/-1;display:flex;gap:14px;align-items:center;font-size:calc(11.5px * var(--fs));color:var(--mu);min-height:16px;flex-wrap:wrap}
+.chk{flex-direction:row;align-items:center;gap:5px;text-transform:none;font-weight:400;letter-spacing:0;font-size:calc(11.5px * var(--fs))}
+.chk input{width:auto}
+.msg{font-size:calc(12px * var(--fs))}
+.msg.err{color:var(--red)} .msg.ok{color:var(--green)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:8px}
+.tile{padding:7px 11px}
+.tile .v{font-size:calc(17px * var(--fs));font-weight:700;font-variant-numeric:tabular-nums}
+.tile .l{font-size:calc(10.5px * var(--fs));color:var(--mu);margin-top:1px}
+.tile .s{font-size:calc(10px * var(--fs));color:var(--mu2);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── board: header + one grid "card row" per stock, all sharing the same tracks ── */
+.board{overflow-x:auto;overflow-y:visible}
+.board-in{min-width:min-content}
+.shead,.srow{display:grid;grid-template-columns:var(--cols);column-gap:0}
+.shead{position:sticky;top:0;z-index:5;background:var(--th);border:1px solid var(--bd);border-radius:10px 10px 0 0}
+.hcell{position:relative;padding:6px 8px;font-size:calc(9.5px * var(--fs));font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--mu);border-right:1px solid var(--bd);min-width:0;line-height:1.5}
+.hcell:last-child{border-right:none}
+.hcell:last-child .rz{right:0}
+.hcell .keys{display:flex;flex-wrap:wrap;column-gap:8px;overflow:hidden}
+.hcell .tname{display:block;color:var(--tx);font-size:calc(10px * var(--fs));margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcell .sk{cursor:pointer;white-space:nowrap}
+.hcell .sk:hover{color:var(--ac2)}
+.hcell .sk.sorted{color:var(--ac2)}
+.hcell .sk.sorted::after{content:attr(data-dir);margin-left:2px}
+.rz{position:absolute;top:0;right:-4px;width:8px;height:100%;cursor:col-resize;z-index:6;touch-action:none}
+.rz::after{content:'';position:absolute;left:3px;top:20%;height:60%;width:2px;border-radius:1px;background:transparent}
+.rz:hover::after,.rz.on::after{background:var(--ac)}
+.rows{border:1px solid var(--bd);border-top:none;border-radius:0 0 10px 10px;background:var(--sf);overflow:hidden}
+.srow{border-bottom:1px solid var(--bd2);background:var(--sf)}
+.srow:last-child{border-bottom:none}
+.srow:hover{background:var(--hover)}
+.c{padding:5px 8px;min-width:0;border-right:1px solid var(--bd);border-top:1px dashed var(--bd);overflow:hidden;font-size:calc(11.5px * var(--fs));font-variant-numeric:tabular-nums}
+.c.num{text-align:right}
+.cap{font-size:calc(8.5px * var(--fs));font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mu2);margin-bottom:2px;text-align:left}
+.layout-table .cap{display:none}
+.layout-table .c{border-top:none}
+.c.first-line{border-top:none}
+.c.last-track{border-right:none}
+
+.sym{font-weight:700;cursor:help;display:inline-block;font-size:calc(13px * var(--fs))}
+.sym:focus{outline:2px solid var(--ac);outline-offset:2px;border-radius:3px}
+.nm{font-size:calc(10px * var(--fs));color:var(--mu);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{display:inline-block;font-size:calc(9px * var(--fs));padding:0 5px;border-radius:4px;border:1px solid var(--bd);color:var(--mu);background:var(--sf2);white-space:nowrap;margin:2px 3px 0 0;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:top}
+.pill.halal{color:var(--green);border-color:var(--green)}
+.pill.warn{color:var(--amber);border-color:var(--amber)}
+.pill.list{color:var(--ac2);border-color:var(--ac)}
+.pill.tag{color:var(--ac2);border-color:var(--bd2);background:var(--acbg);font-size:calc(8.5px * var(--fs));margin:0 0 0 3px}
+.unote{font-size:calc(10px * var(--fs));color:var(--mu);font-style:italic;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.acts{display:flex;gap:3px;margin-top:4px}
+.pos{color:var(--green)} .neg{color:var(--red)} .mu{color:var(--mu2)}
+.sub{font-size:calc(9.5px * var(--fs));color:var(--mu2);margin-top:1px}
+.b{font-weight:600}
+.big{font-size:calc(14px * var(--fs));font-weight:700}
+.alert{color:var(--amber);font-weight:600}
+.empty{text-align:center;padding:30px;color:var(--mu);line-height:1.6;background:var(--sf)}
+/* chart cell */
+.c.cc{padding:4px 6px;display:flex;flex-direction:column}
+.ctop{display:flex;align-items:center;gap:4px;flex-wrap:nowrap;margin-bottom:2px;min-height:16px}
+.ctop .cchg{font-size:calc(10.5px * var(--fs));font-weight:600;white-space:nowrap}
+.ctop .vsn{font-size:calc(9.5px * var(--fs));color:var(--mu2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctop .exp{margin-left:auto;flex:none}
+.rng{display:inline-flex;gap:1px;flex:none}
+.rng button{font:inherit;font-size:calc(9px * var(--fs));line-height:1;padding:2px 4px;border-radius:3px;border:1px solid transparent;background:none;color:var(--mu);cursor:pointer;text-transform:none;letter-spacing:0}
+.rng button:hover{border-color:var(--bd)}
+.rng button.on{background:var(--ac);color:#fff}
+.rng button:disabled{opacity:.35;cursor:default}
+.hcell .rng{margin-top:3px}
+.hcell .rng button{border-color:var(--bd);background:var(--sf)}
+.hcell .rng button.on{background:var(--ac);border-color:var(--ac)}
+svg.cs{display:block;width:100%}
+.nochart{font-size:calc(10px * var(--fs));color:var(--mu2);padding:20px 0;text-align:center}
+/* benchmark card */
+.srow.bench{background:var(--sf2);border-bottom:2px solid var(--bd2)}
+.srow.bench:hover{background:var(--sf2)}
+.bench .bname{font-weight:700;font-size:calc(13px * var(--fs))}
+.btoggle{font:inherit;font-size:calc(11px * var(--fs));border:none;background:none;color:var(--ac2);cursor:pointer;padding:0 4px 0 0}
+.bsum{font-size:calc(11px * var(--fs));line-height:1.6;color:var(--mu)}
+.bsum b{color:var(--tx)}
+/* shareholding */
+.shbar{display:flex;width:100%;height:calc(14px * var(--fs));border-radius:4px;overflow:hidden;background:var(--sf3)}
+.shbar span{display:flex;align-items:center;justify-content:center;font-size:calc(8.5px * var(--fs));font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;min-width:0}
+.shleg{font-size:calc(9px * var(--fs));color:var(--mu);margin-top:2px;line-height:1.45}
+.shleg i{display:inline-block;width:6px;height:6px;border-radius:2px;margin:0 2px 0 4px;vertical-align:0}
+.shleg i:first-child{margin-left:0}
+/* delivery */
+.dl{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:4px;font-size:calc(10px * var(--fs));line-height:1.45}
+.dl .bar{height:5px;border-radius:3px;background:var(--sf3);overflow:hidden}
+.dl .bar b{display:block;height:100%;background:var(--ac)}
+.dl .k{color:var(--mu2)} .dl .v{text-align:right}
+/* news / analyst */
+.news{font-size:calc(10px * var(--fs));line-height:1.3}
+.news ul,.tg ul{list-style:none}
+.news li{margin-bottom:3px;break-inside:avoid}
+.news li a,.tg li a{color:var(--tx);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news li a:hover,.tg li a:hover{color:var(--ac2)}
+.news .meta{font-size:calc(9px * var(--fs));color:var(--mu2)}
+/* in the 3-line layout the news strip runs across several tracks: flow items into columns */
+.layout-structured .c-news ul{columns:3 200px;column-gap:14px}
+.evt{display:inline-block;font-size:calc(9px * var(--fs));padding:1px 5px;border-radius:4px;border:1px solid var(--amber);color:var(--amber);background:var(--amberbg);margin:0 3px 3px 0}
+.news details summary{font-size:calc(9.5px * var(--fs));color:var(--ac2);cursor:pointer}
+.tg{font-size:calc(10px * var(--fs));line-height:1.3}
+.tg li{margin-top:3px}
+.tg .sub{font-size:calc(9px * var(--fs))}
+/* popover */
+#pop{position:fixed;z-index:50;width:330px;background:var(--sf);border:1px solid var(--bd2);border-radius:10px;box-shadow:var(--pop);padding:12px;font-size:calc(12px * var(--fs));pointer-events:none;opacity:0;transition:opacity .1s}
+#pop.on{opacity:1}
+#pop h4{font-size:calc(14px * var(--fs))} #pop .pn{font-size:calc(11px * var(--fs));color:var(--mu);margin-bottom:8px}
+#pop .g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+#pop .g div{background:var(--sf2);border-radius:6px;padding:5px 7px}
+#pop .g b{display:block;font-size:calc(12.5px * var(--fs));font-variant-numeric:tabular-nums}
+#pop .g span{font-size:calc(9.5px * var(--fs));color:var(--mu)}
+#pop .ft{font-size:calc(9.5px * var(--fs));color:var(--mu2);margin-top:8px}
+/* dialogs */
+dialog{border:1px solid var(--bd);border-radius:12px;background:var(--sf);color:var(--tx);padding:18px;width:min(440px,92vw);box-shadow:0 20px 60px #0004;margin:auto}
+dialog::backdrop{background:rgba(15,23,42,.55)}
+dialog h3{font-size:15px;margin-bottom:4px}
+dialog p{font-size:12px;color:var(--mu);margin-bottom:12px}
+dialog form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+dialog .full{grid-column:1/-1}
+dialog .bar{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+/* explorer */
+dialog#xp{width:96vw;height:92vh;max-width:none;max-height:none;padding:12px 14px;display:none;flex-direction:column}
+dialog#xp[open]{display:flex}
+.xhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.xhead h3{margin:0;font-size:16px}
+.xhead .xpx{font-size:14px;font-weight:700}
+.xbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;font-size:11px;color:var(--mu)}
+.xbar .grp{display:inline-flex;gap:2px;border:1px solid var(--bd);border-radius:7px;padding:2px}
+.xbar .grp button{font:inherit;font-size:11px;padding:3px 8px;border:none;border-radius:5px;background:none;color:var(--mu);cursor:pointer}
+.xbar .grp button.on{background:var(--ac);color:#fff}
+.xbar label.chk{font-size:11px;color:var(--tx)}
+.xbar label.chk i{display:inline-block;width:10px;height:3px;border-radius:2px}
+.xlegend{font-size:11px;color:var(--mu);min-height:16px;margin-bottom:2px;font-variant-numeric:tabular-nums}
+.xlegend b{color:var(--tx);font-weight:600}
+#xmain{flex:1;min-height:200px;position:relative}
+.xsub{height:110px;border-top:1px solid var(--bd);position:relative}
+.xsub .lbl{position:absolute;left:6px;top:3px;font-size:10px;color:var(--mu);z-index:2;pointer-events:none}
+.xmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:13px;text-align:center;padding:20px}
+footer{font-size:calc(10px * var(--fs));color:var(--mu2);margin-top:8px;line-height:1.6}
+/* narrow screens: every card collapses to a single stacked column */
+@media(max-width:820px){
+  .addbar{grid-template-columns:1fr 1fr}.addbar .wide{grid-column:1/-1}.toolbar .search{width:100%}
+  .shead{display:none}
+  .srow{grid-template-columns:1fr !important;grid-template-areas:none !important;border-radius:10px;margin-bottom:8px;border:1px solid var(--bd)}
+  .srow .c{grid-area:auto !important;border-right:none;border-top:1px dashed var(--bd)}
+  .rows{border:none;background:none}
+  .layout-table .cap{display:block}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>My <span>Watchlists</span></h1>
+    <span class="mode" id="mode">read-only snapshot</span>
+    <button class="btn" id="refresh" title="Latest prices from stockanalysis.com for every stock">Refresh prices</button>
+    <button class="btn" id="enrich" title="News, target articles, triggers, delivery %, OI and charts for every stock and NIFTY 50 (runs in the background)">Refresh news &amp; data</button>
+    <button class="btn" id="theme" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
+  </header>
+  <div class="banner" id="banner" hidden></div>
+
+  <div class="toolbar">
+    <div id="tabs" style="display:contents"></div>
+    <form class="newlist" id="newlist" autocomplete="off">
+      <input id="nl-name" placeholder="+ New list" maxlength="40" aria-label="New watchlist name">
+      <button class="btn sm" type="submit">Create</button>
+    </form>
+    <span class="msg" id="nl-msg"></span>
+    <span class="spacer"></span>
+    <input class="search" id="q" placeholder="Filter stocks…" aria-label="Filter">
+    <button class="btn sm" id="lh-rename">Rename list</button>
+    <button class="btn sm danger" id="lh-delete">Delete list</button>
+    <button class="btn sm primary" id="addtoggle" aria-expanded="false">+ Add stock</button>
+  </div>
+
+  <form class="card addbar" id="addform" autocomplete="off" hidden>
+    <label>Symbol<input id="a-sym" list="universe" placeholder="e.g. TATAPOWER" required></label>
+    <label>Add to list<select id="a-list"></select></label>
+    <label>Target ₹<input id="a-target" type="number" step="any" min="0"></label>
+    <label>Stop ₹<input id="a-stop" type="number" step="any" min="0"></label>
+    <label class="wide">Note<input id="a-note" placeholder="why you're watching it"></label>
+    <button class="btn primary" id="a-btn" type="submit">Add stock</button>
+    <div class="row2"><span id="a-hint" class="mu"></span>
+      <label class="chk"><input type="checkbox" id="a-force"> add anyway if the symbol can't be verified</label>
+      <span class="msg" id="a-msg"></span></div>
+  </form>
+  <datalist id="universe"></datalist>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div class="viewbar">
+    <span>Layout</span><span class="seg" id="v-layout"></span>
+    <span style="margin-left:8px">Text</span><span class="seg" id="v-font"></span>
+    <button class="btn sm" id="v-reset" title="Restore default column widths for this layout">Reset widths</button>
+    <span class="mu">Drag the edges of the header to resize columns — widths are remembered per layout.</span>
+  </div>
+
+  <div class="board" id="board"><div class="board-in" id="boardin">
+    <div class="shead" id="shead"></div>
+    <div class="rows" id="rows"></div>
+  </div></div>
+  <footer id="foot"></footer>
+</div>
+
+<div id="pop" role="tooltip"></div>
+
+<dialog id="xp" aria-label="Chart explorer">
+  <div class="xhead">
+    <h3 id="x-title"></h3><span class="mu" id="x-name"></span><span class="xpx" id="x-px"></span><span id="x-chg"></span>
+    <span class="spacer" style="flex:1"></span>
+    <a class="btn sm" id="x-tv" target="_blank" rel="noopener noreferrer">Open on TradingView ↗</a>
+    <button class="btn sm" id="x-close">Close</button>
+  </div>
+  <div class="xbar">
+    <span class="grp" id="x-rng"></span>
+    <span class="grp" id="x-type"><button data-t="candle" class="on">Candles</button><button data-t="line">Line</button></span>
+    <label class="chk"><input type="checkbox" data-ind="sma20"><i style="background:#f59e0b"></i>SMA 20</label>
+    <label class="chk"><input type="checkbox" data-ind="sma50" checked><i style="background:#3b82f6"></i>SMA 50</label>
+    <label class="chk"><input type="checkbox" data-ind="sma200"><i style="background:#a855f7"></i>SMA 200</label>
+    <label class="chk"><input type="checkbox" data-ind="ema20"><i style="background:#ec4899"></i>EMA 20</label>
+    <label class="chk"><input type="checkbox" data-ind="bb"><i style="background:#14b8a6"></i>Bollinger 20,2</label>
+    <label class="chk"><input type="checkbox" data-ind="vol" checked>Volume</label>
+    <label class="chk"><input type="checkbox" data-ind="rsi" checked>RSI 14</label>
+    <label class="chk"><input type="checkbox" data-ind="macd">MACD 12,26,9</label>
+    <label class="chk"><input type="checkbox" data-ind="nifty"><i style="background:var(--bench)"></i>vs NIFTY 50 (%)</label>
+  </div>
+  <div class="xlegend" id="x-leg"></div>
+  <div id="xmain"><div class="xmsg" id="x-msg">Loading chart…</div></div>
+  <div class="xsub" id="xrsi"><span class="lbl">RSI 14</span></div>
+  <div class="xsub" id="xmacd"><span class="lbl">MACD 12, 26, 9</span></div>
+  <div class="sub" id="x-foot" style="margin-top:4px"></div>
+</dialog>
+
+<dialog id="edit"><h3 id="e-title"></h3><p id="e-sub"></p>
+  <form method="dialog">
+    <label>Target ₹<input id="e-target" type="number" step="any" min="0"></label>
+    <label>Stop ₹<input id="e-stop" type="number" step="any" min="0"></label>
+    <label class="full">Note<input id="e-note"></label>
+    <div class="bar"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="save">Save</button></div>
+  </form>
+</dialog>
+
+<dialog id="move"><h3 id="m-title"></h3><p>Note, target and stop go with it. A copy leaves the original where it is; a holding's position stays with the original.</p>
+  <form method="dialog">
+    <label class="full">Destination list<select id="m-to"></select></label>
+    <label class="chk full"><input type="checkbox" id="m-copy"> keep it in the current list too (copy)</label>
+    <div class="bar"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="go">Move</button></div>
+  </form>
+</dialog>
+
+<dialog id="rename"><h3>Rename watchlist</h3><p></p>
+  <form method="dialog">
+    <label class="full">Name<input id="r-name" maxlength="40"></label>
+    <div class="bar"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" value="save">Save</button></div>
+  </form>
+</dialog>
+
+<script>
+const EMBED = /*DATA*/null;
+let WL = EMBED.wl, LIVE = false, active = 'ALL', q = '', sortK = 'symbol', sortD = 1;
+const UNI = new Map(EMBED.universe);
+const ALERT_PCT = 3;            // highlight when price is within 3% of target or stop
+const RANGES = ['1D','1W','1M','3M','1Y','5Y','All'];
+const INTRADAY = r => r === '1D' || r === '1W';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const inr = (v,d=2) => v==null ? '—' : '₹' + Number(v).toLocaleString('en-IN',{maximumFractionDigits:d});
+const num = (v,d=2) => v==null ? '—' : Number(v).toLocaleString('en-IN',{maximumFractionDigits:d});
+const pct = (v,d=1) => v==null || !isFinite(v) ? '—' : (v>0?'+':'') + Number(v).toFixed(d) + '%';
+const cls = v => v==null ? 'mu' : v>0 ? 'pos' : v<0 ? 'neg' : 'mu';
+const mcap = v => v==null ? '—' : v>=100000 ? `₹${(v/100000).toFixed(2)}L Cr` : `₹${Math.round(v).toLocaleString('en-IN')} Cr`;
+const qty = v => v==null ? '—' : v>=1e7 ? (v/1e7).toFixed(2)+' Cr' : v>=1e5 ? (v/1e5).toFixed(2)+' L' : Math.round(v).toLocaleString('en-IN');
+const when = s => s ? new Date(s).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+const dshort = s => s ? new Date(s).toLocaleDateString('en-IN',{day:'numeric',month:'short'}) : '';
+const ago = s => { if(!s) return ''; const h=(Date.now()-new Date(s))/36e5; return h<1?'now':h<24?Math.round(h)+'h':Math.round(h/24)+'d'; };
+const ext = (url, text, c='') => url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="${c}">${text}</a>` : text;
+const store = {get:k=>{try{return localStorage.getItem(k)}catch{return null}}, set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}};
+const listById = id => WL.watchlists.find(l => l.id === id);
+const E = s => (WL.enrich||{})[s] || {};
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+let chartRange = RANGES.includes(store.get('wl-range')) ? store.get('wl-range') : '3M';
+let rowRange = {}; try { rowRange = JSON.parse(store.get('wl-rowrange') || '{}') || {}; } catch {}
+let benchOpen = store.get('wl-bench') !== '0';
+let benchRange = RANGES.includes(store.get('wl-brange')) ? store.get('wl-brange') : chartRange;
+let overlay = store.get('wl-overlay') === '1';
+const rangeOf = sym => rowRange[sym] || chartRange;
+
+// ── layouts: tracks (resizable columns) + which field sits in each line of each track ──
+// Repeating a field name across lines/tracks spans it (CSS grid-template-areas).
+const FIELDS = {
+  stock: {label:'Stock',          sort:'symbol'},
+  price: {label:'Price · Day',    sort:'day',      num:true},
+  chart: {label:'Chart',          sort:'rangeChg'},
+  hold:  {label:'Holding P&L',    sort:'pnlPct',   num:true},
+  lvl:   {label:'Target / Stop',  sort:'toTarget', num:true},
+  pe:    {label:'P/E / Industry', sort:'peVsInd',  num:true},
+  share: {label:'Shareholding',   sort:'promoter'},
+  qtr:   {label:'Last qtr QoQ',   sort:'qoq'},
+  dl:    {label:'Delivery %',     sort:'dl1'},
+  oi:    {label:'Open interest',  sort:'oiChg'},
+  an:    {label:'Analyst target', sort:'anTgt'},
+  news:  {label:'News & triggers',sort:'newsN'},
+};
+const LAYOUTS = {
+  structured: {name:'Structured · 3 lines',
+    tracks:[['Stock',150],['Chart',300],['Position',112],['Valuation',118],['Ownership',150],['Flow',128],['Street',230]],
+    lines:[['stock','chart','hold','pe', 'share','dl','an'],
+           ['price','chart','lvl', 'qtr','share','oi','an'],
+           ['price','chart','news','news','news','news','news']]},
+  compact: {name:'Compact · 2 lines',
+    tracks:[['Stock',150],['Chart',280],['Position',112],['Valuation',118],['Ownership',150],['Flow',128],['Street',250]],
+    lines:[['stock','chart','hold','pe', 'share','dl','an'],
+           ['price','chart','lvl', 'qtr','share','oi','news']]},
+  table: {name:'Table · 1 line',
+    tracks:[['Stock',150],['Price',80],['Chart',260],['Holding',92],['Target/Stop',92],['P/E',82],['Shareholding',150],['Last qtr',112],['Delivery',118],['OI',104],['Analyst',190],['News',260]],
+    lines:[['stock','price','chart','hold','lvl','pe','share','qtr','dl','oi','an','news']]},
+};
+let layout = LAYOUTS[store.get('wl-layout')] ? store.get('wl-layout') : 'structured';
+const FONTS = [['S', .9], ['M', 1], ['L', 1.15]];
+let font = FONTS.some(f => f[0] === store.get('wl-font')) ? store.get('wl-font') : 'M';
+const FS = () => FONTS.find(f => f[0] === font)[1];
+
+function widthsOf(key){
+  const def = LAYOUTS[key].tracks.map(t => t[1]);
+  try { const w = JSON.parse(store.get('wl-w-' + key) || 'null'); if (Array.isArray(w) && w.length === def.length && w.every(x => x >= 50)) return w; } catch {}
+  return def;
+}
+let widths = widthsOf(layout);
+// the last track absorbs spare width so the card always fills the board
+const colsCSS = () => widths.map((w, i) => i === widths.length - 1 ? `minmax(${w}px, 1fr)` : `${w}px`).join(' ');
+const applyCols = () => $('boardin').style.setProperty('--cols', colsCSS());
+function applyFont(){ document.documentElement.style.setProperty('--fs', FS()); }
+
+{ const t = store.get('wl-theme'); if (t) document.documentElement.dataset.theme = t; }
+applyFont();
+$('theme').onclick = () => {
+  const cur = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.dataset.theme = cur === 'dark' ? 'light' : 'dark';
+  store.set('wl-theme', document.documentElement.dataset.theme);
+  drawCharts(); if ($('xp').open) xRender();
+};
+
+async function api(path, body){
+  const r = await fetch(path, body ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)} : {});
+  const j = await r.json().catch(() => ({error:`HTTP ${r.status}`}));
+  if (!r.ok || j.error) throw new Error(j.error || `HTTP ${r.status}`);
+  if (j.watchlist) WL = j.watchlist;
+  return j;
+}
+
+async function init(){
+  $('universe').innerHTML = EMBED.universe.map(([s,n]) => `<option value="${esc(s)}">${esc(n)}</option>`).join('');
+  if (location.protocol.startsWith('http')) { try { WL = await api('/api/watchlist'); LIVE = true; } catch {} }
+  setMode();
+  if (!LIVE) {
+    $('banner').hidden = false;
+    $('banner').innerHTML = 'This is a static snapshot, so changes can’t be saved. To create lists, add, edit, move or remove stocks and refresh data, run <b>python scripts/server.py</b> and open <b>http://localhost:8765/watchlist</b>.';
+    document.querySelectorAll('#addform input,#addform select,#addform button,#refresh,#enrich,#newlist input,#newlist button,#lh-rename,#lh-delete,#addtoggle').forEach(e => e.disabled = true);
+  } else pollJob(true);
+  const saved = store.get('wl-active');
+  active = saved && (saved === 'ALL' || listById(saved)) ? saved : 'ALL';
+  $('q').oninput = () => { q = $('q').value; renderBoard(); };
+  $('addtoggle').onclick = () => { const f = $('addform'); f.hidden = !f.hidden; $('addtoggle').setAttribute('aria-expanded', String(!f.hidden)); if (!f.hidden) $('a-sym').focus(); };
+  renderViewbar();
+  new ResizeObserver(debounce(drawCharts, 120)).observe($('board'));
+  render();
+}
+function debounce(fn, ms){ let t; return () => { clearTimeout(t); t = setTimeout(fn, ms); }; }
+function setMode(text, busy){
+  $('mode').textContent = text || (LIVE ? 'live · saves to data/watchlist/watchlist.json' : 'read-only snapshot');
+  $('mode').classList.toggle('live', LIVE && !busy); $('mode').classList.toggle('busy', !!busy);
+}
+
+function renderViewbar(){
+  $('v-layout').innerHTML = Object.entries(LAYOUTS).map(([k, L]) => `<button data-l="${k}" class="${k===layout?'on':''}" aria-pressed="${k===layout}">${L.name}</button>`).join('');
+  $('v-layout').querySelectorAll('button').forEach(b => b.onclick = () => { layout = b.dataset.l; store.set('wl-layout', layout); widths = widthsOf(layout); renderViewbar(); renderBoard(); });
+  $('v-font').innerHTML = FONTS.map(([k]) => `<button data-f="${k}" class="${k===font?'on':''}" aria-pressed="${k===font}" title="${{S:'Small',M:'Medium',L:'Large'}[k]} text">${k}</button>`).join('');
+  $('v-font').querySelectorAll('button').forEach(b => b.onclick = () => { font = b.dataset.f; store.set('wl-font', font); applyFont(); renderViewbar(); drawCharts(); });
+  $('v-reset').onclick = () => { store.set('wl-w-' + layout, ''); widths = widthsOf(layout); renderBoard(); };
+}
+
+// ── background enrichment job ──
+let polling = false;
+async function pollJob(quiet){
+  if (polling) return; polling = true;
+  try {
+    for (;;) {
+      const s = await (await fetch('/api/watchlist/enrich_status')).json();
+      if (!s.running) {
+        if (!quiet) { WL = await api('/api/watchlist'); xCache = {}; render(); setMode(`data refreshed ${when(s.finished)}`); setTimeout(() => setMode(), 6000); }
+        $('enrich').disabled = !LIVE; break;
+      }
+      quiet = false; $('enrich').disabled = true;
+      setMode('refreshing: ' + ((s.log||[]).slice(-1)[0] || 'starting…').replace(/^\S+ /,''), true);
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  } catch { setMode(); }
+  polling = false;
+}
+$('enrich').onclick = async () => {
+  try { await api('/api/watchlist/enrich', {}); pollJob(false); } catch (err) { alert(err.message); }
+};
+
+function setActive(id){ active = id; store.set('wl-active', id); render(); }
+
+function render(){
+  if (active !== 'ALL' && !listById(active)) active = 'ALL';
+  const uniq = new Set(WL.watchlists.flatMap(l => l.items.map(i=>i.symbol))).size;
+  $('tabs').innerHTML =
+    `<span class="tab ${active==='ALL'?'active':''}" data-id="ALL" role="button" tabindex="0">All lists<span class="n">${uniq}</span></span>` +
+    WL.watchlists.map(l => `<span class="tab ${l.id===active?'active':''}" data-id="${esc(l.id)}" role="button" tabindex="0">${esc(l.name)}<span class="n">${l.items.length}</span></span>`).join('');
+  $('tabs').querySelectorAll('.tab').forEach(el => { el.onclick = () => setActive(el.dataset.id); el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActive(el.dataset.id); } }; });
+  const prev = $('a-list').value;
+  $('a-list').innerHTML = WL.watchlists.map(l => `<option value="${esc(l.id)}">${esc(l.name)}</option>`).join('') || '<option value="">(create a list first)</option>';
+  $('a-list').value = active !== 'ALL' ? active : (listById(prev) ? prev : (WL.watchlists[0]||{}).id || '');
+  $('lh-rename').hidden = $('lh-delete').hidden = active === 'ALL';
+  renderBoard();
+}
+
+// ── chart series ──
+// d1: last session (5m) · w1: 5 sessions (15m) · y1: daily 1y · y5: daily 5y · all: weekly
+function seriesOf(c, range){
+  if (!c) return null;
+  const cut = (arr, days) => { if (!arr || !arr.length) return null; const t0 = arr[arr.length-1][0] - days*86400; return arr.filter(p => p[0] >= t0); };
+  const s = {'1D': () => c.d1, '1W': () => c.w1, '1M': () => cut(c.y1, 31), '3M': () => cut(c.y1, 92),
+             '1Y': () => c.y1, '5Y': () => c.y5 || cut(c.all, 5*366), 'All': () => c.all}[range]();
+  return s && s.length > 1 ? s : null;
+}
+// reference price for the % change: previous session close for 1D, first bar otherwise
+const refOf = (c, range, s) => range === '1D' && c.prev_close ? c.prev_close : s[0][1];
+const changeOf = (c, range) => { const s = seriesOf(c, range); return s ? (s[s.length-1][1] / refOf(c, range, s) - 1) * 100 : null; };
+const benchC = () => (WL.bench||{}).chart;
+
+function idxOf(s, t){
+  let lo = 0, hi = s.length - 1;
+  if (t <= s[0][0]) return 0; if (t >= s[hi][0]) return hi;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (s[m][0] <= t) lo = m; else hi = m; }
+  return lo + (t - s[lo][0]) / ((s[hi][0] - s[lo][0]) || 1);
+}
+
+// Draw at the svg's real pixel size (no stretching): x by time, or by bar index for
+// intraday so overnight gaps don't flatten the session.
+function drawLine(svg, c, range, w, h, withBench){
+  const s = seriesOf(c, range);
+  if (!s) { svg.innerHTML = ''; svg.setAttribute('height', 0); return; }
+  const fs = FS(), ref = refOf(c, range, s), intra = INTRADAY(range);
+  const padL = 2, padR = Math.round(44 * fs), padT = 6, padB = Math.round(13 * fs);
+  const t0 = s[0][0], t1 = s[s.length-1][0];
+  const X = t => padL + (intra ? idxOf(s, t) / (s.length-1) : (t - t0) / ((t1 - t0) || 1)) * (w - padL - padR);
+  let ov = null;
+  const bc = withBench ? benchC() : null, bs = bc ? seriesOf(bc, range) : null;
+  if (bs) {
+    const inWin = bs.filter(p => p[0] >= t0 - 1 && p[0] <= t1 + 86400*3);
+    if (inWin.length > 1) {
+      const bref = range === '1D' && bc.prev_close ? bc.prev_close : inWin[0][1];
+      ov = inWin.map(p => [p[0], ref * p[1] / bref]);            // NIFTY rebased to the stock's reference
+    }
+  }
+  const ys = s.map(p => p[1]).concat([ref], ov ? ov.map(p => p[1]) : []);
+  let lo = Math.min(...ys), hi = Math.max(...ys); const pad = (hi - lo) * 0.06 || hi * 0.01; lo -= pad; hi += pad;
+  const Y = v => padT + (1 - (v - lo) / (hi - lo)) * (h - padT - padB);
+  const path = pts => pts.map((p,i) => `${i?'L':'M'}${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join('');
+  const last = s[s.length-1][1], up = last >= ref, col = up ? 'var(--green)' : 'var(--red)';
+  const lx = X(s[s.length-1][0]), ly = Y(last);
+  const sHi = Math.max(...s.map(p=>p[1])), sLo = Math.min(...s.map(p=>p[1]));
+  const fmtT = t => { const d = new Date(t*1000); return range === '1D' ? d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
+    : range === '1W' ? d.toLocaleDateString('en-IN',{weekday:'short'}) : d.toLocaleDateString('en-IN', ['1M','3M'].includes(range) ? {day:'numeric',month:'short'} : {month:'short',year:'2-digit'}); };
+  const nT = w > 360 ? 5 : 3;
+  const ticks = Array.from({length:nT}, (_, k) => k/(nT-1)).map(f => { const i = Math.round(f*(s.length-1)); const x = X(s[i][0]);
+    return `<text x="${x}" y="${h-2}" font-size="${8.5*fs}" fill="var(--mu2)" text-anchor="${f===0?'start':f===1?'end':'middle'}">${fmtT(s[i][0])}</text>`; }).join('');
+  const lbl = (v, y, c2, b) => `<text x="${w-padR+4}" y="${Math.min(h-padB, Math.max(padT+7, y+3))}" font-size="${9*fs}" ${b?'font-weight="700"':''} fill="${c2}">${num(v, v<100?2:0)}</text>`;
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.setAttribute('width', w); svg.setAttribute('height', h);
+  svg.innerHTML =
+    `<line x1="${padL}" x2="${w-padR}" y1="${Y(ref)}" y2="${Y(ref)}" stroke="var(--bd2)" stroke-dasharray="2 3"/>` +
+    (ov ? `<path d="${path(ov)}" fill="none" stroke="var(--bench)" stroke-width="1.1" stroke-dasharray="3 2" opacity=".9"/>` : '') +
+    `<path d="${path(s)} L${lx},${h-padB} L${X(s[0][0])},${h-padB}Z" fill="${col}" opacity=".09"/>` +
+    `<path d="${path(s)}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linejoin="round"/>` +
+    `<circle cx="${lx}" cy="${ly}" r="2.2" fill="${col}"/>` +
+    (Y(sHi) < ly - 9 ? lbl(sHi, Y(sHi), 'var(--mu2)') : '') + (Y(sLo) > ly + 9 ? lbl(sLo, Y(sLo), 'var(--mu2)') : '') + lbl(last, ly, col, true) + ticks +
+    `<title>${esc(range)}: ${num(s[0][1])} → ${num(last)} (${pct((last/ref-1)*100,2)} vs ${range==='1D'?'prev close':'start'})${ov?' · dashed = NIFTY 50 rebased':''}</title>`;
+}
+
+// Size every chart svg to its cell: full width, and the card's height minus the chip bar.
+function drawCharts(){
+  const cells = [...document.querySelectorAll('.c.cc')];
+  cells.forEach(el => { const svg = el.querySelector('svg.cs'); if (svg) svg.setAttribute('height', 40); });
+  cells.forEach(el => {
+    const svg = el.querySelector('svg.cs'); if (!svg) return;
+    const cs = getComputedStyle(el), top = el.querySelector('.ctop'), cap = el.querySelector('.cap');
+    const w = Math.max(110, el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
+    const h = Math.max(60, el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
+                         - (top ? top.offsetHeight + 2 : 0) - (cap && cap.offsetParent ? cap.offsetHeight + 2 : 0));
+    const sym = el.dataset.sym, isBench = sym === '__bench';
+    const c = isBench ? benchC() : (WL.charts||{})[sym];
+    drawLine(svg, c, isBench ? benchRange : rangeOf(sym), Math.floor(w), Math.floor(Math.min(h, 320)), !isBench && overlay);
+  });
+}
+
+function entries(){
+  const rows = [], memberOf = {};
+  WL.watchlists.forEach(l => l.items.forEach(i => (memberOf[i.symbol] ||= []).push(l.name)));
+  for (const l of WL.watchlists) {
+    if (active !== 'ALL' && l.id !== active) continue;
+    for (const it of l.items) {
+      const qd = WL.quotes[it.symbol] || {}, e = E(it.symbol), h = it.holding, p = qd.price ?? null;
+      const r = {...it, listId:l.id, listName:l.name, q:qd, e, price:p, day:qd.day_change_pct ?? null, pe:qd.pe ?? null,
+                 mcap:qd.market_cap_cr ?? null, anTgt:qd.analyst_target ?? null, others:memberOf[it.symbol].filter(n => n !== l.name)};
+      r.toTarget = it.target && p ? (it.target/p - 1)*100 : null;
+      r.toStop = it.stop && p ? (it.stop/p - 1)*100 : null;
+      if (h && p != null) { r.invested = h.qty*h.avg_price; r.value = h.qty*p; r.pnl = r.value-r.invested; r.pnlPct = (p/h.avg_price-1)*100; }
+      else r.pnlPct = null;
+      r.nearTarget = r.toTarget != null && r.toTarget <= ALERT_PCT;
+      r.nearStop = r.toStop != null && r.toStop >= -ALERT_PCT;
+      const rg = rangeOf(it.symbol), c = (WL.charts||{})[it.symbol];
+      r.rangeChg = c ? changeOf(c, rg) : null;
+      const bch = benchC() ? changeOf(benchC(), rg) : null;
+      r.vsNifty = r.rangeChg != null && bch != null ? r.rangeChg - bch : null;
+      r.peVsInd = qd.pe && qd.industry_pe ? (qd.pe/qd.industry_pe-1)*100 : null;
+      r.promoter = (e.shareholding||{}).promoters ?? null;
+      r.qoq = (e.quarterly||{}).profit_qoq ?? null;
+      r.dl1 = (e.delivery||{}).d1 ?? null;
+      r.oiChg = (e.oi||{}).d1_pct ?? null;
+      r.newsN = ((e.news||{}).items||[]).length;
+      rows.push(r);
+    }
+  }
+  return rows;
+}
+
+// ── field renderers (inner HTML of a cell) ──
+const R = {
+  stock(r, isAll){
+    const pills = (isAll ? `<span class="pill list">${esc(r.listName)}</span>` : '') +
+                  (r.halal ? '<span class="pill halal">halal</span>' : '') +
+                  (r.sector ? `<span class="pill" title="${esc(r.sector)}">${esc(r.sector)}</span>` : '') +
+                  (r.verified === false ? '<span class="pill warn" title="Not found in data/stocks.csv and no quote — check the symbol">unverified</span>' : '') +
+                  (!isAll && r.others.length ? `<span class="pill list" title="Also in: ${esc(r.others.join(', '))}">+${r.others.length} list${r.others.length>1?'s':''}</span>` : '');
+    const key = `data-l="${esc(r.listId)}" data-s="${esc(r.symbol)}"`;
+    const acts = LIVE ? `<div class="acts"><button class="ico" data-act="edit" ${key} title="Edit target, stop, note" aria-label="Edit ${esc(r.symbol)}">✎</button>` +
+      `<button class="ico" data-act="move" ${key} ${WL.watchlists.length<2?'disabled':''} title="${WL.watchlists.length<2?'Create another list first':'Move or copy to another list'}" aria-label="Move ${esc(r.symbol)}">⇄</button>` +
+      `<button class="ico danger" data-act="del" ${key} title="Remove from this list" aria-label="Remove ${esc(r.symbol)}">✕</button></div>` : '';
+    return `<span class="sym" tabindex="0" data-pop="${esc(r.symbol)}">${esc(r.symbol)}</span><div class="nm" title="${esc(r.name)}">${esc(r.name)}</div><div>${pills}</div>` +
+      (r.note ? `<div class="unote" title="${esc(r.note)}">${esc(r.note)}</div>` : '') + acts;
+  },
+  price(r){
+    const qd = r.q;
+    return `<div class="big">${inr(r.price)}</div><div class="${cls(r.day)} b">${pct(r.day,2)}</div><div class="sub" title="${esc(qd.price_source ? qd.price_source+' · '+when(qd.price_as_of) : '')}">${esc(qd.price_source||'no quote')}</div>`;
+  },
+  chart(r){
+    const c = (WL.charts||{})[r.symbol];
+    if (!c) return `<div class="nochart">no chart yet — Refresh news &amp; data</div>`;
+    return `<div class="ctop">${rngChips(rangeOf(r.symbol), 'data-rr', c)}<span class="cchg ${cls(r.rangeChg)}">${pct(r.rangeChg)}</span>` +
+      (r.vsNifty != null ? `<span class="vsn" title="Stock change minus NIFTY 50 change over the same range">vs N <span class="${cls(r.vsNifty)}">${r.vsNifty>0?'+':''}${r.vsNifty.toFixed(1)}pp</span></span>` : '') +
+      `<button class="ico exp" data-xp="${esc(r.symbol)}" title="Open chart explorer (candles, volume, indicators)" aria-label="Open chart explorer for ${esc(r.symbol)}">⤢</button></div>` +
+      `<svg class="cs" role="img" aria-label="${esc(r.symbol)} price chart"></svg>`;
+  },
+  hold(r){
+    return r.holding ? `<span class="${cls(r.pnl)} b">${pct(r.pnlPct)}</span><div class="sub">${r.holding.qty} @ ${inr(r.holding.avg_price)}</div><div class="sub ${cls(r.pnl)}">${r.pnl!=null?(r.pnl>=0?'+':'−')+inr(Math.abs(r.pnl),0):''}</div>` : '<span class="mu">not held</span>';
+  },
+  lvl(r){
+    const one = (lbl, v, d, near) => v ? `<div>${lbl} ${inr(v)} <span class="sub ${near?'alert':''}">${pct(d)}</span></div>` : '';
+    return (one('T', r.target, r.toTarget, r.nearTarget) + one('S', r.stop, r.toStop, r.nearStop)) || '<span class="mu">— set via ✎</span>';
+  },
+  pe(r){
+    const qd = r.q;
+    if (qd.pe == null) return '<span class="mu">—</span>' + (qd.industry_pe ? `<div class="sub">ind ${qd.industry_pe.toFixed(1)}</div>` : '');
+    const prem = r.peVsInd;
+    return `<b>${qd.pe.toFixed(1)}</b> <span class="mu">/</span> ${qd.industry_pe!=null?qd.industry_pe.toFixed(1):'—'}` +
+      (prem!=null ? `<div class="sub ${prem>0?'neg':'pos'}" title="P/E vs industry P/E">${prem>0?'premium':'discount'} ${Math.abs(prem).toFixed(0)}%</div>` : '');
+  },
+  share(r){
+    const s = r.e.shareholding; if (!s) return '<span class="mu">—</span>';
+    const segs = SH.filter(([k]) => s[k] > 0);
+    const tip = segs.map(([k,l]) => `${l}: ${s[k].toFixed(2)}%` + (s[k+'_prev']!=null ? ` (${(s[k]-s[k+'_prev']>=0?'+':'')}${(s[k]-s[k+'_prev']).toFixed(2)} vs ${s.prev_period||'prev'})` : '')).join('\n') + `\n${s.period} · ${s.source}`;
+    const bar = segs.map(([k,l,c,ab]) => `<span style="width:${s[k]}%;background:var(${c})">${s[k]>=20?ab+' '+s[k].toFixed(0):''}</span>`).join('');
+    const leg = segs.map(([k,l,c]) => `<i style="background:var(${c})"></i>${l} ${s[k].toFixed(1)}`).join(' ');
+    const dp = s.promoters_prev!=null ? s.promoters - s.promoters_prev : null;
+    return `<div class="shbar" title="${esc(tip)}" role="img" aria-label="${esc(tip)}">${bar}</div><div class="shleg">${leg}</div>` +
+      `<div class="sub">${esc(s.period||'')}${dp!=null&&Math.abs(dp)>=0.01?` · promoter <span class="${cls(dp)}">${dp>0?'+':''}${dp.toFixed(2)}</span>`:''}${s.source.startsWith('NSE')?' · NSE (no FII/DII split)':''}</div>`;
+  },
+  qtr(r){
+    const qt = r.e.quarterly;
+    if (!qt) return `<span class="mu">—</span><div class="sub">${r.q.earnings_date ? 'next: '+esc(r.q.earnings_date) : 'Groww import needed'}</div>`;
+    const tip = `${qt.period} vs ${qt.prev_period} (${qt.unit})\nRevenue ${qt.revenue} vs ${qt.revenue_prev}\nNet profit ${qt.profit} vs ${qt.profit_prev}\nOPM ${qt.opm}% (was ${qt.opm_prev}%)` + (qt.yoy_period?`\nYoY vs ${qt.yoy_period}: revenue ${pct(qt.revenue_yoy)}, profit ${pct(qt.profit_yoy)}`:'');
+    return `<div title="${esc(tip)}"><div class="sub b">${esc(qt.period)}</div>
+      <div>Rev <span class="${cls(qt.revenue_qoq)} b">${pct(qt.revenue_qoq)}</span></div><div>PAT <span class="${cls(qt.profit_qoq)} b">${pct(qt.profit_qoq)}</span></div>
+      ${qt.yoy_period?`<div class="sub">YoY rev ${pct(qt.revenue_yoy)} · PAT ${pct(qt.profit_yoy)}</div>`:''}
+      <div title="Net profit, last ${qt.series.periods.length} quarters">${bars(qt.series.profit)}</div></div>`;
+  },
+  dl(r){
+    const d = r.e.delivery; if (!d) return '<span class="mu">—</span>';
+    const row = (k,v) => `<span class="k">${k}</span><span class="bar"><b style="width:${Math.min(100,v||0)}%"></b></span><span class="v">${v==null?'—':v.toFixed(1)+'%'}</span>`;
+    return `<div class="dl" title="Delivery as % of traded volume (NSE bhavcopy). 1W/1M are volume-weighted.">${row('1D',d.d1)}${row('1W',d.w1)}${row('1M',d.m1)}</div>` +
+      `<div class="sub">${dshort(d.date)}${d.spike?' · <span class="alert">1D spike</span>':''} · vol ${qty(d.vol_d1)}</div>` +
+      (d.series && d.series !== 'EQ' ? `<div class="sub" title="Trade-for-trade (${esc(d.series)} series): every trade settles by delivery">T2T (${esc(d.series)}) · all delivered</div>` : '');
+  },
+  oi(r){
+    const e = r.e;
+    if (!('oi' in e)) return '<span class="mu">—</span>';
+    if (e.oi === null) return '<span class="mu">not in F&amp;O</span>';
+    const o = e.oi;
+    return `<b>${qty(o.oi)}</b> <span class="${cls(o.d1_pct)}">${pct(o.d1_pct)}</span>` +
+      (o.buildup ? `<div class="${BUILD[o.buildup]} b">${o.buildup}</div>` : '') +
+      `<div class="sub">1W ${pct(o.w1_pct)} · 1M ${pct(o.m1_pct)} · ${dshort(o.date)}</div>`;
+  },
+  an(r){
+    const qd = r.q, tn = (r.e.target_news||{}).items || [];
+    const head = r.anTgt ? `<b>${inr(r.anTgt,0)}</b> <span class="${cls(r.price?(r.anTgt/r.price-1):null)}">${r.price?pct((r.anTgt/r.price-1)*100):''}</span>` +
+      `<div class="sub">${esc((qd.analyst_rating||'').replace(/_/g,' '))}${qd.n_analysts?' · '+qd.n_analysts+' analysts':''} · ${ext(`https://stockanalysis.com/quote/nse/${encodeURIComponent(r.symbol)}/forecast/`,'consensus ↗')}</div>`
+      : `<span class="mu">no consensus</span>`;
+    const arts = tn.slice(0,3).map(a => `<li>${ext(a.url, `${a.target?`<b>${inr(a.target,0)}</b> · `:''}${esc(a.title)}`)}<div class="sub">${esc(a.source)} · ${ago(a.published)}</div></li>`).join('');
+    return `<div class="tg">${head}${arts?`<ul>${arts}</ul>`:'<div class="sub">no target-price articles in 120 days</div>'}</div>`;
+  },
+  news(r){
+    const e = r.e, items = (e.news||{}).items || [], tr = e.triggers || {};
+    const nShow = 3;    // structured layout lays these 3 side by side in the news strip
+    const evts = (tr.events||[]).map(v => ext(v.url, `<span class="evt" title="${esc(v.detail)}">⏱ ${dshort(v.date)} · ${esc(v.label.length>30?v.label.slice(0,30)+'…':v.label)}</span>`)).join('');
+    const ed = r.q.earnings_date && !(tr.events||[]).some(v=>v.kind==='board meeting') ? `<span class="evt" title="stockanalysis.com earnings date">⏱ results ${esc(r.q.earnings_date)}</span>` : '';
+    const li = a => `<li>${ext(a.url, esc(a.title))}<div class="meta">${esc(a.source)} · ${ago(a.published)}${a.tags.map(t=>`<span class="pill tag">${esc(t)}</span>`).join('')}</div></li>`;
+    const more = items.length > nShow ? `<details><summary>${items.length-nShow} more</summary><ul>${items.slice(nShow).map(li).join('')}</ul></details>` : '';
+    if (!items.length && !evts && !ed) return `<span class="mu">${e.news ? 'no news in 30 days' : 'not fetched yet'}</span>`;
+    return `<div class="news">${evts}${ed}${items.length?`<ul>${items.slice(0,nShow).map(li).join('')}</ul>${more}`:'<div class="sub">no news in 30 days</div>'}</div>`;
+  },
+};
+const SH = [['promoters','Promoter','--sh-pro','P'],['fii','FII','--sh-fii','FII'],['dii','DII','--sh-dii','DII'],['public','Public','--sh-pub','Pub'],['others','Others','--sh-oth','Oth']];
+const BUILD = {'long buildup':'pos','short covering':'pos','short buildup':'neg','long unwinding':'neg'};
+function bars(vals){
+  const v = vals.filter(x=>x!=null); if (v.length<2) return '';
+  const mx = Math.max(...v.map(Math.abs)) || 1, w = 8;
+  return `<svg width="${vals.length*(w+2)}" height="18" aria-hidden="true">${vals.map((x,i)=>x==null?'':`<rect x="${i*(w+2)}" y="${18-Math.max(1,Math.abs(x)/mx*16)}" width="${w}" height="${Math.max(1,Math.abs(x)/mx*16)}" rx="1.5" fill="${x<0?'var(--red)':i===vals.length-1?'var(--ac)':'var(--bd2)'}"/>`).join('')}</svg>`;
+}
+function rngChips(cur, attr, c){
+  return `<span class="rng">${RANGES.map(x=>`<button type="button" ${attr}="${x}" class="${x===cur?'on':''}" ${c && !seriesOf(c,x)?'disabled':''}>${x}</button>`).join('')}</span>`;
+}
+
+// grid-template-areas for a layout, plus where each field sits (first line / last track)
+// single-quoted: these strings go inside a double-quoted style="" attribute
+function areasOf(L){ return L.lines.map(line => `'${line.join(' ')}'`).join(' '); }
+function placement(L){
+  const p = {}; const nT = L.tracks.length;
+  L.lines.forEach((line, li) => line.forEach((f, ti) => { p[f] ||= {line:li, track:ti, lastTrack:false}; if (ti === nT-1) p[f].lastTrack = true; }));
+  return p;
+}
+
+// one card row per stock: every field becomes a grid cell placed by name
+function cardRow(r, isAll, L, P){
+  const fields = [...new Set(L.lines.flat())];
+  const cells = fields.map(f => {
+    const meta = FIELDS[f], pl = P[f];
+    const klass = `c c-${f}${meta.num?' num':''}${f==='chart'?' cc':''}${pl.line===0?' first-line':''}${pl.lastTrack?' last-track':''}`;
+    return `<div class="${klass}" style="grid-area:${f}" ${f==='chart'?`data-sym="${esc(r.symbol)}"`:''}><div class="cap">${meta.label}</div>${R[f](r, isAll)}</div>`;
+  }).join('');
+  return `<div class="srow" style="grid-template-areas:${areasOf(L)}">${cells}</div>`;
+}
+
+// ── NIFTY 50 benchmark card (same tracks: name | chart | summary across the rest) ──
+function benchRow(rows, L){
+  const b = WL.bench, c = b && b.chart, nT = L.tracks.length;
+  const chartT = L.lines[0].indexOf('chart');
+  const all = `'${Array(nT).fill('all').join(' ')}'`;
+  if (!c) return `<div class="srow bench" style="grid-template-areas:${all}"><div class="c first-line last-track" style="grid-area:all"><span class="mu">NIFTY 50 benchmark: no data yet — Refresh news &amp; data</span></div></div>`;
+  const last = (c.d1 || c.y1 || c.all).slice(-1)[0][1], day = c.prev_close ? (last / c.prev_close - 1) * 100 : null;
+  const chg = changeOf(c, benchRange);
+  const toggle = `<button class="btoggle" id="btoggle" aria-expanded="${benchOpen}" title="${benchOpen?'Collapse':'Expand'} the NIFTY 50 row">${benchOpen?'▾':'▸'}</button>`;
+  if (!benchOpen) return `<div class="srow bench" style="grid-template-areas:${all}"><div class="c first-line last-track" style="grid-area:all">${toggle}<span class="bname">NIFTY 50</span> ${num(last)} <span class="${cls(day)}">${pct(day,2)}</span> · ${benchRange} <span class="${cls(chg)}">${pct(chg)}</span></div></div>`;
+  const areas = `'${Array.from({length:nT}, (_, i) => i < chartT ? 'bn' : i === chartT ? 'chart' : 'sum').join(' ')}'`;
+  const rel = [...new Map(rows.filter(r => r.vsNifty != null).map(r => [r.symbol, r])).values()];
+  const beat = rel.filter(r => r.vsNifty > 0), best = [...rel].sort((a,b)=>b.vsNifty-a.vsNifty);
+  return `<div class="srow bench" style="grid-template-areas:${areas}">
+    <div class="c first-line" style="grid-area:bn">${toggle}<span class="bname">NIFTY 50</span><div class="sub">benchmark · ^NSEI</div>
+      <div class="big" style="margin-top:4px">${num(last)}</div><div class="${cls(day)} b">${pct(day,2)}</div></div>
+    <div class="c cc first-line" style="grid-area:chart" data-sym="__bench"><div class="ctop">${rngChips(benchRange, 'data-br', c)}<span class="cchg ${cls(chg)}">${pct(chg)}</span>
+      <button class="ico exp" data-xp="NIFTY50" title="Open NIFTY 50 in the chart explorer" aria-label="Open NIFTY 50 chart explorer">⤢</button></div><svg class="cs" role="img" aria-label="NIFTY 50 chart"></svg></div>
+    <div class="c first-line last-track" style="grid-area:sum"><div class="bsum">
+      <label class="chk" style="display:inline-flex;margin-bottom:4px"><input type="checkbox" id="ovl" ${overlay?'checked':''}> Overlay NIFTY 50 (dashed, rebased) on every stock chart</label><br>
+      <b>${beat.length}</b> of ${rel.length} stocks beating NIFTY 50 over their selected chart range${rel.length ? ` · best <b class="pos">${esc(best[0].symbol)}</b> ${best[0].vsNifty>0?'+':''}${best[0].vsNifty.toFixed(1)}pp · worst <b class="neg">${esc(best[best.length-1].symbol)}</b> ${best[best.length-1].vsNifty.toFixed(1)}pp` : ''}<br>
+      <span class="sub">52W ${num(c.lo52)} – ${num(c.hi52)} · ${pct((last/c.hi52-1)*100)} from high · ${esc((c.source||'').replace(' via yfinance',''))} · fetched ${when(c.as_of)}</span></div></div></div>`;
+}
+
+// header: one cell per track listing (sortable) the fields stacked in that track, plus a resize handle
+function renderHead(L){
+  $('shead').innerHTML = L.tracks.map(([name], ti) => {
+    // a field spanning several tracks (e.g. the news strip) is labelled under the LAST track it covers
+    const lastTrack = f => Math.max(...L.lines.map(line => line.lastIndexOf(f)));
+    const fs = [...new Set(L.lines.map(line => line[ti]))].filter(f => lastTrack(f) === ti);
+    const keys = fs.map(f => `<span class="sk ${FIELDS[f].sort===sortK?'sorted':''}" data-k="${FIELDS[f].sort}" data-dir="${sortD>0?'▲':'▼'}" role="button" tabindex="0" title="Sort by ${esc(FIELDS[f].label)}">${esc(FIELDS[f].label)}</span>`).join('');
+    const chips = fs.includes('chart') ? `<div><span class="rng" id="rng" title="Set every chart's range">${RANGES.map(x=>`<button type="button" data-r="${x}" class="${x===chartRange?'on':''}">${x}</button>`).join('')}</span></div>` : '';
+    const showName = L.lines.length > 1 && !(fs.length === 1 && FIELDS[fs[0]].label === name);
+    return `<div class="hcell">${showName ? `<span class="tname">${esc(name)}</span>` : ''}<div class="keys">${keys}</div>${chips}<div class="rz" data-t="${ti}" role="separator" aria-orientation="vertical" aria-label="Resize ${esc(name)} column" tabindex="0"></div></div>`;
+  }).join('');
+  $('shead').querySelectorAll('.sk').forEach(el => {
+    const go = () => { const k = el.dataset.k; if (sortK === k) sortD *= -1; else { sortK = k; sortD = k === 'symbol' ? 1 : -1; } renderBoard(); };
+    el.onclick = go; el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
+  });
+  const rg = $('rng'); if (rg) rg.querySelectorAll('button').forEach(b => b.onclick = () => {
+    chartRange = b.dataset.r; rowRange = {}; benchRange = chartRange;
+    store.set('wl-range', chartRange); store.set('wl-rowrange', '{}'); store.set('wl-brange', benchRange); renderBoard();
+  });
+  $('shead').querySelectorAll('.rz').forEach(h => {
+    const ti = +h.dataset.t;
+    h.onpointerdown = e => {
+      e.preventDefault(); h.setPointerCapture(e.pointerId); h.classList.add('on');
+      const x0 = e.clientX, w0 = widths[ti];
+      h.onpointermove = ev => { widths[ti] = Math.max(60, Math.round(w0 + ev.clientX - x0)); applyCols(); };
+      h.onpointerup = () => { h.classList.remove('on'); h.onpointermove = h.onpointerup = null; store.set('wl-w-' + layout, JSON.stringify(widths)); drawCharts(); };
+    };
+    h.onkeydown = e => {   // keyboard resize: ← / → in 10px steps
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault(); widths[ti] = Math.max(60, widths[ti] + (e.key === 'ArrowRight' ? 10 : -10)); applyCols();
+      store.set('wl-w-' + layout, JSON.stringify(widths)); drawCharts();
+    };
+  });
+}
+
+function renderBoard(){
+  const isAll = active === 'ALL', L = LAYOUTS[layout], P = placement(L);
+  $('boardin').className = 'board-in layout-' + layout;
+  applyCols(); renderHead(L);
+
+  let rows = entries();
+  const all = rows.length;
+  if (q) rows = rows.filter(r => (r.symbol+' '+r.name+' '+(r.note||'')).toLowerCase().includes(q.toLowerCase()));
+  rows.sort((a,b) => {
+    const av = a[sortK], bv = b[sortK];
+    if (av == null && bv == null) return a.symbol.localeCompare(b.symbol);
+    if (av == null) return 1; if (bv == null) return -1;
+    return typeof av === 'string' ? sortD*av.localeCompare(bv) || a.symbol.localeCompare(b.symbol) : sortD*(av-bv);
+  });
+
+  const seen = new Set(), held = rows.filter(r => r.invested != null && !seen.has(r.symbol) && seen.add(r.symbol));
+  const inv = held.reduce((s,r)=>s+r.invested,0), val = held.reduce((s,r)=>s+r.value,0);
+  const uq = [...new Map(rows.map(r=>[r.symbol,r])).values()];
+  const priced = uq.filter(r => r.day != null);
+  const alerts = rows.filter(r => r.nearTarget || r.nearStop);
+  const upcoming = uq.filter(r => (r.e.triggers||{}).events?.length);
+  const spikes = uq.filter(r => (r.e.delivery||{}).spike);
+  $('tiles').innerHTML = [
+    {v:uq.length, l:'Stocks', s: `${uq.filter(r=>r.price==null).length || 'all'} ${uq.filter(r=>r.price==null).length?'without a price':'priced'}`},
+    held.length ? {v:inr(val,0), l:'Holdings value', s:`invested ${inr(inv,0)}`} : null,
+    held.length ? {v:`<span class="${cls(val-inv)}">${val-inv>=0?'+':'−'}${inr(Math.abs(val-inv),0)}</span>`, l:'Holdings P&L', s:`<span class="${cls(val-inv)}">${pct(inv?(val/inv-1)*100:null,2)}</span> on ${held.length} positions`} : null,
+    {v:`<span class="pos">${priced.filter(r=>r.day>0).length}</span> / <span class="neg">${priced.filter(r=>r.day<0).length}</span>`, l:'Up / down last session', s:`${priced.length} with day change`},
+    {v:upcoming.length, l:'Upcoming triggers', s: upcoming.map(r=>r.symbol).join(', ') || 'none found'},
+    {v:spikes.length, l:'Delivery spikes (1D ≥ 1.5× 1M)', s: spikes.map(r=>r.symbol).join(', ') || 'none'},
+    {v:`<span class="${alerts.length?'alert':''}">${alerts.length}</span>`, l:`Within ${ALERT_PCT}% of target/stop`, s: alerts.map(r=>r.symbol).join(', ') || 'none'},
+  ].filter(Boolean).map(t => `<div class="card tile"><div class="v">${t.v}</div><div class="l">${t.l}</div><div class="s">${t.s}</div></div>`).join('');
+
+  $('rows').innerHTML = benchRow(rows, L) + (rows.map(r => cardRow(r, isAll, L, P)).join('') ||
+    `<div class="empty">${all ? 'No stocks match this filter.' : WL.watchlists.length ? 'This list is empty. Use “+ Add stock”.' : 'No watchlists yet. Create one with “+ New list”, then add stocks.'}</div>`);
+
+  const rb = $('rows');
+  rb.querySelectorAll('[data-act]').forEach(b => b.onclick = () => ({edit:openEdit, move:openMove, del:delEntry})[b.dataset.act](b.dataset.l, b.dataset.s));
+  rb.querySelectorAll('[data-rr]').forEach(b => b.onclick = () => {
+    const sym = b.closest('.cc').dataset.sym; rowRange[sym] = b.dataset.rr; store.set('wl-rowrange', JSON.stringify(rowRange)); renderBoard(); });
+  rb.querySelectorAll('[data-br]').forEach(b => b.onclick = () => { benchRange = b.dataset.br; store.set('wl-brange', benchRange); renderBoard(); });
+  rb.querySelectorAll('[data-xp]').forEach(b => b.onclick = () => openExplorer(b.dataset.xp));
+  const bt = $('btoggle'); if (bt) bt.onclick = () => { benchOpen = !benchOpen; store.set('wl-bench', benchOpen ? '1' : '0'); renderBoard(); };
+  const ov = $('ovl'); if (ov) ov.onchange = () => { overlay = ov.checked; store.set('wl-overlay', overlay ? '1' : '0'); drawCharts(); };
+  rb.querySelectorAll('[data-pop]').forEach(el => { el.onmouseenter = el.onfocus = () => showPop(el); el.onmouseleave = el.onblur = hidePop; });
+  drawCharts();
+
+  const seeded = WL.seeded_from ? `“Groww holdings” seeded from ${esc(WL.seeded_from.source)} (${when(WL.seeded_from.as_of)}). ` : '';
+  $('foot').innerHTML = `${seeded}Sources: prices & fundamentals — Groww MCP imports or stockanalysis.com; shareholding & quarterly results — Groww (NSE promoter/public fallback); delivery % & OI — NSE bhavcopy archives; triggers — NSE event calendar & corporate actions; news & target articles — Google News; charts — Yahoo Finance (5-min intraday, daily, weekly; 1D change is vs previous close). Hover a symbol for fundamentals; ⤢ opens the chart explorer. Last edit ${when(WL.updated) || '—'} · rendered ${when(WL.generated)}. Not investment advice.`;
+}
+
+// ── fundamentals popover ──
+let popAt = 0;
+function showPop(el){
+  const sym = el.dataset.pop, it = WL.watchlists.flatMap(l=>l.items).find(i=>i.symbol===sym) || {};
+  const qd = WL.quotes[sym] || {}, e = E(sym), ch = (WL.charts||{})[sym] || {}, sh = e.shareholding, qt = e.quarterly;
+  const f = (v,d=2,suf='') => v==null ? '—' : Number(v).toFixed(d)+suf;
+  const cells = [
+    ['Mkt cap', mcap(qd.market_cap_cr)], ['P/E', f(qd.pe,1)], ['Industry P/E', f(qd.industry_pe,1)],
+    ['P/B', f(qd.pb)], ['ROE', f(qd.roe,1,'%')], ['EPS (TTM)', qd.eps_ttm!=null?'₹'+f(qd.eps_ttm):'—'],
+    ['Div yield', f(qd.div_yield,2,'%')], ['Debt / equity', f(qd.debt_to_equity)], ['Book value', inr(qd.book_value)],
+    ['52W high', inr(ch.hi52)], ['52W low', inr(ch.lo52)], ['From 52W high', ch.hi52&&qd.price?pct((qd.price/ch.hi52-1)*100):'—'],
+    ['Promoter', sh?f(sh.promoters,2,'%'):'—'], ['Last qtr PAT', qt?`₹${qt.profit} Cr`:'—'], ['OPM', qt?f(qt.opm,1,'%'):'—'],
+  ];
+  $('pop').innerHTML = `<h4>${esc(sym)}</h4><div class="pn">${esc(it.name||'')}${it.sector?' · '+esc(it.sector):''}</div>
+    <div class="g">${cells.map(([l,v])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div>
+    <div class="ft">Fundamentals: ${esc(qd.price_source||'—')} · ${when(qd.price_as_of)}${qd.analyst_rating?` · consensus ${esc(qd.analyst_rating.replace(/_/g,' '))}`:''}</div>`;
+  const r = el.getBoundingClientRect(), pop = $('pop'), W = pop.offsetWidth || 330;
+  let x = r.right + 10, y = r.top - 8;
+  if (x + W > innerWidth - 8) x = Math.max(8, r.left - W - 10);
+  pop.style.left = x + 'px'; pop.style.top = Math.max(8, Math.min(y, innerHeight - pop.offsetHeight - 8)) + 'px';
+  pop.classList.add('on'); popAt = Date.now();
+}
+function hidePop(){ $('pop').classList.remove('on'); }
+document.addEventListener('scroll', () => { if (Date.now() - popAt > 200) hidePop(); }, true);
+
+// ── chart explorer (TradingView lightweight-charts, loaded on first use) ──
+const LWC_URL = 'https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';
+let lwcP = null, xCache = {}, xSym = null, xRange = '1Y', xType = 'candle', xCharts = [];
+const IST = 19800;   // lightweight-charts renders UTC; shift so the axis reads IST
+function loadLWC(){
+  if (window.LightweightCharts) return Promise.resolve();
+  return lwcP ||= new Promise((ok, bad) => { const s = document.createElement('script'); s.src = LWC_URL; s.onload = ok; s.onerror = () => { lwcP = null; bad(new Error('Could not load the charting library (needs internet).')); }; document.head.appendChild(s); });
+}
+async function ohlc(sym){
+  if (xCache[sym]) return xCache[sym];
+  if (EMBED.ohlc && EMBED.ohlc[sym]) return xCache[sym] = EMBED.ohlc[sym];
+  if (!LIVE) throw new Error('No OHLC data in this snapshot — rebuild with build_watchlist.py build');
+  const r = await fetch('/api/watchlist/ohlc?symbol=' + encodeURIComponent(sym)); const j = await r.json();
+  if (!r.ok || j.error) throw new Error(j.error || 'HTTP ' + r.status);
+  return xCache[sym] = j;
+}
+async function openExplorer(sym){
+  xSym = sym; xRange = sym === 'NIFTY50' ? benchRange : rangeOf(sym);
+  const it = WL.watchlists.flatMap(l=>l.items).find(i=>i.symbol===sym);
+  $('x-title').textContent = sym === 'NIFTY50' ? 'NIFTY 50' : sym;
+  $('x-name').textContent = sym === 'NIFTY50' ? 'benchmark index' : (it ? it.name : '');
+  $('x-tv').href = 'https://www.tradingview.com/chart/?symbol=' + encodeURIComponent(sym === 'NIFTY50' ? 'NSE:NIFTY' : 'NSE:' + sym);
+  $('x-rng').innerHTML = RANGES.map(x => `<button data-x="${x}" class="${x===xRange?'on':''}">${x}</button>`).join('');
+  $('x-rng').querySelectorAll('button').forEach(b => b.onclick = () => { xRange = b.dataset.x; $('x-rng').querySelectorAll('button').forEach(z => z.classList.toggle('on', z === b)); xRender(); });
+  $('xp').showModal(); $('x-msg').style.display = 'flex'; $('x-msg').textContent = 'Loading chart…';
+  try { await Promise.all([loadLWC(), ohlc(sym), benchC() ? ohlc('NIFTY50').catch(() => null) : null]); xRender(); }
+  catch (err) { $('x-msg').textContent = err.message; }
+}
+$('x-close').onclick = () => $('xp').close();
+$('xp').addEventListener('close', () => { xCharts.forEach(c => c.remove()); xCharts = []; });
+$('x-type').querySelectorAll('button').forEach(b => b.onclick = () => { xType = b.dataset.t; $('x-type').querySelectorAll('button').forEach(z => z.classList.toggle('on', z === b)); xRender(); });
+document.querySelectorAll('[data-ind]').forEach(c => c.onchange = () => xRender());
+
+const SMA = (v, n) => v.map((_, i) => i < n-1 ? null : v.slice(i-n+1, i+1).reduce((a,b)=>a+b,0)/n);
+const EMA = (v, n) => { const k = 2/(n+1), o = []; let e = null; v.forEach((x,i) => { if (i < n-1) { o.push(null); return; } e = e == null ? v.slice(0,n).reduce((a,b)=>a+b,0)/n : x*k + e*(1-k); o.push(e); }); return o; };
+const STD = (v, n) => v.map((_, i) => { if (i < n-1) return null; const w = v.slice(i-n+1, i+1), m = w.reduce((a,b)=>a+b,0)/n; return Math.sqrt(w.reduce((a,b)=>a+(b-m)**2,0)/n); });
+function RSI(v, n=14){
+  const o = Array(v.length).fill(null); let g = 0, l = 0;
+  for (let i = 1; i < v.length; i++) {
+    const d = v[i]-v[i-1], up = Math.max(d,0), dn = Math.max(-d,0);
+    if (i <= n) { g += up; l += dn; if (i === n) { g /= n; l /= n; o[i] = l === 0 ? 100 : 100 - 100/(1+g/l); } }
+    else { g = (g*(n-1)+up)/n; l = (l*(n-1)+dn)/n; o[i] = l === 0 ? 100 : 100 - 100/(1+g/l); }
+  }
+  return o;
+}
+
+function xRender(){
+  const raw = xCache[xSym]; if (!raw || !window.LightweightCharts) return;
+  xCharts.forEach(c => c.remove()); xCharts = [];
+  // intraday ranges use 5-min bars, 1M–5Y daily, All weekly; indicators run on the whole set
+  const set = INTRADAY(xRange) ? raw.i5 : xRange === 'All' ? raw.w : raw.d;
+  if (!set || set.length < 2) { $('x-msg').style.display = 'flex'; $('x-msg').textContent = `No ${xRange} data for ${xSym}.`; return; }
+  $('x-msg').style.display = 'none';
+  const t = set.map(r => r[0] + IST), o = set.map(r=>r[1]), h = set.map(r=>r[2]), l = set.map(r=>r[3]), c = set.map(r=>r[4]), v = set.map(r=>r[5]);
+  const last = c[c.length-1];
+  const dayOf = ts => new Date(ts*1000 + IST*1000).toISOString().slice(0,10);
+  const lastDay = dayOf(set[set.length-1][0]);
+  const winStart = {'1D': set.findIndex(r => dayOf(r[0]) === lastDay), '1W': 0,
+                    '1M': t.findIndex(x => x >= t[t.length-1] - 31*86400), '3M': t.findIndex(x => x >= t[t.length-1] - 92*86400),
+                    '1Y': t.findIndex(x => x >= t[t.length-1] - 366*86400), '5Y': 0, 'All': 0}[xRange];
+  const ref = xRange === '1D' && raw.d ? (raw.d.filter(r => dayOf(r[0]) < lastDay).slice(-1)[0] || [])[4] : c[Math.max(0, winStart)];
+  const chg = ref ? (last/ref - 1) * 100 : null;
+  $('x-px').textContent = num(last); $('x-chg').innerHTML = `<span class="${cls(chg)} b">${pct(chg,2)}</span> <span class="mu">${xRange}${xRange==='1D'?' vs prev close':''}</span>`;
+  const on = k => document.querySelector(`[data-ind="${k}"]`).checked;
+  const mu = css('--mu'), bd = css('--bd'), sf = css('--sf'), up = css('--green'), dn = css('--red');
+  const base = {autoSize:true, layout:{background:{type:'solid', color:sf}, textColor:mu, fontSize:11},
+    grid:{vertLines:{color:bd+'55'}, horzLines:{color:bd+'55'}}, rightPriceScale:{borderColor:bd},
+    timeScale:{borderColor:bd, timeVisible: INTRADAY(xRange), secondsVisible:false, rightOffset:3}, crosshair:{mode:0}};
+  const main = LightweightCharts.createChart($('xmain'), base); xCharts.push(main);
+  const ser = xType === 'candle'
+    ? main.addCandlestickSeries({upColor:up, downColor:dn, borderUpColor:up, borderDownColor:dn, wickUpColor:up, wickDownColor:dn})
+    : main.addAreaSeries({lineColor:css('--ac'), topColor:css('--ac')+'40', bottomColor:css('--ac')+'05', lineWidth:2});
+  ser.setData(xType === 'candle' ? t.map((x,i) => ({time:x, open:o[i], high:h[i], low:l[i], close:c[i]})) : t.map((x,i) => ({time:x, value:c[i]})));
+  const line = (vals, color, w=1.5, opts={}) => { const s = main.addLineSeries({color, lineWidth:w, priceLineVisible:false, lastValueVisible:false, crosshairMarkerVisible:false, ...opts}); s.setData(t.map((x,i) => vals[i]==null ? {time:x} : {time:x, value:vals[i]})); return s; };
+  if (on('sma20')) line(SMA(c,20), '#f59e0b');
+  if (on('sma50')) line(SMA(c,50), '#3b82f6');
+  if (on('sma200')) line(SMA(c,200), '#a855f7');
+  if (on('ema20')) line(EMA(c,20), '#ec4899');
+  if (on('bb')) { const m = SMA(c,20), sd = STD(c,20); line(m.map((x,i)=>x==null?null:x+2*sd[i]), '#14b8a6', 1); line(m, '#14b8a6', 1, {lineStyle:2}); line(m.map((x,i)=>x==null?null:x-2*sd[i]), '#14b8a6', 1); }
+  if (on('nifty') && xSym !== 'NIFTY50' && xCache.NIFTY50) {
+    const bset = INTRADAY(xRange) ? xCache.NIFTY50.i5 : xRange === 'All' ? xCache.NIFTY50.w : xCache.NIFTY50.d;
+    if (bset) {
+      const bmap = new Map(bset.map(r => [r[0] + IST, r[4]])); const i0 = Math.max(0, winStart);
+      let b0 = null; for (let i = i0; i < t.length && b0 == null; i++) b0 = bmap.get(t[i]) ?? null;
+      if (b0) line(t.map(x => bmap.has(x) ? c[i0] * bmap.get(x) / b0 : null), css('--bench'), 1.5, {lineStyle:2, title:'NIFTY (rebased)'});
+    }
+  }
+  if (on('vol')) {
+    const vs = main.addHistogramSeries({priceScaleId:'vol', priceFormat:{type:'volume'}, lastValueVisible:false, priceLineVisible:false});
+    main.priceScale('vol').applyOptions({scaleMargins:{top:0.8, bottom:0}});
+    vs.setData(t.map((x,i) => ({time:x, value:v[i], color:(c[i] >= o[i] ? up : dn) + '66'})));
+  }
+  const subs = [];
+  $('xrsi').style.display = on('rsi') ? '' : 'none'; $('xmacd').style.display = on('macd') ? '' : 'none';
+  if (on('rsi')) {
+    const ch = LightweightCharts.createChart($('xrsi'), {...base, timeScale:{...base.timeScale, visible:false}}); xCharts.push(ch); subs.push(ch);
+    const r = RSI(c, 14), s = ch.addLineSeries({color:'#a855f7', lineWidth:1.5, priceLineVisible:false});
+    s.setData(t.map((x,i) => r[i]==null ? {time:x} : {time:x, value:r[i]}));
+    [70, 30].forEach(p => s.createPriceLine({price:p, color:mu, lineWidth:1, lineStyle:2, axisLabelVisible:true}));
+  }
+  if (on('macd')) {
+    const ch = LightweightCharts.createChart($('xmacd'), {...base, timeScale:{...base.timeScale, visible:false}}); xCharts.push(ch); subs.push(ch);
+    const e12 = EMA(c,12), e26 = EMA(c,26), m = c.map((_,i) => e12[i]!=null && e26[i]!=null ? e12[i]-e26[i] : null);
+    const firstM = m.findIndex(x => x != null), sig = Array(c.length).fill(null);
+    if (firstM >= 0) EMA(m.slice(firstM), 9).forEach((x,i) => sig[firstM+i] = x);
+    ch.addHistogramSeries({priceLineVisible:false, lastValueVisible:false}).setData(t.map((x,i) => m[i]==null||sig[i]==null ? {time:x} : {time:x, value:m[i]-sig[i], color:(m[i]-sig[i] >= 0 ? up : dn) + '99'}));
+    ch.addLineSeries({color:'#3b82f6', lineWidth:1.5, priceLineVisible:false}).setData(t.map((x,i) => m[i]==null ? {time:x} : {time:x, value:m[i]}));
+    ch.addLineSeries({color:'#f59e0b', lineWidth:1.5, priceLineVisible:false}).setData(t.map((x,i) => sig[i]==null ? {time:x} : {time:x, value:sig[i]}));
+  }
+  main.timeScale().setVisibleRange({from: t[Math.max(0, winStart)], to: t[t.length-1]});
+  main.timeScale().subscribeVisibleLogicalRangeChange(rg => { if (rg) subs.forEach(s => s.timeScale().setVisibleLogicalRange(rg)); });
+  subs.forEach(s => s.timeScale().setVisibleLogicalRange(main.timeScale().getVisibleLogicalRange()));
+  const fmtT = x => { const d = new Date((x - IST) * 1000); return INTRADAY(xRange) ? d.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); };
+  const legend = i => { if (i == null || i < 0) i = t.length-1;
+    $('x-leg').innerHTML = `${fmtT(t[i])} &nbsp; O <b>${num(o[i])}</b> H <b>${num(h[i])}</b> L <b>${num(l[i])}</b> C <b>${num(c[i])}</b> <span class="${cls(c[i]-(c[i-1]??c[i]))}">${pct(i ? (c[i]/c[i-1]-1)*100 : 0, 2)}</span> &nbsp; Vol <b>${qty(v[i])}</b>`; };
+  legend();
+  main.subscribeCrosshairMove(p => legend(p && p.time != null ? t.indexOf(p.time) : null));
+  $('x-foot').textContent = `${raw.source || ''} · ${INTRADAY(xRange) ? '5-minute' : xRange === 'All' ? 'weekly' : 'daily'} bars · ${set.length} bars loaded (indicators use all of them) · fetched ${when(raw.as_of)} · times in IST · drag to pan, scroll to zoom`;
+}
+
+// ── list actions ──
+$('newlist').onsubmit = async e => {
+  e.preventDefault();
+  const msg = $('nl-msg'); msg.className = 'msg'; msg.textContent = '';
+  try { const r = await api('/api/watchlist/create_list', {name:$('nl-name').value}); $('nl-name').value = ''; setActive(r.list.id); }
+  catch (err) { msg.className = 'msg err'; msg.textContent = err.message; }
+};
+$('lh-rename').onclick = () => { const l = listById(active); if (!l) return; $('r-name').value = l.name; $('rename').showModal(); };
+$('rename').addEventListener('close', async () => {
+  if ($('rename').returnValue !== 'save') return;
+  try { await api('/api/watchlist/rename_list', {id:active, name:$('r-name').value}); render(); } catch (err) { alert(err.message); }
+});
+$('lh-delete').onclick = async () => {
+  const l = listById(active); if (!l) return;
+  if (!confirm(`Delete the watchlist “${l.name}” and its ${l.items.length} stock entr${l.items.length===1?'y':'ies'}? This can't be undone.`)) return;
+  try { await api('/api/watchlist/delete_list', {id:l.id}); setActive('ALL'); } catch (err) { alert(err.message); }
+};
+
+// ── stock actions ──
+$('a-sym').oninput = () => {
+  const s = $('a-sym').value.trim().toUpperCase();
+  $('a-hint').textContent = UNI.has(s) ? UNI.get(s) : (s ? 'not in local NSE list — will check stockanalysis.com' : '');
+};
+$('addform').onsubmit = async e => {
+  e.preventDefault();
+  const btn = $('a-btn'), msg = $('a-msg');
+  btn.disabled = true; msg.className = 'msg'; msg.textContent = 'Adding and fetching a quote…';
+  try {
+    const listId = $('a-list').value;
+    const r = await api('/api/watchlist/add', {list:listId, symbol:$('a-sym').value, target:$('a-target').value,
+                                               stop:$('a-stop').value, note:$('a-note').value, force:$('a-force').checked});
+    msg.className = 'msg ok'; msg.textContent = `Added ${r.item.symbol} to “${listById(listId).name}”.` + (r.job_started ? ' Fetching news, chart & delivery data…' : '');
+    ['a-sym','a-target','a-stop','a-note'].forEach(id => $(id).value = ''); $('a-force').checked = false; $('a-hint').textContent = '';
+    render();
+    if (r.job_started) pollJob(false);
+  } catch (err) { msg.className = 'msg err'; msg.textContent = err.message; }
+  btn.disabled = false;
+};
+
+async function delEntry(listId, sym){
+  if (!confirm(`Remove ${sym} from “${listById(listId).name}”?`)) return;
+  try { await api('/api/watchlist/remove', {list:listId, symbol:sym}); render(); } catch (err) { alert(err.message); }
+}
+
+let ctx = null;
+function openEdit(listId, sym){
+  const it = listById(listId).items.find(i => i.symbol === sym); if (!it) return;
+  ctx = {listId, sym};
+  $('e-title').textContent = `Edit ${sym}`; $('e-sub').textContent = `in “${listById(listId).name}”`;
+  $('e-target').value = it.target ?? ''; $('e-stop').value = it.stop ?? ''; $('e-note').value = it.note || '';
+  $('edit').showModal();
+}
+$('edit').addEventListener('close', async () => {
+  if ($('edit').returnValue !== 'save' || !ctx) return;
+  try { await api('/api/watchlist/update', {list:ctx.listId, symbol:ctx.sym, target:$('e-target').value, stop:$('e-stop').value, note:$('e-note').value}); render(); }
+  catch (err) { alert(err.message); }
+});
+
+function openMove(listId, sym){
+  ctx = {listId, sym};
+  $('m-title').textContent = `Move ${sym} from “${listById(listId).name}”`;
+  $('m-to').innerHTML = WL.watchlists.filter(l => l.id !== listId).map(l => `<option value="${esc(l.id)}">${esc(l.name)}</option>`).join('');
+  $('m-copy').checked = false;
+  $('move').showModal();
+}
+$('move').addEventListener('close', async () => {
+  if ($('move').returnValue !== 'go' || !ctx) return;
+  try { await api('/api/watchlist/move', {symbol:ctx.sym, from:ctx.listId, to:$('m-to').value, copy:$('m-copy').checked}); render(); }
+  catch (err) { alert(err.message); }
+});
+
+$('refresh').onclick = async () => {
+  const b = $('refresh'); b.disabled = true; b.textContent = 'Refreshing…';
+  try { const r = await api('/api/watchlist/refresh', {}); render(); b.textContent = `Updated ${r.updated}/${r.total}`; }
+  catch (err) { b.textContent = 'Refresh failed'; alert(err.message); }
+  setTimeout(() => { b.textContent = 'Refresh prices'; b.disabled = !LIVE; }, 2500);
+};
+
+init();
+</script>
+</body>
+</html>
