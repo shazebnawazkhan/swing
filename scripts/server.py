@@ -314,6 +314,26 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 self._json({"error": "no signals — run predict_daily.py"}, 404)
 
+        elif p in ("/earnings", "/results"):
+            page = ROOT / "outputs" / "earnings_calendar.html"
+            if page.exists():
+                self._file(page, "text/html; charset=utf-8")
+            else:
+                body = (b"<h2>No results calendar yet &mdash; run "
+                        b"<code>python scripts/build_earnings_calendar.py</code>.</h2>")
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html")
+                self.send_header("Content-Length", len(body))
+                self.end_headers()
+                self.wfile.write(body)
+
+        elif p == "/api/earnings_calendar":
+            cal = ROOT / "outputs" / "earnings_calendar_latest.json"
+            if cal.exists():
+                self._file(cal, "application/json")
+            else:
+                self._json({"error": "no calendar — run build_earnings_calendar.py"}, 404)
+
         elif p == "/api/config":
             self._json({"capital": _read_capital()})
 
