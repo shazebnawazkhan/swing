@@ -334,6 +334,38 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 self._json({"error": "no calendar — run build_earnings_calendar.py"}, 404)
 
+        elif p in ("/watchlist", "/watchlist.html"):
+            # rendered per request from data/watchlist/*.json, so it is never stale
+            try:
+                body = _watchlist_html().encode("utf-8")
+            except Exception as e:
+                return self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", len(body))
+            self.end_headers()
+            self.wfile.write(body)
+
+        elif p == "/api/watchlist":
+            self._json(_wl().payload())
+
+        elif p == "/api/watchlist/ohlc":
+            # full OHLCV bars for the chart explorer (kept out of the main payload: ~100 KB/symbol)
+            _wl()
+            from src import watchlist_enrich
+            qs = parse_qs(self.path.split("?", 1)[1]) if "?" in self.path else {}
+            sym = (qs.get("symbol", [""])[0]).upper()
+            raw = watchlist_enrich.load_chart(sym) if re.fullmatch(r"[A-Z0-9&\-]{1,20}", sym) else None
+            if raw and raw.get("v") == 2:
+                self._json(raw)
+            else:
+                self._json({"error": f"no OHLC data for {sym} — run Refresh news & data"}, 404)
+
+        elif p == "/api/watchlist/enrich_status":
+            _wl()
+            from src import watchlist_enrich
+            self._json(watchlist_enrich.job_status())
+
         elif p == "/api/config":
             self._json({"capital": _read_capital()})
 
@@ -388,6 +420,9 @@ class Handler(BaseHTTPRequestHandler):
             _write_capital(cap)
             self._json({"ok": True, "capital": cap})
 
+        elif p.startswith("/api/watchlist/"):
+            self._watchlist_api(p.rsplit("/", 1)[-1], body)
+
         elif p == "/api/run":
             with _lock:
                 if _run_status == "running":
@@ -398,6 +433,74 @@ class Handler(BaseHTTPRequestHandler):
 
         else:
             self._json({"error": "not found"}, 404)
+
+    def _watchlist_api(self, action: str, body: dict):
+        """POST /api/watchlist/<action>; every success reply carries the fresh payload.
+
+        Lists:  create_list {name} | rename_list {id,name} | delete_list {id} | reorder_lists {ids}
+        Stocks: add {list,symbol,target?,stop?,note?,force?} | remove {list,symbol}
+                update {list,symbol,target?,stop?,note?} | move {symbol,from,to,copy?}
+        Quotes: refresh {symbols?}
+        """
+        ws = _wl()
+        try:
+            extra = {}
+            if action == "create_list":
+                extra["list"] = ws.create_list(body.get("name", ""))
+            elif action == "rename_list":
+                extra["list"] = ws.rename_list(body.get("id", ""), body.get("name", ""))
+            elif action == "delete_list":
+                extra["removed_entries"] = ws.delete_list(body.get("id", ""))
+            elif action == "reorder_lists":
+                ws.reorder_lists(list(body.get("ids") or []))
+            elif action == "add":
+                extra["item"] = ws.add(body.get("symbol", ""), list_id=body.get("list"),
+                                       note=body.get("note", ""), target=body.get("target"),
+                                       stop=body.get("stop"), force=bool(body.get("force")))
+                # news / chart / delivery / OI for the new symbol, off the request thread
+                from src import watchlist_enrich as we
+                sym = extra["item"]["symbol"]
+                extra["job_started"] = we.start_job([sym], ws.names_map())
+            elif action == "enrich":
+                from src import watchlist_enrich as we
+                syms = body.get("symbols") or ws.all_symbols()
+                if not we.start_job(syms, ws.names_map()):
+                    return self._json({"error": "a refresh is already running"}, 409)
+                extra["job_started"] = True
+            elif action == "remove":
+                if not ws.remove(body.get("list", ""), body.get("symbol", "")):
+                    return self._json({"error": "that stock is not in this list"}, 404)
+            elif action == "update":
+                extra["item"] = ws.update(body.get("list", ""), body.get("symbol", ""), body)
+            elif action == "move":
+                extra["item"] = ws.move(body.get("symbol", ""), body.get("from", ""),
+                                        body.get("to", ""), copy=bool(body.get("copy")))
+            elif action == "refresh":
+                syms = body.get("symbols") or ws.all_symbols()
+                extra.update(updated=len(ws.refresh_quotes(syms)), total=len(syms))
+            else:
+                return self._json({"error": "unknown watchlist action"}, 404)
+            self._json({"ok": True, **extra, "watchlist": ws.payload()})
+        except ws.WatchlistError as e:
+            self._json({"error": str(e)}, 400)
+        except Exception as e:
+            self._json({"error": f"{type(e).__name__}: {e}"}, 500)
+
+
+# ── Watchlist helpers (lazy imports keep server start-up fast) ─────────────────
+
+def _wl():
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from src import watchlist_store
+    return watchlist_store
+
+
+def _watchlist_html() -> str:
+    _wl()
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from build_watchlist import build_html
+    return build_html()
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
