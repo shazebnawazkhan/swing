@@ -1,0 +1,1536 @@
+{
+ "source": "outputs/NSE_Analyst_Dashboard.html",
+ "extracted_at": "2026-11-22T21:49:22",
+ "baseline_as_of": "2026-09-23",
+ "provenance_note": "Ratings, targets, bulk deals and thesis text were carried over from the previous dashboard (stated source: Trendlyne / broker reports / NSE-BSE disclosures). They are NOT available from Groww MCP and have not been re-verified.",
+ "stocks": [
+  {
+   "symbol": "RELIANCE",
+   "company": "Reliance Industries Ltd",
+   "sector": "Energy & Petrochem",
+   "consensus_target": 1550,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 1600,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 1520,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Goldman Sachs",
+     "rating": "BUY",
+     "target": 1580,
+     "date": "Jul 2026"
+    },
+    {
+     "agency": "UBS",
+     "rating": "NEUTRAL",
+     "target": 1250,
+     "date": "Aug 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Capital Group (US)",
+     "action": "BUY",
+     "qty": "2.1Cr",
+     "price": 1210,
+     "value": 2541,
+     "date": "Sep 15, 2026"
+    },
+    {
+     "client": "Societe Generale",
+     "action": "SELL",
+     "qty": "85L",
+     "price": 1230,
+     "value": 1045,
+     "date": "Sep 8, 2026"
+    }
+   ],
+   "thesis": "Jio's 5G monetization is accelerating with ARPU expanding 12% YoY. New energy giga-factories are ahead of schedule with first solar module capacity coming online Q4FY27. Retail segment Reliance Retail hitting 3x store expansion. O2C margins recovering as global refining spreads widen. Consensus sees $250Bn market cap potential by FY28.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1248,
+    "day_change_pct": 0.61,
+    "pe": 19.06,
+    "roe": 8.94,
+    "market_cap_cr": 1680741,
+    "upside_pct": 24.2
+   }
+  },
+  {
+   "symbol": "HDFCBANK",
+   "company": "HDFC Bank Ltd",
+   "sector": "Banking",
+   "consensus_target": 970,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 1000,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "IDBI Capital",
+     "rating": "BUY",
+     "target": 960,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Deven Choksey",
+     "rating": "BUY",
+     "target": 950,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Macquarie",
+     "rating": "OUTPERFORM",
+     "target": 980,
+     "date": "Jul 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "GIC Private (Singapore)",
+     "action": "BUY",
+     "qty": "1.2Cr",
+     "price": 720,
+     "value": 864,
+     "date": "Sep 12, 2026"
+    },
+    {
+     "client": "Norges Bank",
+     "action": "BUY",
+     "qty": "65L",
+     "price": 715,
+     "value": 465,
+     "date": "Sep 5, 2026"
+    }
+   ],
+   "thesis": "Post merger integration is near complete with credit cost cycle normalizing. NIM has bottomed and expansion expected from H2FY27. Loan growth recovering to 14% YoY trajectory. At 1.9x P/B vs. long-term average of 3.5x P/B, the stock trades at a significant discount. CASA franchise of 46% provides structural advantage.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 737.25,
+    "day_change_pct": -0.18,
+    "pe": 13.81,
+    "roe": 13.14,
+    "market_cap_cr": 1139294,
+    "upside_pct": 31.6
+   }
+  },
+  {
+   "symbol": "ICICIBANK",
+   "company": "ICICI Bank Ltd",
+   "sector": "Banking",
+   "consensus_target": 1746,
+   "analyst_ratings": [
+    {
+     "agency": "Consensus (28 analysts)",
+     "rating": "BUY",
+     "target": 1746,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 1750,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "IDBI Capital",
+     "rating": "BUY",
+     "target": 1730,
+     "date": "Jul 2026"
+    },
+    {
+     "agency": "Deven Choksey",
+     "rating": "BUY",
+     "target": 1686,
+     "date": "Jul 2026"
+    },
+    {
+     "agency": "Goldman Sachs",
+     "rating": "BUY",
+     "target": 1800,
+     "date": "Aug 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Temasek Holdings",
+     "action": "BUY",
+     "qty": "1.5Cr",
+     "price": 1310,
+     "value": 1965,
+     "date": "Sep 18, 2026"
+    },
+    {
+     "client": "Capital Group",
+     "action": "BUY",
+     "qty": "80L",
+     "price": 1295,
+     "value": 1036,
+     "date": "Sep 10, 2026"
+    }
+   ],
+   "thesis": "ICICI Bank delivered Q1FY27 PAT growth of 15.9% YoY to ₹148Bn. NIM expanding to 4.36% aided by moderating deposit costs. Core PPOP outperformed on both NII and fees. RoA of 2.49% and RoE of 17.1% are best-in-class among large banks. Digital bank accounts growing 50% YoY. Credit cost cycle turning benign with PCR at 82%.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1340,
+    "day_change_pct": 0.03,
+    "pe": 16.09,
+    "roe": 15.0,
+    "market_cap_cr": 961507,
+    "upside_pct": 30.3
+   }
+  },
+  {
+   "symbol": "TCS",
+   "company": "Tata Consultancy Services",
+   "sector": "IT Software",
+   "consensus_target": 2650,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 2700,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 2600,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 2750,
+     "date": "Jul 2026"
+    },
+    {
+     "agency": "Nomura",
+     "rating": "NEUTRAL",
+     "target": 2200,
+     "date": "Aug 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "LIC of India",
+     "action": "BUY",
+     "qty": "45L",
+     "price": 2050,
+     "value": 923,
+     "date": "Sep 16, 2026"
+    },
+    {
+     "client": "Mirae Asset",
+     "action": "BUY",
+     "qty": "30L",
+     "price": 2080,
+     "value": 624,
+     "date": "Sep 9, 2026"
+    }
+   ],
+   "thesis": "TCS is uniquely positioned at the intersection of AI and large enterprise transformation. $AI division revenues grew 35% QoQ. Dividend yield of 5.23% provides income floor. Gen-AI co-pilot tools driving ASP expansion on existing contracts. Order backlog at all-time high of $12.8Bn. Management guided 13-15% constant currency growth for FY27.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 2089.6,
+    "day_change_pct": -0.73,
+    "pe": 15.22,
+    "roe": 45.89,
+    "market_cap_cr": 761969,
+    "upside_pct": 26.8
+   }
+  },
+  {
+   "symbol": "INFY",
+   "company": "Infosys Ltd",
+   "sector": "IT Software",
+   "consensus_target": 1320,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 1350,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Deven Choksey",
+     "rating": "BUY",
+     "target": 1300,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Macquarie",
+     "rating": "OUTPERFORM",
+     "target": 1400,
+     "date": "Jul 2026"
+    },
+    {
+     "agency": "CLSA",
+     "rating": "BUY",
+     "target": 1280,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Vanguard Group",
+     "action": "BUY",
+     "qty": "95L",
+     "price": 995,
+     "value": 945,
+     "date": "Sep 17, 2026"
+    },
+    {
+     "client": "BlackRock",
+     "action": "BUY",
+     "qty": "1.1Cr",
+     "price": 1010,
+     "value": 1111,
+     "date": "Sep 11, 2026"
+    }
+   ],
+   "thesis": "Infosys raised FY27 CC revenue growth guidance to 8-10% backed by $4.8Bn deal TCV in Q1. Topaz AI platform signed 200+ clients. Cost management delivering 50bps margin expansion per quarter. At 13.8x PE vs industry of 17.8x, stock offers 22% valuation discount. Strong free cash flow yield of 6.2% supports buybacks.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1020.5,
+    "day_change_pct": -0.86,
+    "pe": 13.78,
+    "roe": 33.24,
+    "market_cap_cr": 417921,
+    "upside_pct": 29.4
+   }
+  },
+  {
+   "symbol": "SUNPHARMA",
+   "company": "Sun Pharmaceutical Industries",
+   "sector": "Pharmaceuticals",
+   "consensus_target": 2250,
+   "analyst_ratings": [
+    {
+     "agency": "ICICI Direct",
+     "rating": "BUY",
+     "target": 2300,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 2200,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Elara Capital",
+     "rating": "BUY",
+     "target": 2150,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "InCred Equities",
+     "rating": "BUY",
+     "target": 2280,
+     "date": "Aug 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Capital Group",
+     "action": "BUY",
+     "qty": "55L",
+     "price": 1820,
+     "value": 1001,
+     "date": "Sep 20, 2026"
+    }
+   ],
+   "thesis": "Sun Pharma's specialty pipeline in US (Ilumya, Cequa, Winlevi) now contributes 32% of US revenues vs 12% two years ago. India branded generics growing at 14% driven by chronic therapy segments. API business recovering with margins expanding 300bps. Taro integration synergies fully realized. R&D pipeline of 18 specialty NDA filings expected in FY27-28.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1865,
+    "day_change_pct": 1.01,
+    "pe": 36.51,
+    "roe": 13.74,
+    "market_cap_cr": 442437,
+    "upside_pct": 20.6
+   }
+  },
+  {
+   "symbol": "HCLTECH",
+   "company": "HCL Technologies Ltd",
+   "sector": "IT Software",
+   "consensus_target": 1650,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 1700,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "IDBI Capital",
+     "rating": "BUY",
+     "target": 1620,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Prabhudas Lilladher",
+     "rating": "BUY",
+     "target": 1680,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "SBI Mutual Fund",
+     "action": "BUY",
+     "qty": "40L",
+     "price": 1230,
+     "value": 492,
+     "date": "Sep 14, 2026"
+    }
+   ],
+   "thesis": "HCL's hybrid cloud and AI services book grew 31% in FY26. Products & Platforms segment (HCL Software) now at 24% margins driving earnings quality. Dividend yield of 4.25% among highest in IT sector. Engineering services winning larger deals as automotive and industrial clients shift to software-defined products. EBIT margin guidance of 18-19% is conservative.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1256.7,
+    "day_change_pct": -1.08,
+    "pe": 19.77,
+    "roe": 22.14,
+    "market_cap_cr": 344635,
+    "upside_pct": 31.3
+   }
+  },
+  {
+   "symbol": "BHARTIARTL",
+   "company": "Bharti Airtel Ltd",
+   "sector": "Telecom",
+   "consensus_target": 2200,
+   "analyst_ratings": [
+    {
+     "agency": "Goldman Sachs",
+     "rating": "BUY",
+     "target": 2300,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 2150,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 2100,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "JP Morgan",
+     "rating": "OVERWEIGHT",
+     "target": 2250,
+     "date": "Jul 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Singapore Temasek",
+     "action": "BUY",
+     "qty": "35L",
+     "price": 1790,
+     "value": 627,
+     "date": "Sep 19, 2026"
+    },
+    {
+     "client": "GQG Partners",
+     "action": "BUY",
+     "qty": "55L",
+     "price": 1800,
+     "value": 990,
+     "date": "Sep 12, 2026"
+    }
+   ],
+   "thesis": "Airtel's postpaid subscriber market share hit 40% backed by network superiority in 5G. ARPU growing 12% annually and management guided ₹300+ ARPU by FY27 from current ₹233. Africa Airtel contributing $420M EBITDA and improving. Debt refinancing at lower rates to reduce interest burden 18% in FY27. Broadband growing 45% YoY adding premium subscribers.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1833.2,
+    "day_change_pct": 0.88,
+    "pe": 31.15,
+    "roe": 17.91,
+    "market_cap_cr": 1134101,
+    "upside_pct": 20.0
+   }
+  },
+  {
+   "symbol": "ITC",
+   "company": "ITC Ltd",
+   "sector": "FMCG",
+   "consensus_target": 560,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 580,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "ICICI Direct",
+     "rating": "BUY",
+     "target": 540,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Deven Choksey",
+     "rating": "BUY",
+     "target": 550,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "SBI Life Insurance",
+     "action": "BUY",
+     "qty": "1.2Cr",
+     "price": 262,
+     "value": 314,
+     "date": "Sep 22, 2026"
+    }
+   ],
+   "thesis": "ITC Hotels demerger unlocked ₹34,000Cr of hidden value. Core cigarettes maintain 85% EBIT margins with stable volumes. FMCG segment (Sunfeast, Bingo, Nimyle) approaching profitability with revenues crossing ₹200Bn. Agribusiness growing 15% YoY. Post demerger, conglomerate discount shrinks significantly. Dividend yield of 5.5% provides strong income floor.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 270.15,
+    "day_change_pct": 1.64,
+    "pe": 16.45,
+    "roe": 28.53,
+    "market_cap_cr": 332121,
+    "upside_pct": 107.3
+   }
+  },
+  {
+   "symbol": "SBIN",
+   "company": "State Bank of India",
+   "sector": "Banking",
+   "consensus_target": 1200,
+   "analyst_ratings": [
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 1250,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 1200,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 1180,
+     "date": "Jul 2026"
+    },
+    {
+     "agency": "BOB Capital",
+     "rating": "BUY",
+     "target": 1220,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Government of India (LIC)",
+     "action": "BUY",
+     "qty": "2Cr",
+     "price": 975,
+     "value": 1950,
+     "date": "Sep 16, 2026"
+    },
+    {
+     "client": "Norges Bank",
+     "action": "BUY",
+     "qty": "90L",
+     "price": 980,
+     "value": 882,
+     "date": "Sep 8, 2026"
+    }
+   ],
+   "thesis": "SBI is the largest beneficiary of India's capex cycle with ₹32,000Bn balance sheet. NPA resolution completing with net NPA at 0.57% — multi-year low. YONO digital platform at 63M active users monetizing cross-sell. Subsidiaries (SBI Life, SBI Cards, SBI MF) worth ₹350/share. Core banking trading at 1.2x P/B — 40% discount to HDFC Bank.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 994.1,
+    "day_change_pct": 0.72,
+    "pe": 10.15,
+    "roe": 14.29,
+    "market_cap_cr": 910292,
+    "upside_pct": 20.7
+   }
+  },
+  {
+   "symbol": "TITAN",
+   "company": "Titan Company Ltd",
+   "sector": "Consumer Discretionary",
+   "consensus_target": 5800,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 6000,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Elara Capital",
+     "rating": "BUY",
+     "target": 5700,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 5750,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Norges Bank",
+     "action": "BUY",
+     "qty": "22L",
+     "price": 4750,
+     "value": 1045,
+     "date": "Sep 18, 2026"
+    }
+   ],
+   "thesis": "Titan's Tanishq gained 250bps market share in organized jewellery in FY26. Caratlane integration enabling online-to-offline conversion. International Tanishq expanding in USA with 15 stores. Eyewear (Titan Eye+) added 900 stores in 18 months. Watches premiumization drives 22% revenue growth in top segments. Wedding jewellery demand structural tailwind in India.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 4880,
+    "day_change_pct": -0.98,
+    "pe": 75.68,
+    "roe": 32.31,
+    "market_cap_cr": 435903,
+    "upside_pct": 18.9
+   }
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "company": "Bajaj Finance Ltd",
+   "sector": "NBFC",
+   "consensus_target": 1400,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 1450,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Goldman Sachs",
+     "rating": "BUY",
+     "target": 1380,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 1420,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 1350,
+     "date": "Jul 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Temasek Holdings",
+     "action": "BUY",
+     "qty": "75L",
+     "price": 1020,
+     "value": 765,
+     "date": "Sep 20, 2026"
+    },
+    {
+     "client": "Abu Dhabi Investment Authority",
+     "action": "BUY",
+     "qty": "50L",
+     "price": 1030,
+     "value": 515,
+     "date": "Sep 13, 2026"
+    }
+   ],
+   "thesis": "Bajaj Finance is the best-in-class consumer lender with AUM of ₹3.9Trillion growing at 25% CAGR. New verticals (auto loans, SME, rural) adding TAM of 3x current size. Tech stack enables cross-sell ratio of 3.8x per customer. Credit costs remaining below 1.5% aided by data underwriting. ROE recovery to 22%+ by FY28 as scale benefits emerge.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1043.2,
+    "day_change_pct": 3.41,
+    "pe": 30.43,
+    "roe": 16.68,
+    "market_cap_cr": 628199,
+    "upside_pct": 34.2
+   }
+  },
+  {
+   "symbol": "MARUTI",
+   "company": "Maruti Suzuki India Ltd",
+   "sector": "Automobiles",
+   "consensus_target": 15000,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 15500,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "ICICI Direct",
+     "rating": "BUY",
+     "target": 14800,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 15200,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "LIC of India",
+     "action": "BUY",
+     "qty": "15L",
+     "price": 11950,
+     "value": 1793,
+     "date": "Sep 15, 2026"
+    }
+   ],
+   "thesis": "Maruti dominates 41% of Indian passenger vehicle market. EV launch (e-Suzuki) with Suzuki Motor Japan targeting 2M EVs by 2030. Premium SUV segment (Grand Vitara, Jimny) growing 55% vs prior year. Export to Japan under MOU boosting utilization. Toyota partnership on hybrid technology driving margin surprise. FY28 volume target of 2.8M vs current 2.2M.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 12230,
+    "day_change_pct": 0.33,
+    "pe": 26.74,
+    "roe": 13.7,
+    "market_cap_cr": 383257,
+    "upside_pct": 22.6
+   }
+  },
+  {
+   "symbol": "M&M",
+   "company": "Mahindra & Mahindra Ltd",
+   "sector": "Automobiles",
+   "consensus_target": 3850,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 4000,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Kotak Securities",
+     "rating": "BUY",
+     "target": 3800,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "CLSA",
+     "rating": "OUTPERFORM",
+     "target": 3900,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Nomura",
+     "rating": "BUY",
+     "target": 3750,
+     "date": "Aug 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Capital Group",
+     "action": "BUY",
+     "qty": "60L",
+     "price": 2980,
+     "value": 1788,
+     "date": "Sep 22, 2026"
+    },
+    {
+     "client": "Mirae Asset",
+     "action": "BUY",
+     "qty": "35L",
+     "price": 2990,
+     "value": 1047,
+     "date": "Sep 14, 2026"
+    }
+   ],
+   "thesis": "M&M's SUV segment waitlists extending to 8 months for Thar Roxx, XEV 9e and BE 6e. Farm Equipment Services operating 15,000 centers and EV tractor launch in FY27. Subsidiaries Mahindra Finance, Tech Mahindra, and Mahindra Lifespace all recovering. EV portfolio funding secured from BII, CPPIB. Electric PV market share target of 20% by FY28.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 3035,
+    "day_change_pct": -0.31,
+    "pe": 18.74,
+    "roe": 18.37,
+    "market_cap_cr": 379276,
+    "upside_pct": 26.9
+   }
+  },
+  {
+   "symbol": "KOTAKBANK",
+   "company": "Kotak Mahindra Bank Ltd",
+   "sector": "Banking",
+   "consensus_target": 2300,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 2400,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "ICICI Direct",
+     "rating": "BUY",
+     "target": 2250,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "BOB Capital",
+     "rating": "BUY",
+     "target": 2350,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "GIC Singapore",
+     "action": "BUY",
+     "qty": "45L",
+     "price": 400,
+     "value": 180,
+     "date": "Sep 11, 2026"
+    }
+   ],
+   "thesis": "Kotak Bank's post-RBI restriction resolution has re-enabled digital onboarding — app downloads surged 40% post-lifting. Credit card biz restarting will add 2% revenue uplift. ROE expected to improve to 15% by FY27 from current 11% as operating leverage kicks in. Strong capital adequacy at 23% provides headroom for growth. Ashok Vaswani's playbook of AI-driven cost reduction on track.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 413.25,
+    "day_change_pct": 0.15,
+    "pe": 20.22,
+    "roe": 11.06,
+    "market_cap_cr": 410341,
+    "upside_pct": 29.4
+   }
+  },
+  {
+   "symbol": "AXISBANK",
+   "company": "Axis Bank Ltd",
+   "sector": "Banking",
+   "consensus_target": 1700,
+   "analyst_ratings": [
+    {
+     "agency": "Goldman Sachs",
+     "rating": "BUY",
+     "target": 1750,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 1720,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "IDBI Capital",
+     "rating": "BUY",
+     "target": 1680,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Macquarie",
+     "rating": "OUTPERFORM",
+     "target": 1800,
+     "date": "Jul 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Baillie Gifford",
+     "action": "BUY",
+     "qty": "70L",
+     "price": 1210,
+     "value": 847,
+     "date": "Sep 19, 2026"
+    },
+    {
+     "client": "Norges Bank",
+     "action": "BUY",
+     "qty": "55L",
+     "price": 1220,
+     "value": 671,
+     "date": "Sep 9, 2026"
+    }
+   ],
+   "thesis": "Axis Bank's 'Sparkle' strategy delivering — 38% PAT CAGR over 3 years. NIM at 4.15% expanding on improved funding mix. SME and affluent banking segments growing at 28% YoY. Citi India acquisition synergies fully realized with premium card portfolio generating 25% ROE. At 1.75x P/B vs sustainable ROE of 16%, significant re-rating potential.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1243.2,
+    "day_change_pct": 0.04,
+    "pe": 13.85,
+    "roe": 12.53,
+    "market_cap_cr": 386852,
+    "upside_pct": 36.8
+   }
+  },
+  {
+   "symbol": "NTPC",
+   "company": "NTPC Ltd",
+   "sector": "Power",
+   "consensus_target": 450,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 480,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 430,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Prabhudas Lilladher",
+     "rating": "BUY",
+     "target": 460,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "BOB Capital",
+     "rating": "BUY",
+     "target": 450,
+     "date": "Jul 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "LIC of India",
+     "action": "BUY",
+     "qty": "3Cr",
+     "price": 318,
+     "value": 954,
+     "date": "Sep 20, 2026"
+    },
+    {
+     "client": "SBI Mutual Fund",
+     "action": "BUY",
+     "qty": "1.5Cr",
+     "price": 320,
+     "value": 480,
+     "date": "Sep 13, 2026"
+    }
+   ],
+   "thesis": "NTPC is transforming from a thermal pure-play to a renewable energy major. 60GW renewable capacity target by 2032 (current: 8GW). NTPC Green Energy IPO at 4x book validates RE franchise value. Regulated equity growing 12% annually with assured returns. Coal plant efficiency highest in sector at 88% PLF. Dividend yield of 2.75% + capital gains catalyst from NTPC Green listing.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 326,
+    "day_change_pct": -0.55,
+    "pe": 11.19,
+    "roe": 13.31,
+    "market_cap_cr": 317081,
+    "upside_pct": 38.0
+   }
+  },
+  {
+   "symbol": "HAL",
+   "company": "Hindustan Aeronautics Ltd",
+   "sector": "Defence",
+   "consensus_target": 6200,
+   "analyst_ratings": [
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 6500,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 6200,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Elara Capital",
+     "rating": "BUY",
+     "target": 5900,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Kotak Securities",
+     "rating": "BUY",
+     "target": 6100,
+     "date": "Jul 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "SBI Mutual Fund",
+     "action": "BUY",
+     "qty": "18L",
+     "price": 4780,
+     "value": 860,
+     "date": "Sep 22, 2026"
+    },
+    {
+     "client": "Nippon India MF",
+     "action": "BUY",
+     "qty": "12L",
+     "price": 4800,
+     "value": 576,
+     "date": "Sep 15, 2026"
+    }
+   ],
+   "thesis": "HAL secured ₹1.35Trillion order book (10x revenue) with Tejas Mk1A (83 aircraft), LCH Prachand and AMCA. Defence budget growing 15% in FY27 with indigenisation mandate of 65%. Aero-engine technology transfer with GE for AMCA is transformational. Export inquiries from 15 countries for ALH and LCA. Revenue visibility extends to FY35. Scarcity value as only listed defence aerospace major.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 4836,
+    "day_change_pct": 0.75,
+    "pe": 34.39,
+    "roe": 22.21,
+    "market_cap_cr": 320544,
+    "upside_pct": 28.2
+   }
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "company": "Adani Ports and SEZ",
+   "sector": "Logistics & Ports",
+   "consensus_target": 2250,
+   "analyst_ratings": [
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 2300,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 2200,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "JP Morgan",
+     "rating": "OVERWEIGHT",
+     "target": 2350,
+     "date": "Jul 2026"
+    },
+    {
+     "agency": "UBS",
+     "rating": "BUY",
+     "target": 2180,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Capital Group (Entities)",
+     "action": "BUY",
+     "qty": "4.1Cr",
+     "price": 1750,
+     "value": 7175,
+     "date": "Sep 12, 2026"
+    },
+    {
+     "client": "GIC Singapore",
+     "action": "BUY",
+     "qty": "55L",
+     "price": 1770,
+     "value": 974,
+     "date": "Sep 5, 2026"
+    }
+   ],
+   "thesis": "Adani Ports handles 27% of India's total container throughput — a natural monopoly at multiple coastline locations. Haifa Port (Israel) acquisition generating $180M EBITDA ahead of schedule. SEZ monetization at Mundra adding ₹4,000Cr annually. Logistics arm (Adani Logistics) integrating rail, road, warehousing generating ₹2,000Cr revenues. Volume CAGR of 13% aligned with India trade growth.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1807.3,
+    "day_change_pct": 0.69,
+    "pe": 31.43,
+    "roe": 13.32,
+    "market_cap_cr": 412443,
+    "upside_pct": 24.5
+   }
+  },
+  {
+   "symbol": "PERSISTENT",
+   "company": "Persistent Systems Ltd",
+   "sector": "IT Software",
+   "consensus_target": 9500,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 9800,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 9200,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 9600,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Invesco",
+     "action": "BUY",
+     "qty": "8L",
+     "price": 7200,
+     "value": 576,
+     "date": "Sep 16, 2026"
+    }
+   ],
+   "thesis": "Persistent is the fastest-growing mid-cap IT company with 24% CC revenue growth in Q1FY27. AI-first delivery model generating 35% win rate on new RFPs. Microsoft partnership on Copilot customization services provides differentiated positioning. BFSI vertical growing 30%+ driven by digital lending transformation. Strong talent retention at 87% vs industry average of 78%.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 7450,
+    "day_change_pct": 0.55,
+    "pe": 55.2,
+    "roe": 26.8,
+    "market_cap_cr": 84759,
+    "upside_pct": 27.5
+   }
+  },
+  {
+   "symbol": "GLENMARK",
+   "company": "Glenmark Pharmaceuticals",
+   "sector": "Pharmaceuticals",
+   "consensus_target": 2100,
+   "analyst_ratings": [
+    {
+     "agency": "ICICI Direct",
+     "rating": "BUY",
+     "target": 2200,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 2050,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Centrum Broking",
+     "rating": "BUY",
+     "target": 2000,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Mirae Asset",
+     "action": "BUY",
+     "qty": "20L",
+     "price": 1580,
+     "value": 316,
+     "date": "Sep 18, 2026"
+    }
+   ],
+   "thesis": "Glenmark's Ryaltris nasal spray launched in 20+ markets with $500M peak sales potential. US generics pipeline of 67 ANDAs pending approval. India branded generics growing 24% in respiratory and dermatology. Ichnos Sciences oncology biotech assets could be monetized at $1Bn+. Debt repayment on track with 45% net debt reduction in FY26.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1640,
+    "day_change_pct": 1.2,
+    "pe": 35.8,
+    "roe": 15.2,
+    "market_cap_cr": 69511,
+    "upside_pct": 28.1
+   }
+  },
+  {
+   "symbol": "MAZDOCK",
+   "company": "Mazagon Dock Shipbuilders",
+   "sector": "Defence",
+   "consensus_target": 2800,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 2900,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 2750,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Elara Capital",
+     "rating": "BUY",
+     "target": 2700,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "SBI MF",
+     "action": "BUY",
+     "qty": "15L",
+     "price": 2150,
+     "value": 323,
+     "date": "Sep 20, 2026"
+    }
+   ],
+   "thesis": "Mazagon Dock has ₹45,000Cr+ order book with 6 P75 Scorpene submarines and 3 destroyers. Navy's 30-year shipbuilding plan allocates ₹2.8Trillion for domestic construction. Cost-plus contracts ensure profitability insulation. Technology transfer from France (Naval Group) for advanced submarine systems. Revenue visibility to FY32 with current backlog.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 2211.5,
+    "day_change_pct": 0.34,
+    "pe": 38.2,
+    "roe": 21.5,
+    "market_cap_cr": 88904,
+    "upside_pct": 26.6
+   }
+  },
+  {
+   "symbol": "OLECTRA",
+   "company": "Olectra Greentech Ltd",
+   "sector": "EV & Green Transport",
+   "consensus_target": 1800,
+   "analyst_ratings": [
+    {
+     "agency": "ICICI Direct",
+     "rating": "BUY",
+     "target": 1900,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Prabhudas Lilladher",
+     "rating": "BUY",
+     "target": 1850,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Systematix",
+     "rating": "BUY",
+     "target": 1800,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Nuvama Asset Management",
+     "action": "BUY",
+     "qty": "5L",
+     "price": 1240,
+     "value": 62,
+     "date": "Sep 22, 2026"
+    }
+   ],
+   "thesis": "Olectra is India's #1 electric bus manufacturer with 70% market share in government e-bus tenders. PM E-Bus Sewa scheme providing 10,000 bus order visibility. Battery energy density improvement reducing cost by 18% YoY. Maharashtra, UP, Tamil Nadu ordering fleets creating multi-year revenue visibility. JV with Yutong (China) for technology transfer on next-gen platforms.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1275.9,
+    "day_change_pct": 4.82,
+    "pe": 48.5,
+    "roe": 14.2,
+    "market_cap_cr": 11245,
+    "upside_pct": 41.1
+   }
+  },
+  {
+   "symbol": "PIRAMALENT",
+   "company": "Piramal Enterprises Ltd",
+   "sector": "NBFC",
+   "consensus_target": 1350,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 1400,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "ICICI Direct",
+     "rating": "BUY",
+     "target": 1350,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 1300,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "ICICI Prudential MF",
+     "action": "BUY",
+     "qty": "12L",
+     "price": 920,
+     "value": 110,
+     "date": "Sep 17, 2026"
+    }
+   ],
+   "thesis": "Piramal Enterprises re-rating story: 100% analysts rate BUY. Wholesale realty book winding down, retail lending growing 35%. Housing Finance AUM at ₹600Bn with 0.88% GNPA. PharmaCo business (CDMOs, formulations) demerger potential unlocking value. Strong management track record of capital allocation across cycles.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 950,
+    "day_change_pct": 1.1,
+    "pe": 22.5,
+    "roe": 9.5,
+    "market_cap_cr": 21500,
+    "upside_pct": 42.1
+   }
+  },
+  {
+   "symbol": "NHPC",
+   "company": "NHPC Ltd",
+   "sector": "Power",
+   "consensus_target": 100,
+   "analyst_ratings": [
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 105,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 100,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Prabhudas Lilladher",
+     "rating": "BUY",
+     "target": 98,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "LIC of India",
+     "action": "BUY",
+     "qty": "5Cr",
+     "price": 74,
+     "value": 370,
+     "date": "Sep 18, 2026"
+    }
+   ],
+   "thesis": "NHPC is India's largest hydro power PSU with 7,071MW installed capacity. New hydro projects in Arunachal Pradesh (2,000MW) and J&K (800MW) to be commissioned by FY28. Peak deficit in northern India creating assured tariffs for new capacity. PSP (Pumped Storage) projects providing grid-scale storage — premium tariffs. Trading at significant discount to replacement cost.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 76.74,
+    "day_change_pct": 0.96,
+    "pe": 15.8,
+    "roe": 11.2,
+    "market_cap_cr": 77000,
+    "upside_pct": 30.3
+   }
+  },
+  {
+   "symbol": "ANGELONE",
+   "company": "Angel One Ltd",
+   "sector": "Broking",
+   "consensus_target": 450,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 480,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "ICICI Direct",
+     "rating": "BUY",
+     "target": 440,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Nuvama",
+     "rating": "BUY",
+     "target": 460,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Nuvama Wealth",
+     "action": "BUY",
+     "qty": "8L",
+     "price": 285,
+     "value": 23,
+     "date": "Sep 21, 2026"
+    }
+   ],
+   "thesis": "Angel One's client base at 25M+ with 45% Gen-Z investors driving long-term stickiness. SuperApp strategy with mutual funds, wealth management, and insurance cross-selling generating ₹15,000 ARPU. F&O market share at 14% despite SEBI curbs. Technology-first approach keeping cost-to-serve 60% below traditional brokers. Wealth management segment launched with ₹35,000 Cr AUM target by FY27.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 300,
+    "day_change_pct": 1.66,
+    "pe": 10.8,
+    "roe": 28.5,
+    "market_cap_cr": 21500,
+    "upside_pct": 50.0
+   }
+  },
+  {
+   "symbol": "KARURVYSYA",
+   "company": "Karur Vysya Bank",
+   "sector": "Banking",
+   "consensus_target": 450,
+   "analyst_ratings": [
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 460,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Anand Rathi",
+     "rating": "BUY",
+     "target": 440,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 450,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Tata AIA Life",
+     "action": "BUY",
+     "qty": "25L",
+     "price": 315,
+     "value": 79,
+     "date": "Sep 19, 2026"
+    }
+   ],
+   "thesis": "Karur Vysya Bank is a hidden gem with ROE of 16%+ at only 1.2x P/B. South India franchise with strong MSME relationships and 98% digital transactions. GNPA declining 40bps QoQ to 1.8%. Credit growth at 16% YoY. Management guided for ₹100Bn balance sheet by FY26. Capital raising providing runway for 20% growth for 3 years.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 324.45,
+    "day_change_pct": 1.34,
+    "pe": 8.5,
+    "roe": 16.2,
+    "market_cap_cr": 25800,
+    "upside_pct": 38.7
+   }
+  },
+  {
+   "symbol": "EICHERMOT",
+   "company": "Eicher Motors Ltd",
+   "sector": "Automobiles",
+   "consensus_target": 9000,
+   "analyst_ratings": [
+    {
+     "agency": "Motilal Oswal",
+     "rating": "BUY",
+     "target": 9500,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "ICICI Securities",
+     "rating": "BUY",
+     "target": 8800,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Goldman Sachs",
+     "rating": "BUY",
+     "target": 9200,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Abu Dhabi Investment Authority",
+     "action": "BUY",
+     "qty": "10L",
+     "price": 7050,
+     "value": 705,
+     "date": "Sep 16, 2026"
+    }
+   ],
+   "thesis": "Eicher Motors' Royal Enfield dominates 90% of the ₹150,000-350,000 premium motorcycle segment with no credible competition. Global expansion (Thailand, Brazil, Colombia) adding incremental 40,000 units. VECV commercial vehicles growing 20% YoY. Guerrilla and Classic Bobber launching in new categories. Strong FCF generation with ₹5,000Cr cash on books.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 7200,
+    "day_change_pct": 0.45,
+    "pe": 32.6,
+    "roe": 26.8,
+    "market_cap_cr": 203969,
+    "upside_pct": 25.0
+   }
+  },
+  {
+   "symbol": "INOXINDIA",
+   "company": "Inox India Ltd",
+   "sector": "Industrial Equipment",
+   "consensus_target": 1500,
+   "analyst_ratings": [
+    {
+     "agency": "ICICI Direct",
+     "rating": "BUY",
+     "target": 1600,
+     "date": "Sep 2026"
+    },
+    {
+     "agency": "Emkay Global",
+     "rating": "BUY",
+     "target": 1500,
+     "date": "Aug 2026"
+    },
+    {
+     "agency": "Centrum Broking",
+     "rating": "BUY",
+     "target": 1480,
+     "date": "Sep 2026"
+    }
+   ],
+   "bulk_deals": [
+    {
+     "client": "Nippon India MF",
+     "action": "BUY",
+     "qty": "6L",
+     "price": 985,
+     "value": 59,
+     "date": "Sep 20, 2026"
+    }
+   ],
+   "thesis": "Inox India is the largest cryogenic equipment maker globally for liquid gases (LNG, LOX, LN2). LNG infrastructure build-out in India creating 5x addressable market. City Gas Distribution network requiring ₹25,000Cr of cryogenic equipment. Export order book from US and Europe for green hydrogen storage. Near-monopoly economics with 40%+ EBITDA margins.",
+   "baseline": {
+    "as_of": "2026-09-23",
+    "price": 1030,
+    "day_change_pct": 0.85,
+    "pe": 38.5,
+    "roe": 21.5,
+    "market_cap_cr": 19448,
+    "upside_pct": 45.6
+   }
+  }
+ ]
+}
